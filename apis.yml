@@ -1,25 +1,28 @@
+aid: democracy-works
 url: >-
   https://example.com/apis/democracy-works-elections-api-democracy-works-election-data.yml
 apis:
-  - name: Democracy Works Elections API  Democracy Works Election Data
+  - aid: democracy-works:elections-api
+    name: Democracy Works Elections API
     image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
     humanURL: https://data.democracy.works/api-info
     overlays: []
+    properties:
+      - url: properties/openapi-spec.yml
+        name: OpenAPI
+        type: OpenAPI
     description: >-
       The Democracy Works Elections API provides reliable voting guidance for
       all levels of elections, from federal to local. Inspire civic
       participation by powering your platforms, apps, and voter communications
       with our data.
-    properties:
-      - name: OpenAPI
-        url: properties/openapi-spec.yml
-        type: OpenAPI
 name: Democracy Works
 tags:
-  - Bookmarks
+  - Elections
 image: >-
   https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
-created: '2024-03-30T00:00:00.000Z'
+common: []
+created: '2024-03-30'
 modified: '2024-11-10'
 description: >-
   The Democracy Works Elections API provides reliable voting guidance for all
@@ -29,5 +32,3 @@ maintainers:
   - FN: API Evangelist
     email: info@apievangelist.com
 specificationVersion: '0.19'
-common: []
-aid: democracy-works
