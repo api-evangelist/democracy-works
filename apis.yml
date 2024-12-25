@@ -8,7 +8,7 @@ apis:
     humanURL: https://data.democracy.works/api-info
     overlays: []
     properties:
-      - url: openapiopenapi-spec.yml
+      - url: openapi/openapi-spec.yml
         name: OpenAPI
         type: OpenAPI
     description: >-
