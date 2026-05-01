@@ -1,0 +1,40 @@
+name: Democracy Works Elections API Capabilities
+description: >-
+  Capabilities exposed by the Democracy Works Elections API for
+  retrieving election data, election authorities, and bulk exports
+  used to power voter-facing applications.
+capabilities:
+  - name: List Authorities
+    description: Retrieve election authorities with optional filtering.
+    operationId: getAuthorities
+    method: GET
+    path: /authorities
+  - name: Get State Authorities
+    description: Retrieve election authorities for a specific U.S. state by postal code.
+    operationId: getStateAuthorities
+    method: GET
+    path: /authorities/state/{stateCode}
+  - name: List Local Authorities
+    description: Retrieve local-level election authorities.
+    operationId: getLocalAuthorities
+    method: GET
+    path: /authorities/local
+  - name: List Elections
+    description: Retrieve upcoming and past elections at federal, state, and local levels.
+    operationId: getElections
+    method: GET
+    path: /elections
+  - name: List Exports
+    description: Retrieve bulk export bundles of election and authority data.
+    operationId: getExports
+    method: GET
+    path: /exports
+use_cases:
+  - name: Voter information apps
+    description: Surface upcoming elections, deadlines, and contact information to voters.
+  - name: Civic outreach campaigns
+    description: Power voter reminders and outreach by integrating election dates and authority guidance.
+  - name: Bulk data integration
+    description: Sync the full election and authority dataset into downstream platforms via export bundles.
+  - name: State-specific guidance
+    description: Drive personalized voter guidance flows scoped to a state's election authority.

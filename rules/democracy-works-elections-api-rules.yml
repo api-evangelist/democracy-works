@@ -1,0 +1,48 @@
+extends:
+  - spectral:oas
+rules:
+  democracy-works-info-contact:
+    description: API info should include a contact for Democracy Works.
+    given: $.info
+    severity: warn
+    then:
+      field: contact
+      function: truthy
+  democracy-works-base-url:
+    description: Servers should reference api.democracy.works.
+    given: $.servers[*].url
+    severity: warn
+    then:
+      function: pattern
+      functionOptions:
+        match: "democracy\\.works"
+  democracy-works-apikey-auth:
+    description: API should declare X-API-Key authentication.
+    given: $.components.securitySchemes
+    severity: error
+    then:
+      field: ApiKeyAuth
+      function: truthy
+  democracy-works-elections-resource:
+    description: API should expose /elections as a primary resource.
+    given: $.paths
+    severity: warn
+    then:
+      function: pattern
+      functionOptions:
+        match: "/elections"
+  democracy-works-authorities-resource:
+    description: API should expose /authorities as a primary resource.
+    given: $.paths
+    severity: warn
+    then:
+      function: pattern
+      functionOptions:
+        match: "/authorities"
+  democracy-works-operation-tags:
+    description: Operations should be tagged Elections, Authorities, etc.
+    given: $.paths[*][*]
+    severity: warn
+    then:
+      field: tags
+      function: truthy

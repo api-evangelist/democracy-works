@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.democracy.works/authority.json",
+  "title": "Authority",
+  "type": "object",
+  "properties": {
+    "id": {"type": "string", "description": "Unique identifier for the election authority."},
+    "name": {"type": "string", "description": "Human-readable name of the authority."},
+    "ocd_id": {"type": "string", "description": "Open Civic Data ID identifying the jurisdiction served."},
+    "state": {"type": "string", "description": "Two-letter U.S. state code."},
+    "level": {"type": "string", "enum": ["state", "local"], "description": "Level of the authority."},
+    "contact": {
+      "type": "object",
+      "properties": {
+        "phone": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "website": {"type": "string", "format": "uri"}
+      }
+    }
+  },
+  "required": ["id", "ocd_id"]
+}

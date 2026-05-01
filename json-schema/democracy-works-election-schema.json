@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.democracy.works/election.json",
+  "title": "Election",
+  "type": "object",
+  "properties": {
+    "id": {"type": "string", "description": "Unique identifier for the election."},
+    "name": {"type": "string", "description": "Human-readable name of the election."},
+    "election_date": {"type": "string", "format": "date", "description": "Date of the election."},
+    "registration_deadline": {"type": "string", "format": "date", "description": "Voter registration deadline for this election."},
+    "ocd_id": {"type": "string", "description": "Open Civic Data ID identifying the political division."},
+    "state": {"type": "string", "description": "Two-letter U.S. state code."},
+    "type": {"type": "string", "description": "Election type (general, primary, special, runoff, etc.)."},
+    "guidance": {"type": "string", "description": "Voter guidance content."}
+  },
+  "required": ["id", "election_date", "ocd_id"]
+}

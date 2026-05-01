@@ -1,0 +1,18 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@vocab": "https://schema.democracy.works/",
+    "schema": "https://schema.org/",
+    "dw": "https://schema.democracy.works/",
+    "Election": "schema:Event",
+    "Authority": "schema:GovernmentOrganization",
+    "id": {"@id": "schema:identifier"},
+    "name": {"@id": "schema:name", "@type": "schema:Text"},
+    "description": {"@id": "schema:description", "@type": "schema:Text"},
+    "election_date": {"@id": "dw:electionDate", "@type": "schema:Date"},
+    "registration_deadline": {"@id": "dw:registrationDeadline", "@type": "schema:Date"},
+    "ocd_id": {"@id": "dw:ocdId", "@type": "schema:Text"},
+    "state": {"@id": "schema:addressRegion", "@type": "schema:Text"},
+    "url": {"@id": "schema:url", "@type": "schema:URL"}
+  }
+}

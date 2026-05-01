@@ -1,0 +1,21 @@
+name: Democracy Works Vocabulary
+description: >-
+  Shared vocabulary of terms used across the Democracy Works Elections
+  API and supporting voter-information data products.
+terms:
+  - term: Election
+    definition: A specific contest with a date, deadlines, jurisdiction, and voter guidance content.
+  - term: Authority
+    definition: A government office or body that runs elections - state-level evergreen guidance plus contact information.
+  - term: OCD-ID
+    definition: An Open Civic Data identifier describing a political division (country, state, county, locality).
+  - term: Local Authority
+    definition: A county- or municipality-level election office responsible for conducting local elections.
+  - term: State Authority
+    definition: A state-level election office providing the canonical voter registration and instructions for that state.
+  - term: Export
+    definition: A bulk dataset bundling elections and authorities for download and integration.
+  - term: Voter Guidance
+    definition: Localized, multilingual instructions explaining how to register and vote in a specific jurisdiction.
+  - term: Deadline
+    definition: A registration, ballot-request, or ballot-return cutoff date associated with an election.
