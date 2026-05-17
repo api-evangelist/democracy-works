@@ -2,7 +2,7 @@ aid: democracy-works
 name: Democracy Works
 url: >-
   https://raw.githubusercontent.com/api-evangelist/democracy-works/refs/heads/main/apis.yml
-type: Contract
+kind: contract
 position: Consuming
 access: 3rd-Party
 image: >-
@@ -17,7 +17,7 @@ tags:
 created: '2024-03-30'
 modified: '2026-04-28'
 specificationVersion: '0.19'
-xType: company
+kind: company
 description: >-
   Democracy Works is a nonprofit civic technology organization providing
   reliable voting guidance for federal, state, and local elections. Its
@@ -66,7 +66,7 @@ common:
     url: https://groups.google.com/a/democracy.works/g/democracy-works-data
   - type: Support
     url: mailto:partnerships@democracy.works
-  - type: JSON-LD
+  - type: JSONLD
     url: json-ld/democracy-works-context.jsonld
   - type: Vocabulary
     url: vocabulary/democracy-works-vocabulary.yml
