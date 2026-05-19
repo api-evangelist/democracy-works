@@ -56,6 +56,8 @@ apis:
       - type: JSONSchema
         url: json-schema/democracy-works-authority-schema.json
 common:
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/democracyworks
   - type: Website
     url: https://www.democracy.works
   - type: Data Portal
