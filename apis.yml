@@ -31,7 +31,7 @@ apis:
       guidance for all levels of elections, from federal to local. It
       exposes elections, election authorities, state-level guidance, and
       bulk export endpoints used to inspire civic participation.
-    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     humanURL: https://data.democracy.works/api-info
     baseURL: https://api.democracy.works/v2
     tags:
