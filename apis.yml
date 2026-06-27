@@ -42,7 +42,7 @@ apis:
     properties:
       - type: Documentation
         url: https://data.democracy.works/api-info
-      - type: SignUp
+      - type: Signup
         url: https://data.democracy.works/api-signup
       - type: OpenAPI
         url: openapi/openapi-spec.yml
