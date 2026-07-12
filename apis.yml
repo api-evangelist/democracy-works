@@ -55,6 +55,8 @@ apis:
       - type: JSONSchema
         url: json-schema/democracy-works-authority-schema.json
 common:
+  - type: DomainSecurity
+    url: security/democracy-works-domain-security.yml
   - type: LinkedIn
     url: https://www.linkedin.com/company/democracyworks
   - type: Website
@@ -71,6 +73,8 @@ common:
     url: json-ld/democracy-works-context.jsonld
   - type: Vocabulary
     url: vocabulary/democracy-works-vocabulary.yml
+  - url: https://www.democracy.works/newsroom
+    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
