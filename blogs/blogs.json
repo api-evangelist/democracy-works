@@ -1,0 +1,14 @@
+{
+  "repo": "democracy-works",
+  "feeds": [
+    {
+      "source": "https://www.democracy.works/newsroom",
+      "feed_url": "https://www.democracy.works/newsroom",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    }
+  ],
+  "fetched": "2026-07-11T11:50:51Z",
+  "post_count": 5
+}
