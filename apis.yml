@@ -3,6 +3,18 @@ name: Democracy Works
 url: >-
   https://raw.githubusercontent.com/api-evangelist/democracy-works/refs/heads/main/apis.yml
 kind: contract
+accessModel:
+  pricing: freemium
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Freemium
+  confidence: medium
+  source:
+  - plans
+  generated: '2026-07-22'
+  method: derived
 position: Consuming
 access: 3rd-Party
 image: >-
@@ -24,36 +36,72 @@ description: >-
   outreach campaigns with comprehensive election and election-authority
   data keyed to Open Civic Data IDs.
 apis:
-  - aid: democracy-works:elections-api
-    name: Democracy Works Elections API
-    description: >-
-      The Democracy Works Elections API provides reliable voting
-      guidance for all levels of elections, from federal to local. It
-      exposes elections, election authorities, state-level guidance, and
-      bulk export endpoints used to inspire civic participation.
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    humanURL: https://data.democracy.works/api-info
-    baseURL: https://api.democracy.works/v2
-    tags:
-      - Authorities
-      - Elections
-      - Exports
-      - Voter Information
-    properties:
-      - type: Documentation
-        url: https://data.democracy.works/api-info
-      - type: Signup
-        url: https://data.democracy.works/api-signup
-      - type: OpenAPI
-        url: openapi/openapi-spec.yml
-      - type: Rules
-        url: rules/democracy-works-elections-api-rules.yml
-      - type: Capabilities
-        url: capabilities/democracy-works-elections-api-capabilities.yml
-      - type: JSONSchema
-        url: json-schema/democracy-works-election-schema.json
-      - type: JSONSchema
-        url: json-schema/democracy-works-authority-schema.json
+- aid: democracy-works:democracy-works-authorities-api
+  name: Democracy Works Authorities API
+  description: The Authorities API from Democracy Works — 3 operation(s) for authorities.
+  humanURL: https://data.democracy.works/api-info
+  baseURL: https://api.democracy.works/v2
+  tags:
+  - Authorities
+  properties:
+  - type: OpenAPI
+    url: openapi/democracy-works-authorities-api-openapi.yml
+  - type: Documentation
+    url: https://data.democracy.works/api-info
+  - type: Signup
+    url: https://data.democracy.works/api-signup
+  - type: Rules
+    url: rules/democracy-works-elections-api-rules.yml
+  - type: Capabilities
+    url: capabilities/democracy-works-elections-api-capabilities.yml
+  - type: JSONSchema
+    url: json-schema/democracy-works-election-schema.json
+  - type: JSONSchema
+    url: json-schema/democracy-works-authority-schema.json
+- aid: democracy-works:democracy-works-elections-api
+  name: Democracy Works Elections API
+  description: The Elections API from Democracy Works — 1 operation(s) for elections.
+  humanURL: https://data.democracy.works/api-info
+  baseURL: https://api.democracy.works/v2
+  tags:
+  - Elections
+  properties:
+  - type: OpenAPI
+    url: openapi/democracy-works-elections-api-openapi.yml
+  - type: Documentation
+    url: https://data.democracy.works/api-info
+  - type: Signup
+    url: https://data.democracy.works/api-signup
+  - type: Rules
+    url: rules/democracy-works-elections-api-rules.yml
+  - type: Capabilities
+    url: capabilities/democracy-works-elections-api-capabilities.yml
+  - type: JSONSchema
+    url: json-schema/democracy-works-election-schema.json
+  - type: JSONSchema
+    url: json-schema/democracy-works-authority-schema.json
+- aid: democracy-works:democracy-works-exports-api
+  name: Democracy Works Exports API
+  description: The Exports API from Democracy Works — 1 operation(s) for exports.
+  humanURL: https://data.democracy.works/api-info
+  baseURL: https://api.democracy.works/v2
+  tags:
+  - Exports
+  properties:
+  - type: OpenAPI
+    url: openapi/democracy-works-exports-api-openapi.yml
+  - type: Documentation
+    url: https://data.democracy.works/api-info
+  - type: Signup
+    url: https://data.democracy.works/api-signup
+  - type: Rules
+    url: rules/democracy-works-elections-api-rules.yml
+  - type: Capabilities
+    url: capabilities/democracy-works-elections-api-capabilities.yml
+  - type: JSONSchema
+    url: json-schema/democracy-works-election-schema.json
+  - type: JSONSchema
+    url: json-schema/democracy-works-authority-schema.json
 common:
   - type: DomainSecurity
     url: security/democracy-works-domain-security.yml
