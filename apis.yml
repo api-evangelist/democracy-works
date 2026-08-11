@@ -52,8 +52,6 @@ apis:
     url: https://data.democracy.works/api-signup
   - type: Rules
     url: rules/democracy-works-elections-api-rules.yml
-  - type: Capabilities
-    url: capabilities/democracy-works-elections-api-capabilities.yml
   - type: JSONSchema
     url: json-schema/democracy-works-election-schema.json
   - type: JSONSchema
@@ -74,8 +72,6 @@ apis:
     url: https://data.democracy.works/api-signup
   - type: Rules
     url: rules/democracy-works-elections-api-rules.yml
-  - type: Capabilities
-    url: capabilities/democracy-works-elections-api-capabilities.yml
   - type: JSONSchema
     url: json-schema/democracy-works-election-schema.json
   - type: JSONSchema
@@ -96,8 +92,6 @@ apis:
     url: https://data.democracy.works/api-signup
   - type: Rules
     url: rules/democracy-works-elections-api-rules.yml
-  - type: Capabilities
-    url: capabilities/democracy-works-elections-api-capabilities.yml
   - type: JSONSchema
     url: json-schema/democracy-works-election-schema.json
   - type: JSONSchema
