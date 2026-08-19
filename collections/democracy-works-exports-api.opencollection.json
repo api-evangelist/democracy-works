@@ -1,0 +1,35 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Democracy Works Exports API",
+    "version": "2.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Exports",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Exports",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.democracy.works/v2/exports",
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "This endpoint serves presigned URLs to flat files on AWS S3. It supports no parameters.\n\nTo set up a bulk data export, contact partnerships@democracy.works.\n\nPresigned URLs are temporary and expire after one hour. Download the file promptly after requesting a URL. If a URL expires before you can download your file, request a new one from this endpoint.\n\nPresigned URLs grant access to your data. Do not share these URLs with any party that should have access to this data.\n\n[Learn more about Workin"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

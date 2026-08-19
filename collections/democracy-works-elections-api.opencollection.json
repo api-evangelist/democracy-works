@@ -1,0 +1,97 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Democracy Works Elections API",
+    "version": "2.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Elections",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Elections",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.democracy.works/v2/elections",
+            "params": [
+              {
+                "name": "address",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "addressStreet",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "addressCity",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "addressStateCode",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "addressZip",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "addressZip4",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "stateCode",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "ocdId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "startDate",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "endDate",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "includeQuestionAndAnswer",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "includeBallotData",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "This endpoint has election-specific dates and deadlines, URLs for voters to get more information and take action, and detailed guidance in both English and Spanish. The information included reflects the voter registration and voting methods available in the state for that election, such as online, in-person, and by-mail registration as well as by-mail, in-person, and early voting. The election also contains some information from the related state authority. The default is to return all elections"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

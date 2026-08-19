@@ -1,0 +1,110 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Democracy Works Authorities API",
+    "version": "2.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Authorities",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "State authorities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.democracy.works/v2/authorities/state/:stateCode",
+            "params": [
+              {
+                "name": "stateCode",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "includeQuestionAndAnswer",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "This endpoint includes statewide evergreen information and instructions on how to register and vote for each state (and Washington, D.C.). It includes contact information for state election authorities, registration methods, voting methods, state-specific URLs to authoritative government websites, and more. \n\nAuthorities do not contain election-specific information such as dates, and while we closely monitor this data for changes and update when needed, Authorities information generally does not"
+        },
+        {
+          "info": {
+            "name": "All authorities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.democracy.works/v2/authorities",
+            "params": [
+              {
+                "name": "address",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "stateCode",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "includeQuestionAndAnswer",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "This endpoint includes all statewide and local authorities that correspond to a given address or state parameter. \n\nThe statewide authorities include evergreen information and guidance on how to register and vote in that state, as well as contact information for state election authorities. Local authorities provide contact information for the local election office. \n\nAuthorities do not contain election-specific information such as dates, and while we closely monitor this data for changes and upd"
+        },
+        {
+          "info": {
+            "name": "Local authorities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.democracy.works/v2/authorities/local",
+            "params": [
+              {
+                "name": "address",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "stateCode",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "This endpoint provides contact information for over 8,500 local election offices at the county and municipal levels.\n\nAuthorities are returned sorted alphabetically by OCD-ID. \n\nSupports the following standard parameters: see __[Pagination](#section/Standard-Parameters/Pagination)__ and __[Localization](#section/Standard-Parameters/Localization)__.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
