@@ -1,0 +1,177 @@
+specification: API Commons Conventions
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: searched
+source: >-
+  https://developers.democracy.works/api/v2 (Standard Parameters sections + the harvested
+  OpenAPI), a live probe of https://api.democracy.works/v2/elections, and the provider's
+  "Integrating Election Data into AI Experiences" developer guide linked from
+  https://www.democracy.works/search-social-ai
+description: >-
+  Cross-cutting runtime semantics for the Democracy Works Elections API v2. This is a
+  READ-ONLY API — all 11 published operations are GETs — which settles three of the
+  agent-readiness dimensions by structure rather than by policy.
+authentication:
+  style: api-key-header
+  header: X-API-KEY
+  scheme_name: ApiKeyAuth
+  issuance: >-
+    Keys are issued by Democracy Works on request through partnerships@democracy.works.
+    There is no self-service signup; the former signup page soft-404s.
+  failure: 403 with {"message":"Forbidden"} (gateway envelope); absent and invalid keys
+    are indistinguishable.
+  detail: authentication/democracy-works-authentication.yml
+pagination:
+  style: page-number
+  parameters:
+  - name: pageSize
+    in: query
+    default: 10
+    maximum: 100
+    note: A query whose response exceeds the service limit returns 413, not a truncated page.
+  - name: page
+    in: query
+    default: 1
+  response_field: pagination
+  response_shape:
+    totalRecordCount: number
+    currentPage: number
+    pageSize: number
+  applies_to: every operation that returns multiple results
+  docs: https://developers.democracy.works/api/v2#section/Standard-Parameters/Pagination
+  cursor: false
+sparse_fieldsets:
+  supported: true
+  parameter: fields
+  syntax: >-
+    Comma-separated google.protobuf.FieldMask symbolic paths, e.g.
+    fields="ocdId,date,contact.email". Paths are validated against the full schema; an
+    invalid path is a 400.
+  docs: https://developers.democracy.works/api/v2#section/Standard-Parameters/Fields
+  note: >-
+    This is the recommended defence against 413 on large election queries, and it is the
+    lever an agent should reach for before lowering pageSize.
+expansion:
+  supported: partial
+  parameters:
+  - name: includeBallotData
+    applies_to: getElections
+    note: Ballot measures and contests are omitted from the default election response.
+  - name: includeQuestionAndAnswer
+    applies_to: [getElections, getAuthorities, getStateAuthorities]
+    note: Q&A guidance content is omitted unless explicitly requested.
+localization:
+  supported: true
+  mechanism: Accept-Language request header
+  values: [en, en-US, es, es-US]
+  behavior: >-
+    Only fields tagged Localized are translated; an unavailable translation returns null
+    rather than falling back to English. A client must handle nulls, not assume fallback.
+  docs: https://developers.democracy.works/api/v2#section/Standard-Parameters/Localization
+content_formatting:
+  supported: true
+  parameter: contentFormatType
+  values: [html, json]
+  default: html
+  note: >-
+    json returns prose fields as an abstract syntax tree rather than a string. An agent
+    rendering to plain text should ask for json and walk the AST instead of stripping HTML.
+  docs: https://developers.democracy.works/api/v2#section/Standard-Parameters/Content-Formatting
+caching:
+  provider_guidance: cache API responses for no more than one hour
+  source: >-
+    "Integrating Election Data into AI Experiences — A guide for developers" (Democracy
+    Works, PDF), section "Recommendations for using the Democracy Works Elections API",
+    item 3, linked from https://www.democracy.works/search-social-ai
+  quote: >-
+    "To balance user responsiveness with data freshness, we recommend caching API responses
+    for no more than one hour."
+  http_cache_headers: none observed
+  note: >-
+    The recommendation is prose in a PDF, not a Cache-Control header. The API itself sends
+    no cache directives, so a client must implement the one-hour ceiling itself.
+attribution:
+  required: true
+  requirement: >-
+    Cite Democracy Works and return the canonical Democracy Works URL the API includes in
+    its response (election.canonicalUrl, authority.canonicalUrl) alongside any answer
+    derived from the data; link out to Secretary of State and other state portals where
+    relevant.
+  source: >-
+    "Integrating Election Data into AI Experiences", items 1 and 2, linked from
+    https://www.democracy.works/search-social-ai
+  note: >-
+    This is a genuine consumption obligation, not a nicety — the provider states plainly
+    that tools should DECLINE to answer when no authoritative source is available rather
+    than answer from model memory.
+request_tracing:
+  supported: false
+  note: >-
+    No first-party request-id header. AWS API Gateway surfaces x-amzn-requestid and
+    x-amz-cf-id on responses (observed live 2026-09-07); those are infrastructure ids, not
+    a documented support handle, but they are the only correlation ids available.
+versioning:
+  style: url-path-major
+  current: /v2
+  detail: lifecycle/democracy-works-lifecycle.yml
+error_envelope:
+  format: custom
+  shapes:
+  - '{status: integer, message: [string]} — application errors (400/404/413/500)'
+  - '{message: string} — gateway errors (403/429) and all voting-locations errors'
+  rfc9457: false
+  detail: errors/democracy-works-problem-types.yml
+rate_limit_signaling:
+  headers: none
+  exhaustion_status: 429
+  exhaustion_body: '{"message":"Too Many Requests"}'
+  retry_after: not observed
+  note: >-
+    No X-RateLimit-* or RateLimit-* headers are documented and none were observed. A client
+    cannot read its remaining budget and must infer throttling from the 429 alone.
+  detail: rate-limits/democracy-works-rate-limits.yml
+idempotency:
+  coverage: na
+  scope: []
+  mechanism: none
+  note: >-
+    NOT A GAP — a structural na. All 11 operations in the v2 contract are GETs, which are
+    idempotent by HTTP definition. There is no write surface for an Idempotency-Key header
+    to protect, so no Idempotency pointer is wired into apis.yml.
+dry_run_mode:
+  supported: na
+  note: Read-only API; there is no action to rehearse.
+reversibility:
+  applicable: false
+  grade: na
+  write_surfaces: []
+  reversal_operations: []
+  note: >-
+    Structural na, established from the contract rather than assumed: every published
+    operation is a GET (getStateAuthorities, getAuthorities, getLocalAuthorities,
+    getElections, getBallotMeasure, getCandidate, getContest, getEndorsement,
+    getEndorsementBulk, getExports, getVotingLocations). Nothing an agent calls here changes
+    provider state, so there is nothing to cancel, refund, void or restore, and no window to
+    state. The one operation with a time dimension is getExports, whose presigned S3 URLs
+    EXPIRE after one hour — that is an expiry on a credential, not a reversal window, and
+    the remedy is to request a fresh URL from the same endpoint.
+  evidence: https://developers.democracy.works/api/v2
+side_effects:
+  data_egress:
+  - operation: getExports
+    note: >-
+      Returns presigned AWS S3 URLs that grant access to the caller's contracted data for
+      one hour. The provider warns in the contract: "Do not share these URLs with any party
+      that should have access to this data." An agent must treat the returned URL as a
+      secret and must not log or echo it.
+  pii_inbound:
+  - operations: [getElections, getAuthorities, getLocalAuthorities, getVotingLocations]
+    note: >-
+      These accept a voter's full street address. The provider's own guidance flags this as
+      a decision point — point the user at TurboVote instead, or accept the address and
+      apply your own protections. An agent should not persist the address it sends.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

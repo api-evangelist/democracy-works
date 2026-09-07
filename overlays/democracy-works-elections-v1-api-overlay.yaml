@@ -1,0 +1,48 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist overlay for Democracy Works Elections API v1 (legacy)
+  version: 1.0.0
+extends: democracy-works-elections-v1-api-openapi.yml
+x-provenance:
+  generated: '2026-09-07'
+  method: generated
+  source: API Evangelist enrichment pass over the harvested Democracy Works contract; captures only the
+    catalog's own enhancements and never mutates the provider document.
+actions:
+- target: $.info
+  description: Add the support contact Democracy Works publishes in the contract prose but does not express
+    as info.contact.
+  update:
+    contact:
+      name: Democracy Works Partnerships
+      email: partnerships@democracy.works
+      url: https://www.democracy.works/contact
+- target: $.servers[0]
+  description: Name the server so a split document still says which surface it belongs to.
+  update:
+    description: Democracy Works API v1 (legacy, unversioned paths, still served)
+- target: $.info
+  description: Record where this document came from and what the catalog changed, so the refined copy
+    is never mistaken for the provider original.
+  update:
+    x-api-evangelist:
+      provider: Democracy Works
+      providerId: democracy-works
+      harvested: '2026-09-07'
+      harvested-from: https://developers.democracy.works/api/v1
+      original: openapi/_original/democracy-works-api-v1-openapi.json
+      refinements:
+      - Split from the single provider document to one document per resource group.
+      - Declared the tag "Elections v1" and applied it to every operation; the provider document tags
+        no operation.
+      - Restated the OpenAPI version as 3.2.0 (provider publishes 3.1.1).
+      - Carried only the components each operation actually references.
+      - Added operationIds (getStateAuthorityUrls, getStateAuthorities, getUpcomingElections); the provider
+        document declares none.
+      artifacts:
+        authentication: authentication/democracy-works-authentication.yml
+        conventions: conventions/democracy-works-conventions.yml
+        errors: errors/democracy-works-problem-types.yml
+        lifecycle: lifecycle/democracy-works-lifecycle.yml
+        data-model: data-model/democracy-works-data-model.yml
+        rate-limits: rate-limits/democracy-works-rate-limits.yml

@@ -1,0 +1,436 @@
+openapi: 3.2.0
+info:
+  title: Democracy Works Contests API
+  version: '2.0'
+  description: "# Introduction\n\nThe Democracy Works Elections API provides your application with comprehensive elections data and voting guidance, surfacing our unparalleled coverage of upcoming local, state, and federal elections. Power your platforms, apps, reminders, outreach campaigns, and much more.\n\nJoin the community of developers in our [Google Group](https://groups.google.com/a/democracy.works/g/democracy-works-data)\nfor updates about our data and elections.\n\n## Authentication\nAccess to the Democracy Works Elections API requires authentication. To access the DW API, include an `X-API-KEY` header with each API request. The key of that header should be lowercase. The value of that header should be your API key. For example:\n\n```sh\ncurl \"https://api.democracy.works/v2/elections\" \\\n    --header \"X-API-KEY: <YOUR API KEY>\"\n```\n\nFor pricing information and to obtain a test key, please [contact us](https://data.democracy.works/api-signup).\n\n## Base URL\nThe base URL for all API endpoints is: https://api.democracy.works/v2\n\n## Support\nIf you have any further questions or issues, please contact us at partnerships@democracy.works.\n\n## Data\n\nData is captured in two entities, an __Election__ and an __Authority__. The __Election__ has election-specific dates and deadlines, URLs for voters to get more information and take action, and detailed guidance in both English and Spanish. The __Authority__ includes statewide evergreen information and instructions on how to register and vote for each state, as well as election office contact information.\n\n# Open Civic Data IDs (OCD-IDs)\n\nWe use Open Civic Data IDs [(OCD-IDs)](https://opencivicdata.info/en/latest/ocdids.html)\nthroughout the API to describe entities and filter results.\n\nOCD-IDs start with what is being identified, and in our case it is always\n`ocd-division`.\n\nSince all authorities are, or are contained within, a state and all elections\nare run by some authority, almost every OCD-ID in our system starts with\n`ocd-division/country:us/state:__`, where `__` is a two-letter state postal code.\n\nThe only exception to this is for the District of Columbia, which has the OCD-ID\n`ocd-division/country:us/district:dc`.\n\n## OCD-ID on the Authority\nThe OCD-ID associated with an authority describes the political district covered\nby an authority. Authorities are uniquely identifiable by the associated OCD-ID.\n\nFor example:\n- The OCD-ID `ocd-division/country:us/state:ak/place:anderson` is associated\n  with the authority for Anderson, Alaska.\n- The OCD-ID `ocd-division/country:us/state:ny/county:albany/council_district:2`\n  is not associated with an authority because Albany's 2nd Ward is a legislative\n  ward which does not run its own elections.\n\n## OCD-ID on the Election\nThe OCD-ID associated with an election describes the highest-level district\nin which all voters have something to vote for on the ballot on Election Day.\nElections always have an associated OCD-ID, but are not uniquely\nidentifiable by the associated OCD-ID.\n\nFor example:\n- If there is a mayoral race in Philadelphia as well as a state-wide\nmeasure contest in Pennsylvania on a given day, there will be one election\nentity with OCD-ID `ocd-division/country:us/state:pa`.\n- If there is only a mayoral race in Pittsburgh in Allegheny County on a given\nday, there will be an election entity with OCD-ID\n`ocd-division/country:us/state:pa/county:allegheny`.\n\n# Standard Parameters\nFunctionality shared between API endpoints is noted here. Each endpoint will\nspecify whether it supports the following functionality.\n\n## Pagination\nAny endpoint that returns multiple results supports pagination. An endpoint that\nsupports pagination accepts two related query parameters:\n- `pageSize`\n  - Specifies the number of results requested. Defaults to 10 if not specified. The maximum value is 100.\n  - Example: `pageSize=15`\n- `page`\n  - Specifies the page to return, based on `pageSize`. Defaults to 1 if not specified.\n  - Example: `page=2`\n\nYou can send none, one, or both of these parameters. Each endpoint that supports\npagination will have a `pagination` field in the response, which details what\npage of information is returned, what page size was used for the request, and the\ntotal number of results found.\n\n## Localization\nSome endpoints support localization. An endpoint that supports localization accepts a\nheader parameter:\n- `Accept-Language`\n  - Specifies the language tag for localization. Accepted values are `en`, `en-US`, `es`, and `es-US`.\n  - Example: `Accept-Language: es`\n\nNot all fields on the response of a localized endpoint are localized. Each field that supports localization\nwill have a `Localized` tag on its field description.\n\nIf no localization in the requested language is found,\nlocalized fields will return `null`.\n\n## Content Formatting\nSome endpoints support content formatting. An endpoint that supports formatting accepts a\nquery parameter:\n- `contentFormatType`\n  - Specifies the format of certain fields in the response.\n    Accepted values are `html` and `json`. Defaults to `html` if not specified.\n  - Example: `contentFormatType=json`\n\nNot all fields on the response of a formatted endpoint are formatted.\nFormatting is generally supported on prose-like fields, including Question and Answer content and most instruction fields.\nEach field that supports formatting will have a `Formatted` tag on its field description.\n\nThe `json`-formatted content is the content represented as an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).\n\n## Fields\nSome endpoints support field masking to specify a list of fields to include in the API response. This helps to avoid unnecessary computation and improve performance. An endpoint that supports field masking accepts a\nquery parameter:\n- `fields`\n  - Specifies the symbolic field paths to include in the response, provided as comma-separated list. See more about [Field Masks](https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask).\n  - Example: `fields=\"ocdId,date,contact.email\"`\n\nPaths are validated against all possible fields, and providing an invalid path will result in a 400 response.\n"
+servers:
+- url: https://api.democracy.works/v2
+tags:
+- name: Contests
+paths:
+  /contests:
+    get:
+      operationId: getContest
+      summary: Contest
+      description: 'This endpoint gets one contest by `id`.
+
+        '
+      security:
+      - ApiKeyAuth: []
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+          description: Hash identifier of the contest to get.
+          example: co_682d473ab8a590c2f1ed2d4fd8dd11c49a44b62f
+        required: true
+      responses:
+        '200':
+          description: Contest fetched by query.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/contest'
+              examples:
+                sampleContestsResponse:
+                  $ref: '#/components/examples/contests'
+        '400':
+          $ref: '#/components/responses/badRequestError'
+        '404':
+          description: Not Found Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errors'
+              example:
+                status: 404
+                message:
+                - Contest not found.
+        '429':
+          $ref: '#/components/responses/tooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+      tags:
+      - Contests
+components:
+  examples:
+    contests:
+      summary: Sample contests response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        data:
+          contests:
+            id: co_682d473ab8a590c2f1ed2d4fd8dd11c49a44b62f
+            name: AC Transit District Board of Directors Ward 6
+            title: null
+            body: null
+            level: local
+            branch: legislative
+            districtName: AC Transit District Ward 6
+            districtType: specialDistrictSubdivision
+            contestType: regular
+            ocdId: ocd-division/country:us/state:ca/transit_district:alameda-contra_costa/district:6
+            seatsUpForElection: 1,
+            rankedChoice: false
+            rankedChoiceExplainerURL: null
+            rankedChoiceRankNumber: null
+            hasPrimary: false
+            generalDate: null
+            primaryDate: null
+            partisanPrimary: null
+            partisanPrimaryExplainerUrl: null
+            partisanPrimaryExplainerEn: null
+            partisanPrimaryExplainerEs: null
+            cancelled: null
+            aboutOffice: null
+            candidates:
+            - id: can_07e636ccd8ca58886d6578b4006233f5b2153b8f
+              fullName: Shonda Goward
+              firstName: Shonda
+              lastName: Goward
+              partyAffiliation:
+              - Nonpartisan
+              isIncumbent: false
+              isWriteIn: false
+              ballotpediaUrl: https://ballotpedia.org/Shonda_Goward
+              status: lost
+              runningMateFullName: null
+              runningMateTitle: null
+              rankedChoiceVotingRound: null
+              endorsementCount: 1
+              contact:
+                campaign:
+                  email: shonda@gowardforactransit.com
+                  website: http://www.gowardforactransit.com
+                  facebook: null
+                  twitter: null
+                  instagram: null
+                  youtube: null
+                  mailingAddress: 30042 Mission Blvd
+                  Ste 121 PMB 205: null
+                  Hayward: null
+                  CA 94544: null
+                  phone: 510-646-0845
+                personal:
+                  website: null
+                  facebook: null
+                  twitter: shondagoward
+                  instagram: https://www.instagram.com/sixthregion/
+                  youtube: null
+                  linkedIn: https://www.linkedin.com/in/shondagoward/
+            - id: can_92800009b57ea6d51a701ebaec4ce10be78494f3
+              fullName: Jesse Lee Gunn
+              firstName: Jesse
+              lastName: Gunn
+              partyAffiliation:
+              - Nonpartisan
+              isIncumbent: false
+              isWriteIn: false
+              ballotpediaUrl: https://ballotpedia.org/Jesse_Lee_Gunn
+              status: lost
+              runningMateFullName: null
+              runningMateTitle: null
+              rankedChoiceVotingRound: null
+              endorsementCount: 1
+              contact:
+                campaign:
+                  email: jg4act@gmail.com
+                  website: https://www.jesse2024.com/
+                  facebook: https://www.facebook.com/jesse4transit
+                  twitter: null
+                  instagram: https://www.instagram.com/jesse4transit
+                  youtube: null
+                  mailingAddress: 510 Schafer Road Hayward CA 94544
+                  phone: 510-512-4236
+                personal:
+                  website: null
+                  facebook: https://www.facebook.com/jesse4transit
+                  twitter: jessegunnmath
+                  instagram: null
+                  youtube: https://www.youtube.com/@jessegunn5994
+                  linkedIn: https://www.linkedin.com/in/jesse4transit/
+  responses:
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
+  schemas:
+    candidate:
+      description: A representation of a candidate.
+      type: object
+      required:
+      - id
+      - fullName
+      - firstName
+      - lastName
+      - partyAffiliation
+      - isWriteIn
+      properties:
+        id:
+          type: string
+          description: The ID of the candidate.
+        fullName:
+          type: string
+          description: The full name of the candidate.
+        firstName:
+          type: string
+          description: The first name of the candidate.
+        lastName:
+          type: string
+          description: The last name of the candidate.
+        partyAffiliation:
+          type: array
+          description: Describes the party affiliation of the candidate.
+          items:
+            type: string
+        isIncumbent:
+          type: boolean
+          description: Indicates whether a candidate is an incumbent.
+        isWriteIn:
+          type: boolean
+          description: Indicates whether a candidate is a write-in candidate.
+        ballotpediaUrl:
+          type: string
+          description: The URL of the candidate's Ballotpedia page.
+        status:
+          type: string
+          description: The status of the candidate in that contest.
+          enum:
+          - won
+          - lost
+          - advanced
+          - declared
+          - disqualified
+          - onBallot
+          - withdrew
+          - notable
+          - acclaimed
+          - withdrewStillOnBallot
+        runningMateFullName:
+          type: string
+          description: The full name of the candidate's running mate.
+        runningMateTitle:
+          type: string
+          description: The title of the candidate's running mate.
+        rankedChoiceVotingRound:
+          type: number
+          description: RCV results are reported in “rounds” of calculations. Ballotpedia reports each round of these results, so a candidate in an RCV will have a row for each round of calculation in that stage. The first round of results reported will have this attribute = 1. Rounds will count up until the final round.
+        endorsementCount:
+          type: number
+          description: The number of endorsements available for this candidate.
+        contact:
+          type: object
+          properties:
+            campaign:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The candidate’s campaign email address.
+                website:
+                  type: string
+                  description: The candidate’s campaign website.
+                facebook:
+                  type: string
+                  description: The candidate’s campaign Facebook.
+                twitter:
+                  type: string
+                  description: The candidate’s campaign Twitter.
+                instagram:
+                  type: string
+                  description: The candidate’s campaign Instagram.
+                youtube:
+                  type: string
+                  description: The candidate’s campaign YouTube.
+                mailingAddress:
+                  type: string
+                  description: The candidate’s campaign mailing address.
+                phone:
+                  type: string
+                  description: The candidate’s campaign phone number.
+            personal:
+              type: object
+              properties:
+                website:
+                  type: string
+                  description: The candidate’s personal website.
+                facebook:
+                  type: string
+                  description: The candidate’s personal Facebook.
+                twitter:
+                  type: string
+                  description: The candidate’s personal Twitter.
+                instagram:
+                  type: string
+                  description: The candidate’s personal Instagram.
+                youtube:
+                  type: string
+                  description: The candidate’s personal YouTube.
+                linkedIn:
+                  type: string
+                  description: The candidate’s personal LinkedIn.
+    contest:
+      description: Information on the race for the specific office up for election, including the list of candidates and candidate information.
+      type: object
+      required:
+      - id
+      - name
+      - level
+      - districtName
+      - ocdId
+      - seatsUpForElection
+      - candidates
+      properties:
+        id:
+          type: string
+          description: The ID of the contest.
+        name:
+          type: string
+          description: 'The name of the office  (ex: “President”).'
+        title:
+          type: string
+          description: Human readable title of the office (e.g. Senator)
+        body:
+          type: string
+          description: Label of legislative or judicial body to which the contest belongs
+        level:
+          type: string
+          description: The level of the contest.
+          enum:
+          - federal
+          - state
+          - local
+        branch:
+          type: string
+          description: The branch of government of the office.
+          enum:
+          - executive
+          - judicial
+          - legislative
+        districtName:
+          type: string
+          description: The name of the district that elects the office.
+        districtType:
+          type: string
+          description: The type of district that elects the office.
+          enum:
+          - cityTown
+          - cityTownSubdivision
+          - congress
+          - county
+          - countySubdivision
+          - judicialDistrict
+          - judicialDistrictSubdivision
+          - schoolDistrict
+          - schoolDistrictSubdivision
+          - specialDistrict
+          - specialDistrictSubdivision
+          - state
+          - stateLegislativeLower
+          - stateLegislativeUpper
+          - stateSubdivision
+          - township
+        contestType:
+          type: string
+          description: The type of contest.
+          enum:
+          - regular
+          - special
+          - recall
+        ocdId:
+          type: string
+          description: The OCD-ID of the contest.
+        seatsUpForElection:
+          type: string
+          description: The number of seats up for election.
+        rankedChoice:
+          type: boolean
+          description: If the contest is conducted by ranked choice voting (RCV), then TRUE; else FALSE.
+        rankedChoiceExplainerURL:
+          type: string
+          description: Link to state or local election administrator website explaining how ranked choice voting works.
+        rankedChoiceRankNumber:
+          type: number
+          description: Number of candidates a voter can rank on a ballot in a Ranked Choice Election.
+        hasPrimary:
+          type: boolean
+          description: For a general election, indicates if an associated primary election exists.
+        primaryDate:
+          type: string
+          description: For a general election, provides the date of the associated primary election.
+        generalDate:
+          type: string
+        partisanPrimary:
+          type: string
+        partisanPrimaryExplainerUrl:
+          type: string
+          description: URL where voter can learn more about how to vote in the party primary contest.
+        partisanPrimaryExplainerEn:
+          type: string
+          description: English-language sentence explaining to voters how to vote in the party primary contest.
+        partisanPrimaryExplainerEs:
+          type: string
+          description: Spanish-language sentence explaining to voters how to vote in the party primary contest.
+        partisanPrimaryExplainerSharedId:
+          type: string
+          description: Hash for all contests (associated with the election) sharing the same guidance.
+        cancelled:
+          type: boolean
+          description: TRUE if contest does not appear on ballot due to a cancellation. Contests may be cancelled if the number of candidates filed is less than or equal to the number of positions up for election. Not all jurisdictions cancel contests under these circumstances as write-in votes may be allowed in some case
+        aboutOffice:
+          type: string
+          description: A brief summary of the role and responsibilities associated with an office.
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/candidate'
+          description: A list of candidates running for election for the contest.
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY

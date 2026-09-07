@@ -1,0 +1,432 @@
+openapi: 3.2.0
+info:
+  title: Democracy Works Voting Locations API
+  version: '2.0'
+  description: "# Introduction\n\nThe Democracy Works Elections API provides your application with comprehensive elections data and voting guidance, surfacing our unparalleled coverage of upcoming local, state, and federal elections. Power your platforms, apps, reminders, outreach campaigns, and much more.\n\nJoin the community of developers in our [Google Group](https://groups.google.com/a/democracy.works/g/democracy-works-data)\nfor updates about our data and elections.\n\n## Authentication\nAccess to the Democracy Works Elections API requires authentication. To access the DW API, include an `X-API-KEY` header with each API request. The key of that header should be lowercase. The value of that header should be your API key. For example:\n\n```sh\ncurl \"https://api.democracy.works/v2/elections\" \\\n    --header \"X-API-KEY: <YOUR API KEY>\"\n```\n\nFor pricing information and to obtain a test key, please [contact us](https://data.democracy.works/api-signup).\n\n## Base URL\nThe base URL for all API endpoints is: https://api.democracy.works/v2\n\n## Support\nIf you have any further questions or issues, please contact us at partnerships@democracy.works.\n\n## Data\n\nData is captured in two entities, an __Election__ and an __Authority__. The __Election__ has election-specific dates and deadlines, URLs for voters to get more information and take action, and detailed guidance in both English and Spanish. The __Authority__ includes statewide evergreen information and instructions on how to register and vote for each state, as well as election office contact information.\n\n# Open Civic Data IDs (OCD-IDs)\n\nWe use Open Civic Data IDs [(OCD-IDs)](https://opencivicdata.info/en/latest/ocdids.html)\nthroughout the API to describe entities and filter results.\n\nOCD-IDs start with what is being identified, and in our case it is always\n`ocd-division`.\n\nSince all authorities are, or are contained within, a state and all elections\nare run by some authority, almost every OCD-ID in our system starts with\n`ocd-division/country:us/state:__`, where `__` is a two-letter state postal code.\n\nThe only exception to this is for the District of Columbia, which has the OCD-ID\n`ocd-division/country:us/district:dc`.\n\n## OCD-ID on the Authority\nThe OCD-ID associated with an authority describes the political district covered\nby an authority. Authorities are uniquely identifiable by the associated OCD-ID.\n\nFor example:\n- The OCD-ID `ocd-division/country:us/state:ak/place:anderson` is associated\n  with the authority for Anderson, Alaska.\n- The OCD-ID `ocd-division/country:us/state:ny/county:albany/council_district:2`\n  is not associated with an authority because Albany's 2nd Ward is a legislative\n  ward which does not run its own elections.\n\n## OCD-ID on the Election\nThe OCD-ID associated with an election describes the highest-level district\nin which all voters have something to vote for on the ballot on Election Day.\nElections always have an associated OCD-ID, but are not uniquely\nidentifiable by the associated OCD-ID.\n\nFor example:\n- If there is a mayoral race in Philadelphia as well as a state-wide\nmeasure contest in Pennsylvania on a given day, there will be one election\nentity with OCD-ID `ocd-division/country:us/state:pa`.\n- If there is only a mayoral race in Pittsburgh in Allegheny County on a given\nday, there will be an election entity with OCD-ID\n`ocd-division/country:us/state:pa/county:allegheny`.\n\n# Standard Parameters\nFunctionality shared between API endpoints is noted here. Each endpoint will\nspecify whether it supports the following functionality.\n\n## Pagination\nAny endpoint that returns multiple results supports pagination. An endpoint that\nsupports pagination accepts two related query parameters:\n- `pageSize`\n  - Specifies the number of results requested. Defaults to 10 if not specified. The maximum value is 100.\n  - Example: `pageSize=15`\n- `page`\n  - Specifies the page to return, based on `pageSize`. Defaults to 1 if not specified.\n  - Example: `page=2`\n\nYou can send none, one, or both of these parameters. Each endpoint that supports\npagination will have a `pagination` field in the response, which details what\npage of information is returned, what page size was used for the request, and the\ntotal number of results found.\n\n## Localization\nSome endpoints support localization. An endpoint that supports localization accepts a\nheader parameter:\n- `Accept-Language`\n  - Specifies the language tag for localization. Accepted values are `en`, `en-US`, `es`, and `es-US`.\n  - Example: `Accept-Language: es`\n\nNot all fields on the response of a localized endpoint are localized. Each field that supports localization\nwill have a `Localized` tag on its field description.\n\nIf no localization in the requested language is found,\nlocalized fields will return `null`.\n\n## Content Formatting\nSome endpoints support content formatting. An endpoint that supports formatting accepts a\nquery parameter:\n- `contentFormatType`\n  - Specifies the format of certain fields in the response.\n    Accepted values are `html` and `json`. Defaults to `html` if not specified.\n  - Example: `contentFormatType=json`\n\nNot all fields on the response of a formatted endpoint are formatted.\nFormatting is generally supported on prose-like fields, including Question and Answer content and most instruction fields.\nEach field that supports formatting will have a `Formatted` tag on its field description.\n\nThe `json`-formatted content is the content represented as an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).\n\n## Fields\nSome endpoints support field masking to specify a list of fields to include in the API response. This helps to avoid unnecessary computation and improve performance. An endpoint that supports field masking accepts a\nquery parameter:\n- `fields`\n  - Specifies the symbolic field paths to include in the response, provided as comma-separated list. See more about [Field Masks](https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask).\n  - Example: `fields=\"ocdId,date,contact.email\"`\n\nPaths are validated against all possible fields, and providing an invalid path will result in a 400 response.\n"
+servers:
+- url: https://api.democracy.works/v2
+tags:
+- name: Voting Locations
+paths:
+  /voting-locations:
+    get:
+      operationId: getVotingLocations
+      summary: Voting Locations
+      description: "### Address arguments\n\nAn address may be supplied in one of two ways:\n\n- **As a single string**, via `address`.\n- **As components**, via `addressStreet`, `addressCity`, `addressState`,\n  and `addressZip`. All four component parameters must be present, and\n  `addressUnitNumber` may optionally be added.\n\nAll requests must include an address as single string or with all required\ncomponents (preferred).\n\n```bash\n# Address as a single string\ncurl \\\n  --get \\\n  --header \"X-API-KEY: $YOUR_API_KEY\" \\\n  --data-urlencode address=\"20 Jay Street Brooklyn NY 11201\" \\\n  --data-urlencode publishStatus=prepublished \\\n  https://api.democracy.works/v2/voting-locations\n```\n\n```bash\n# Address as components\ncurl \\\n  --get \\\n  --header \"X-API-KEY: $YOUR_API_KEY\" \\\n  --data-urlencode addressStreet=\"20 Jay Street\" \\\n  --data-urlencode addressCity=Brooklyn \\\n  --data-urlencode addressState=NY \\\n  --data-urlencode addressZip=11201 \\\n  --data-urlencode addressUnitNumber=\"Unit 410\" \\\n  --data-urlencode publishStatus=prepublished \\\n  https://api.democracy.works/v2/voting-locations\n```\n"
+      parameters:
+      - in: query
+        name: address
+        required: false
+        schema:
+          type: string
+          description: The full street address as a single string. Required unless all of `addressStreet`, `addressCity`, `addressState`, and `addressZip` are provided.
+          example: 20 Jay Street Brooklyn NY 11201
+      - in: query
+        name: addressStreet
+        required: false
+        schema:
+          type: string
+          description: The street portion of the address. Must be provided together with `addressCity`, `addressState`, and `addressZip`.
+          example: 20 Jay Street
+      - in: query
+        name: addressCity
+        required: false
+        schema:
+          type: string
+          description: The city portion of the address. Must be provided together with `addressStreet`, `addressState`, and `addressZip`.
+          example: Brooklyn
+      - in: query
+        name: addressState
+        required: false
+        schema:
+          type: string
+          description: The 2-letter postal abbreviation for the state. DC is also accepted. Must be provided together with `addressStreet`, `addressCity`, and `addressZip`.
+          example: NY
+      - in: query
+        name: addressZip
+        required: false
+        schema:
+          type: string
+          description: The 5-digit ZIP code. Must be provided together with `addressStreet`, `addressCity`, and `addressState`.
+          example: '11201'
+      - in: query
+        name: addressUnitNumber
+        required: false
+        schema:
+          type: string
+          description: Optional apartment, suite, or unit number. Used only with the address component parameters; it is silently ignored when sent alongside `address`.
+          example: Unit 410
+      - in: query
+        name: publishStatus
+        required: false
+        schema:
+          type: string
+          example: prepublished
+          default: published
+          enum:
+          - published
+          - prepublished
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  election:
+                    $ref: '#/components/schemas/votingLocationElection'
+                  otherElections:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/votingLocationElection'
+                  normalizedInput:
+                    $ref: '#/components/schemas/normalizedAddress'
+                  state:
+                    $ref: '#/components/schemas/state'
+                  votingLocations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/votingLocation'
+                  earlyVoteSites:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/votingLocation'
+                  dropOffLocations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/votingLocation'
+              example:
+                election:
+                  id: 36546cc9-aafb-466b-b92a-b91674eeb091
+                  name: New York General Election
+                  electionDay: '2025-11-04'
+                  ocdDivisionId: ocd-division/country:us/state:ny
+                otherElections: []
+                normalizedInput:
+                  line1: 20 Jay St
+                  line2: null
+                  unit_number: null
+                  unit_label: null
+                  city: Brooklyn
+                  state: NY
+                  zip: '11201'
+                state:
+                  name: Hawaii
+                  electionAdministrationBody:
+                    electionNoticeText: null
+                    electionNoticeUrl: null
+                    votingLocationFinderUrl: https://elections.hawaii.gov/voter-service-centers-and-places-of-deposit/
+                votingLocations:
+                - uuid: 05bf2123-143c-4ad5-8473-37959b147240
+                  address:
+                    locationName: Farragut Comm Ctr
+                    line1: 228 York St
+                    line2: null
+                    city: Brooklyn
+                    state: NY
+                    zip: '11201'
+                  latitude: 40.700687
+                  longitude: 73.98139
+                  startDate: '2025-11-04'
+                  endDate: '2025-11-04'
+                  pollingHours: 'Tue, Nov 4: 6:00 am - 9:00 pm'
+                  notes: Conference Room G
+                  sources:
+                  - name: Democracy Works
+                earlyVoteSites:
+                - uuid: f86db89d-8940-45d4-9144-6c9ec11171a8
+                  address:
+                    locationName: New York City College of Technology
+                    line1: 285 Jay St
+                    line2: null
+                    city: Brooklyn
+                    state: NY
+                    zip: '11201'
+                  latitude: 40.695488
+                  longitude: -73.98695
+                  startDate: '2025-10-25'
+                  endDate: '2025-11-02'
+                  pollingHours: 'Sat, Oct 25: 9:00 am - 5:00 pm
+
+                    Sun, Oct 26: 9:00 am - 5:00 pm
+
+                    Mon, Oct 27: 9:00 am - 5:00 pm
+
+                    Tue, Oct 28: 10:00 am - 8:00 pm
+
+                    Wed, Oct 29: 10:00 am - 8:00 pm
+
+                    Thu, Oct 30: 9:00 am - 5:00 pm
+
+                    Fri, Oct 31: 8:00 am - 4:00 pm
+
+                    Sat, Nov 1: 9:00 am - 5:00 pm
+
+                    Sun, Nov 2: 9:00 am - 5:00 pm'
+                  notes: null
+                  sources:
+                  - name: Democracy Works
+                dropOffLocations:
+                - uuid: 7ac7ab89-1d10-4001-975f-e5e4bf7e882f
+                  address:
+                    locationName: New York City College of Technology
+                    line1: 285 Jay St
+                    line2: null
+                    city: Brooklyn
+                    state: NY
+                    zip: '11201'
+                  latitude: 40.695488
+                  longitude: -73.98695
+                  startDate: '2025-10-25'
+                  endDate: '2025-11-02'
+                  pollingHours: 'Sat, Oct 25: 9:00 am - 5:00 pm
+
+                    Sun, Oct 26: 9:00 am - 5:00 pm
+
+                    Mon, Oct 27: 9:00 am - 5:00 pm
+
+                    Tue, Oct 28: 10:00 am - 8:00 pm
+
+                    Wed, Oct 29: 10:00 am - 8:00 pm
+
+                    Thu, Oct 30: 9:00 am - 5:00 pm
+
+                    Fri, Oct 31: 8:00 am - 4:00 pm
+
+                    Sat, Nov 1: 9:00 am - 5:00 pm
+
+                    Sun, Nov 2: 9:00 am - 5:00 pm'
+                  notes: null
+                  sources:
+                  - name: Democracy Works
+                - uuid: fa0c4eb9-8e7c-473a-8430-f2defe2214c1
+                  address:
+                    locationName: Farragut Comm Ctr
+                    line1: 228 York St
+                    line2: null
+                    city: Brooklyn
+                    state: NY
+                    zip: '11201'
+                  latitude: 40.700687
+                  longitude: -73.98139
+                  startDate: '2025-11-04'
+                  endDate: '2025-11-04'
+                  pollingHours: 'Tue, Nov 4: 6:00 am - 9:00 pm'
+                  notes: null
+                  sources:
+                  - name: Democracy Works
+                - uuid: 6ac9151a-9097-41a0-a82a-19581a32a577
+                  address:
+                    locationName: Kings County Board of Elections
+                    line1: 345 Adams Street
+                    line2: 4th Floor
+                    city: Brooklyn
+                    state: NY
+                    zip: '11201'
+                  latitude: 40.692623
+                  longitude: -73.98846
+                  startDate: '2025-10-25'
+                  endDate: '2025-11-04'
+                  pollingHours: 'Sat, Oct 25: 9:00 am - 5:00 pm
+
+                    Sun, Oct 26: 9:00 am - 5:00 pm
+
+                    Mon, Oct 27: 9:00 am - 5:00 pm
+
+                    Tue, Oct 28: 10:00 am - 8:00 pm
+
+                    Wed, Oct 29: 10:00 am - 8:00 pm
+
+                    Thu, Oct 30: 9:00 am - 5:00 pm
+
+                    Fri, Oct 31: 8:00 am - 4:00 pm
+
+                    Sat, Nov 1: 9:00 am - 5:00 pm
+
+                    Sun, Nov 2: 9:00 am - 5:00 pm
+
+                    Tue, Nov 4: 6:00 am - 9:00 pm'
+                  notes: null
+                  sources:
+                  - name: Democracy Works
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/votingLocationError'
+              examples:
+                missingAddress:
+                  summary: Missing address parameters
+                  value:
+                    message: Invalid parameters, address components or an address must be provided.
+                invalidPublishStatus:
+                  summary: Invalid publishStatus value
+                  value:
+                    message: Invalid param supplied for publishStatus
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/votingLocationError'
+              example:
+                message: Forbidden
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/votingLocationError'
+              examples:
+                missingHouseNumber:
+                  summary: No house number identified
+                  value:
+                    message: Incomplete address. No house number identified.
+                noSMARTYNormalization:
+                  summary: Unable to normalize address
+                  value:
+                    message: Unable to normalize user address
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/votingLocationError'
+              example:
+                message: Too Many Requests
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/votingLocationError'
+              example:
+                message: Internal server error
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/votingLocationError'
+              example:
+                message: Service unavailable
+      tags:
+      - Voting Locations
+components:
+  schemas:
+    normalizedAddress:
+      type: object
+      properties:
+        line1:
+          type: string
+        line2:
+          type:
+          - string
+          - null
+        unit_number:
+          type:
+          - string
+          - null
+        unit_label:
+          type:
+          - string
+          - null
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+    state:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the state
+        electionAdministrationBody:
+          type: object
+          properties:
+            electionNoticeText:
+              type: string
+              nullable: true
+              description: Information shared by the state related to an ongoing election
+            electionNoticeUrl:
+              type: string
+              nullable: true
+              description: Link to an official state source for electionNoticeText
+            votingLocationFinderUrl:
+              type: string
+              nullable: true
+              description: Link to official state lookup tool
+    votingLocation:
+      type: object
+      properties:
+        uuid:
+          type: string
+        address:
+          type: object
+          properties:
+            locationName:
+              type:
+              - string
+              - null
+            line1:
+              type: string
+            line2:
+              type:
+              - string
+              - null
+            city:
+              type: string
+            state:
+              type: string
+            zip:
+              type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        startDate:
+          type: string
+        endDate:
+          type: string
+        pollingHours:
+          type: string
+        notes:
+          type: string
+          nullable: true
+          description: Additional information to help voters find a Voting Location
+        sources:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the organization that gathered the Voting Locations
+    votingLocationElection:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        electionDay:
+          type: string
+        ocdDivisionId:
+          type: string
+    votingLocationError:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable message describing the error.
+      required:
+      - message
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY

@@ -1,0 +1,69 @@
+specification: Agent Skills
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: generated
+source: >-
+  Authored by API Evangelist from openapi/_original/democracy-works-api-v2-openapi.json
+  (harvested 2026-09-07 from https://developers.democracy.works/api/v2) and the provider's
+  own developer guide "Integrating Election Data into AI Experiences", linked from
+  https://www.democracy.works/search-social-ai. Democracy Works publishes no skills or
+  AGENTS.md of its own; every operationId below is real and grepped from the contract.
+description: >-
+  Packaged Agent Skills for the Democracy Works Elections API — one per marquee voter-facing
+  flow. Each is grounded in real operationIds and carries the provider's stated consumption
+  obligations: prompt for location, cite the canonical URL, decline rather than guess, and
+  cache for no more than one hour.
+provider_published_skills: false
+skills:
+- name: democracy-works-find-upcoming-elections
+  file: democracy-works-find-upcoming-elections.md
+  api: Democracy Works Elections API
+  operations: [getElections]
+  summary: Upcoming elections for an address or state, with dates, deadlines and guidance phase.
+- name: democracy-works-explain-state-voting-rules
+  file: democracy-works-explain-state-voting-rules.md
+  api: Democracy Works Authorities API
+  operations: [getStateAuthorities, getAuthorities, getLocalAuthorities]
+  summary: How to register and how to vote in a given state, with the official office links.
+- name: democracy-works-find-where-to-vote
+  file: democracy-works-find-where-to-vote.md
+  api: Democracy Works Voting Locations API
+  operations: [getVotingLocations]
+  summary: Polling places, early-voting sites and drop boxes for a street address.
+- name: democracy-works-explore-the-ballot
+  file: democracy-works-explore-the-ballot.md
+  api: Democracy Works Elections API
+  operations: [getElections, getContest, getCandidate, getBallotMeasure, getEndorsement,
+    getEndorsementBulk]
+  summary: Contests, candidates, ballot measures and endorsements on a voter's ballot.
+- name: democracy-works-pull-bulk-exports
+  file: democracy-works-pull-bulk-exports.md
+  api: Democracy Works Exports API
+  operations: [getExports]
+  summary: Contracted bulk exports as one-hour presigned S3 URLs, handled as credentials.
+shared_rules:
+  auth: 'X-API-KEY header; keys issued by Democracy Works on request, no self-service signup.'
+  attribution: >-
+    Cite Democracy Works and return the canonical URL from the response with any answer
+    derived from the data.
+  refusal: >-
+    Decline to answer when the API returns no authoritative data; point the user at
+    TurboVote or their Secretary of State instead of answering from model memory.
+  caching: No more than one hour, per the provider's published guidance.
+  errors: >-
+    Two envelopes, not RFC 9457 — {status, message[]} for application errors and {message}
+    for gateway (403/429) and voting-location errors. See
+    errors/democracy-works-problem-types.yml.
+  rate_limits: >-
+    Undocumented. 429 carries no Retry-After and no rate-limit headers; use exponential
+    backoff with jitter. See rate-limits/democracy-works-rate-limits.yml.
+  size_limit: >-
+    413 means the response is too large — shrink pageSize (max 100) or apply a `fields`
+    field mask. Waiting does not help.
+  pii: >-
+    Several operations take a voter's full street address. Do not persist or log it.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

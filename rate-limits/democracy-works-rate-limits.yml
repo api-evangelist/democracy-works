@@ -4,90 +4,96 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Democracy Works
 providerId: democracy-works
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
+modified: '2026-09-07'
+generated: '2026-09-07'
+method: searched
+source: >-
+  https://developers.democracy.works/api/v2 (full contract text and every operation's
+  responses), a live probe of https://api.democracy.works/v2/elections, and the provider's
+  "Integrating Election Data into AI Experiences" developer guide
 tags:
-  - Civic Tech
-  - Elections
-  - Government
-  - Nonprofit
-  - Voter Information
-  - Voting
-  - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the Democracy Works API surface. Captures per-tier
-  quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to
-  be replaced with published provider limits.
+- Civic Tech
+- Elections
+- Government
+- Nonprofit
+- Voter Information
+- Voting
+- Rate Limiting
+description: >-
+  Democracy Works documents NO rate limits. Throttling demonstrably exists — every
+  operation declares a 429 — but no number, window, scope or response header is published,
+  so a client cannot know its budget or how much of it is left. limit_count is 0 as a
+  measured fact.
+limit_count: 0
+limits: []
+documented: false
+enforcement_observed: true
+exhaustion:
+  status: 429
+  envelope: gatewayErrors
+  body: '{"message":"Too Many Requests"}'
+  declared_on: >-
+    all 11 operations, via components.responses.tooManyRequestsError (the voting-locations
+    operation declares its own inline 429)
+  note: >-
+    The 429 is served by AWS API Gateway, not the application, so the throttle is an edge
+    policy. Its values are not published.
 headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
-responseCodes:
-  throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
-limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Democracy Works Elections API
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Democracy Works Elections API
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Democracy Works Elections API
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Democracy Works Elections API
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Democracy Works Elections API
-policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+  limit: null
+  remaining: null
+  reset: null
+  retry_after: null
+  policy: null
+  observed: none
+  note: >-
+    No X-RateLimit-*, no RateLimit-* (RFC 9239 draft form), no Retry-After. Response headers
+    observed live on 2026-09-07 were content-type, x-amz-apigw-id, x-amzn-requestid,
+    x-amzn-errortype, x-cache, via, x-amz-cf-pop, x-amz-cf-id and vary — infrastructure
+    only. An agent has no runtime signal and must treat throttling as invisible until it
+    happens.
+related_size_limit:
+  status: 413
+  name: contentTooLargeError
+  message: Response size too large. Try again with a smaller pageSize.
+  note: >-
+    Not a rate limit but the ceiling an integrator hits first. It is a per-RESPONSE size
+    cap, remedied by lowering pageSize (max 100) or narrowing the `fields` field mask —
+    not by waiting.
+provider_guidance:
+  quote: >-
+    "implementing caching reduces the work that the Elections API has to do and increases
+    responsiveness for users of your system... we recommend caching API responses for no
+    more than one hour."
+  source: >-
+    "Integrating Election Data into AI Experiences — A guide for developers" (Democracy
+    Works, PDF), linked from https://www.democracy.works/search-social-ai
+  note: >-
+    The closest thing to a published usage policy: a one-hour cache ceiling framed as both
+    a freshness ceiling and a load-reduction floor. It is guidance in a PDF, not an
+    enforceable documented limit.
+recommended_client_behavior:
+- Exponential backoff with jitter on 429; there is no Retry-After to honour.
+- Cache responses for up to one hour, per the provider's own guidance.
+- On 413, shrink pageSize or apply a `fields` field mask rather than retrying unchanged.
+evidence:
+- url: https://api.democracy.works/v2/elections
+  status: 403
+  probed: '2026-09-07'
+  note: Unauthenticated probe; captured the full response header set. No rate-limit headers.
+- url: https://developers.democracy.works/api/v2
+  status: 200
+  probed: '2026-09-07'
+  note: >-
+    Full-text search of the contract for "rate", "limit", "throttle" and "429" returns no
+    published figure — the only "limit" hits are the pageSize maximum of 100.
+supersedes:
+  method: generated
+  date: '2026-05-04'
+  note: >-
+    This file previously asserted five tiered limits (10/100/1000 requests per minute with
+    burst ceilings) and a full X-RateLimit-* header set, written by an API Evangelist bulk
+    sweep. Democracy Works publishes none of it and sends none of those headers. Removed
+    rather than annotated.
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com

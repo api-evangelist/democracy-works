@@ -1,0 +1,53 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist overlay for Democracy Works Voting Locations API
+  version: 1.0.0
+extends: democracy-works-voting-locations-api-openapi.yml
+x-provenance:
+  generated: '2026-09-07'
+  method: generated
+  source: API Evangelist enrichment pass over the harvested Democracy Works contract; captures only the
+    catalog's own enhancements and never mutates the provider document.
+actions:
+- target: $.info
+  description: Add the support contact Democracy Works publishes in the contract prose but does not express
+    as info.contact.
+  update:
+    contact:
+      name: Democracy Works Partnerships
+      email: partnerships@democracy.works
+      url: https://www.democracy.works/contact
+- target: $.servers[0]
+  description: Name the server so a split document still says which surface it belongs to.
+  update:
+    description: Democracy Works Elections API v2 production base URL
+- target: $.info
+  description: Record where this document came from and what the catalog changed, so the refined copy
+    is never mistaken for the provider original.
+  update:
+    x-api-evangelist:
+      provider: Democracy Works
+      providerId: democracy-works
+      harvested: '2026-09-07'
+      harvested-from: https://developers.democracy.works/api/v2
+      original: openapi/_original/democracy-works-api-v2-openapi.json
+      refinements:
+      - Split from the single provider document to one document per resource group.
+      - Declared the tag "Voting Locations" and applied it to every operation; the provider document tags
+        no operation.
+      - Restated the OpenAPI version as 3.2.0 (provider publishes 3.0.2).
+      - Carried only the components each operation actually references.
+      artifacts:
+        authentication: authentication/democracy-works-authentication.yml
+        conventions: conventions/democracy-works-conventions.yml
+        errors: errors/democracy-works-problem-types.yml
+        lifecycle: lifecycle/democracy-works-lifecycle.yml
+        data-model: data-model/democracy-works-data-model.yml
+        rate-limits: rate-limits/democracy-works-rate-limits.yml
+- target: $.components.securitySchemes.ApiKeyAuth
+  description: Normalize the header name to the casing the provider uses in its own curl example, and
+    say how a key is obtained.
+  update:
+    name: X-API-KEY
+    description: API key issued by Democracy Works on request (partnerships@democracy.works). No self-service
+      signup; the signup URL cited in the contract description now soft-404s.

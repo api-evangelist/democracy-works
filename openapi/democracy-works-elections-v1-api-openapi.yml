@@ -1,0 +1,667 @@
+openapi: 3.2.0
+info:
+  title: Democracy Works Elections API v1 (legacy)
+  version: 1.0.0
+  description: "# Overview\nDemocracy Works collects data about elections that happen in the US.\n\nWe record this data in two entities, one called an **Election**, and one\ncalled an **Authority**.\n\nThe **Election** has election-specific dates and deadlines, URLs to get more\ninformation and take actions, and detailed instructions. The information\nincluded reflects the voter registration and voting methods available in the\nstate for that election, such as online, in-person, and by-mail registration\nas well as by-mail, in-person, and early voting. The Election also contains\nsome information from the related Authority, or Authorities in some cases.\n\nThe **Authority** includes contact information, available registration\nmethods, available voting methods, state-specific URLs, and more.\nAuthorities do not contain election-specific information such as dates, and\nAuthority information generally does not change from election to election.\n\n## Getting Started\n\nElection and Authority data is based on Open Civic Data IDs (OCD-IDs), so\nyou should familiarize yourself with how they work before jumping into the\nrest of this document.\n\n# Open Civic Data IDs (OCD IDs)\n\nBoth Authorities and Elections are identified using an Open Civic Data ID\n(OCD-ID).\n\nOCD-IDs start with what is being identified, and in our case it is always\n`ocd-division`.\n\nThen there is a tree-like structure of strings where the longer the\nidentifier gets, the more specific or fine-grained the identifier becomes.\nIn our case, there is always `country:us`, because we only cover US\nElections. We cover all 50 States, and the District of Columbia.\n\nSince all local Elections are contained within States, every OCD-ID in our\nsystem (except one) starts with `ocd-division/country:us/state:__`, where\n`__` is a two-letter state code.\n\nThe only exception to this is for the District of Columbia, which has the\nOCD-ID `ocd-division/country:us/district:dc`.\n\nAfter the state, the OCD-ID gets more specific by getting longer and using\nvarious legal jurisdiction labels to indicate what area an Election or\nAuthority is covering. Some examples are\n\n* `county:___`,\n* `place:___` (generally means municipality),\n* `parish:__` (for Louisiana),\n* `borough:__` (for Alaska),\n* `sd:__` (for School District),\n\netc.\n\nHere are some examples:\n\n* `ocd-division/country:us/state:wi/county:ashland/place:agenda`\n* `ocd-division/country:us/state:wi/county:ashland`\n* `ocd-division/country:us/state:wi`\n* `ocd-division/country:us/state:ma/place:agawam_town`\n\nSometimes a place is nested under a county, and sometimes it is not. This\ncould indicate that the municipality is in multiple counties or that there\nare multiple unique municipalities in the state with the same name but in\ndifferent counties, but not necessarily.\n\n## OCD-IDs on the Election\n\nIf a request is made like this:\n\n```bash\ncurl -H \"Accept: application/json\" -H \"Authorization: apikey $YOUR_API_KEY\" \\\n  \"https://api.democracy.works/elections/upcoming?district-divisions=ocd-division/country:us/state:il/place:chicago\"\n```\n\nThe response will contain an OCD-ID here:\n\n```json\n[\n  {\n    \"district-divisions\": [\n      {\n        \"ocd-id\": \"ocd-division/country:us/state:il/place:chicago\",\n        ...\n```\n\nNote: Technically there can be more than one `district-division` because the\nvalue type is a list, but in practice we only use one, so it is safe to\ntreat the first object in the list as the value.\n\n## OCD-IDs on the Authority\n\nIf a request is made like this:\n\n```bash\ncurl -H \"Accept: application/json\" -H \"Authorization: apikey $YOUR_API_KEY\" \\\n  \"https://api.democracy.works/election-authorities/states\"\n```\n\nThe response will contain an OCD-ID here:\n\n```json\n  {\"authorities\": [\n    {\"ocd-division\": [\"ocd-division/country:us/state:il\", ...\n```\n\nThe response contains a list of `authorities`, and the OCD-ID is the first\nitem in the list under `ocd-division`.\n\n# State Authorities\n\nThere are two ways to get information on Election Authorities, and both are\nfor the state level only.\n\nInformation from State and Local Authorities is copied over to Elections, so\noften there isn’t a need to make requests for Authorities at all. The only\nfields that are not on the Election are:\n\n* Contact information (address, phone, homepage URL, etc.)\n* `voter-registration-status-url` so voters can look up there registration\n  status\n* `local-election-authority-lookup-url` so voters can look up who to contact\n  about registration or voting information at the local level.\n\nYou can request these URLs with the State Authority URLs resource.\n"
+servers:
+- description: Democracy Works API
+  url: https://api.democracy.works
+tags:
+- name: Elections v1
+paths:
+  /election-authorities/state-urls/{stateAbbreviation}:
+    get:
+      summary: State authority URLs
+      description: "```bash\ncurl -H \"Accept: application/json\" \\\n  -H \"Authorization: apikey $YOUR_API_KEY\" \\\n  \"https://api.democracy.works/election-authorities/state-urls/ny\"\n```\n\nURLs are not required, and their availability depends on the state. The\nAuthority lookup URLs may be the same, depending on the state.\n"
+      parameters:
+      - in: path
+        name: stateAbbreviation
+        required: true
+        schema:
+          type: string
+          example: ny
+          description: 'The lowercase abbreviation of the state you want to retrieve information for.
+
+            '
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateAuthorityUrlResponse'
+      operationId: getStateAuthorityUrls
+      tags:
+      - Elections v1
+  /election-authorities/states:
+    get:
+      summary: All state authorities (contact information)
+      description: "```bash\ncurl -H \"Accept: application/json\" \\\n  -H \"Authorization: apikey $YOUR_API_KEY\" \\\n  \"https://api.democracy.works/election-authorities/states\"\n```\n\nThe response will be an object with a list of Authorities. Each\nAuthority will have a `district-division`, but we recommend that you\ndisregard and get that information from the Election. As a reminder, the\nElection will have `voter-registration-methods` and the `voting-methods`\ncopied from the State and Local Authorities for the methods offered in\nthat particular Election, along with dates and deadlines. The only thing\nthe `district-division` has that the Election does not is the\n`voter-registration-status-url`, which would be simpler to obtain from\nthe “State URLs” resource.\n"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StateAuthorityResponse'
+      operationId: getStateAuthorities
+      tags:
+      - Elections v1
+  /elections/upcoming:
+    get:
+      summary: Upcoming elections
+      description: "An “upcoming” Election is one that is in our system and the date is in\nthe future, including the day that the request is made. Both statewide\nand local Elections are part of this data set. We define a statewide\nElection as any election where all voters in the state have something on\nthe ballot or any federal congressional election. These generally end in\na two-letter state code. All other elections are considered local. \n\nThere are two ways to request Upcoming Elections:\n\n1. all at once\n2. one (or more) OCD-ID(s) at a time\n\nBe sure to include the `Accept` header because the default\n`Content-Type` is the lesser known EDN (application/edn). The two\n`Content-Type`s supported are `application/json` and `application/edn`.\n\n### All Upcoming Elections\n\nReturns a list of all upcoming elections.\n\nAn example response is available, and all field definitions are in the\nUpcoming Elections API Reference.\n\n```bash\ncurl -H \"Accept: application/json\" \\\n  -H \"Authorization: apikey $YOUR_API_KEY\" \\\n  https://api.democracy.works/elections/upcoming\n```\n\n### Upcoming Elections by OCD-ID\n\nReturns a list of all upcoming elections for the provided OCD-ID(s).\nSame as the above, but filtered.\n\n```bash\ncurl -H \"Accept: application/json\" \\\n  -H \"Authorization: apikey $YOUR_API_KEY\" \\\n  \"https://api.democracy.works/elections/upcoming?district-divisions=ocd-division/country:us/state:il/place:chicago\"\n```\n"
+      parameters:
+      - in: query
+        name: district-divisions
+        schema:
+          type: string
+        description: 'A **comma-separated** list, supplied as a string, of OCD IDs that will
+
+          return upcoming elections only for the OCD IDs provided.
+
+          '
+      - in: query
+        name: language
+        description: 'By default, responses include instructions in English. At this time we
+
+          support 2 languages: English (`en`) and Spanish (`es`). Use this parameter to receive
+
+          instructions in a single language.
+
+
+          You may also use `all` to receive instructions in both English and
+
+          Spanish. Note that this changes the structure of the response; any
+
+          field which supports localized instructions will be an object keyed by all
+
+          supported languages, exemplified by the following JSON fragment:
+
+
+          ```
+
+          {"instructions": {"en": "...", "es": "..."}}
+
+          ```
+
+          '
+        schema:
+          type: string
+          enum:
+          - en
+          - es
+          - all
+      - in: query
+        name: qa-status
+        schema:
+          type: string
+          default: complete
+          enum:
+          - incomplete
+          - complete
+          - all
+        description: 'See [QA Status](#tag/QAStatus) for a more in-depth discussion of the
+
+          meaning of this parameter.
+
+          '
+      - in: header
+        name: Accept
+        schema:
+          type: string
+          enum:
+          - application/json
+          - application/edn
+      - in: header
+        name: Authorization
+        schema:
+          type: string
+          example: apikey $YOUR_API_KEY
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UpcomingElectionsResponse'
+      operationId: getUpcomingElections
+      tags:
+      - Elections v1
+components:
+  schemas:
+    StateAuthorityUrlResponse:
+      type: object
+      properties:
+        voter-registration-status-url:
+          type: string
+          format: uri
+          description: 'URL for voter to check their status
+
+            '
+        voter-registration-status-url-shortened:
+          type: string
+          format: uri
+          description: 'Shortened URL for a voter to check their status
+
+            '
+        local-election-authority-lookup-url:
+          type: string
+          format: uri
+          example: https://tvote.org/abcd123
+          description: 'URL for voter to contact their local Election Authority
+
+            '
+        local-reg-authority-lookup-url:
+          type: string
+          format: uri
+          description: 'URL for voter to contact their local Registration Authority
+
+            '
+    StateAuthorityAddress:
+      type: object
+      properties:
+        street:
+          type: string
+          description: 'Street address for state election office
+
+            '
+        city:
+          type: string
+          description: 'City for state election office
+
+            '
+        state:
+          type: string
+          description: 'State abbreviation
+
+            '
+        zip:
+          type: string
+          description: 'Zip code for state election office
+
+            '
+    StateAuthorityResponse:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: 'Unique ID, for internal use only.
+
+            '
+        types:
+          type: array
+          items:
+            type: string
+            enum:
+            - election
+            - registration
+            - none
+          description: "Describes whether the state handles voter registration form and/or\nballot request application processing.\n\n* `election`: state election authority processes ballot request\n  applications\n* `registration`: state election authority processes voter registration\n  applications\n* `none`: voter registration and ballot request applications are not\n  done at the state level\n"
+        physical-address:
+          $ref: '#/components/schemas/StateAuthorityAddress'
+          description: 'Lists each element of the state election office''s physical address.
+
+            '
+        email:
+          type: string
+          format: email
+          description: 'Email address for the state election office.
+
+            '
+        phone:
+          type: string
+          description: 'Phone number for the state election office.
+
+            '
+        mailing-address:
+          $ref: '#/components/schemas/StateAuthorityAddress'
+          description: ''
+        official-title:
+          type: string
+          description: "State election office name. \n"
+        instructions:
+          type: object
+          description: ''
+          properties:
+            party:
+              type: string
+        local-election-authority-lookup-url:
+          type: string
+          format: uri
+          description: ''
+        polling-place-url:
+          type: string
+          format: uri
+          description: 'Provides a link to the state''s polling place lookup page.
+
+            '
+        polling-place-url-shortened:
+          type: string
+          format: uri
+          example: https://tvote.org/asdf123
+          description: 'Shortened version of `polling-place-url`.
+
+            '
+        office-name:
+          type: string
+          description: 'Full state name
+
+            '
+        homepage-url:
+          type: string
+          format: uri
+          description: "Link to the state election website. \n"
+    LocalizedField:
+      oneOf:
+      - type: object
+        properties:
+          en:
+            type: string
+            description: English text
+          es:
+            type: string
+            description: Spanish text
+      - type: string
+        description: Localized text dependent on the `language` parameter
+    ByMailVotingMethod:
+      type: object
+      required:
+      - type
+      - primary
+      properties:
+        type:
+          type: string
+          enum:
+          - by-mail
+        primary:
+          type: boolean
+          description: 'Indicates whether voting by mail is the primary voting method for the particular election or not. `true`: primary voting method; `false`: not primary voting method.
+
+            '
+        ballot-request-form-url:
+          $ref: '#/components/schemas/LocalizedField'
+          description: 'URL for a form that a voter can use to request an absentee/by-mail ballot.
+
+            '
+        ballot-request-deadline-received:
+          type: string
+          format: date-time
+          description: 'Indicates the date that a ballot request application must be received by the designated election official for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        ballot-return-deadline-postmarked:
+          type: string
+          format: date-time
+          description: 'Indicates the date that a completed ballot must be postmarked by the voter for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        ballot-return-deadline-received:
+          type: string
+          format: date-time
+          description: 'Indicates the date that a completed ballot must be received by the designated election official for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        ballot-return-deadline-in-person:
+          type: string
+          format: date-time
+          description: 'Indicates the date that a completed ballot must be returned in-person by the voter at a designated election office/dropbox for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        vbm-alias:
+          $ref: '#/components/schemas/LocalizedField'
+          description: 'The name used by the jurisdiction to refer to voting by mail.
+
+            '
+        excuse-required:
+          type: boolean
+          description: 'Indicates whether you need an excuse to vote by-mail. `true`: excuse required; `false`: excuse not required.
+
+            '
+        acceptable-forms:
+          type: array
+          description: 'Lists the acceptable ballot request application form.
+
+            '
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: 'For internal use only. Name for the ballot request application.
+
+                  '
+    EarlyVotingVotingMethod:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - early-voting
+          description: 'Indicates that early voting is an option for the particular election. The sections following provide the state-specific requirements. This field and fields associated with early voting are only populated in states where it is available.
+
+            '
+        primary:
+          type: boolean
+          description: 'Indicates whether voting early is the primary voting method for the particular election or not. `true`: primary voting method; `false`: not primary voting method.
+
+            '
+        excuse-required:
+          type: boolean
+          description: 'Indicates whether you need an excuse to vote early. `true`: excuse required; `false`: excuse not required.
+
+            '
+        start:
+          type: string
+          format: date-time
+          description: 'Indicates the start date for early voting for the particular election. Early voting dates often vary within a state. This date can either be the earliest date or the latest date any jurisdiction is required to begin. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        end:
+          type: string
+          format: date-time
+          description: 'Indicates the end date for early voting for the particular election. Early voting dates often vary within a state. This date can either be the earliest day or the latest date any jurisdiction is required to end. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        alias:
+          type: string
+          enum:
+          - early-voting
+          - absentee-in-person
+          description: 'Default is empty, meaning election officials in the state use the term "early voting" or the value can explicitly list `early-voting`. If the value is `absentee-in-person` that means election officials in the state use the term "absentee in person". We don''t distinguish these two in the data because they are functionally equivalent.
+
+            '
+        exact-dates:
+          type: boolean
+          deprecated: true
+          description: Deprecated field as we reconsider date display.
+        url:
+          type: string
+          format: uri
+          description: 'If there is a website that provides information about the election or how to participate, we will provide it here. This field is often an election-specific URL, though we may include voter information portals.
+
+            '
+    InPersonVotingMethod:
+      type: object
+      required:
+      - type
+      - primary
+      properties:
+        type:
+          type: string
+          enum:
+          - in-person
+          description: 'Indicates that voting in-person is an option for the particular election. The sections following provide the state-specific requirements. This field, and fields associated with voting in-person, are not available in Oregon.
+
+            '
+        primary:
+          type: boolean
+          description: 'Indicates whether voting in person is the primary voting method for the particular election or not. `true`: primary voting method; `false`: not primary voting method.
+
+            '
+        excuse-required:
+          type: boolean
+          description: "Indicates whether you need an excuse to vote in-person. `true`:\n  excuse required; `false`: excuse not required.\n"
+        instructions:
+          type: object
+          description: 'Lists the state-specific requirements for voting in-person. See [our notes on instruction fields](#tag/Instructions) for more information on interpreting these fields.
+
+            '
+          properties:
+            voting-id:
+              description: 'Provides the identification requirements and other instructions for voting in-person.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+    ByMailRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - by-mail
+          description: 'Indicates that registering to vote by mail is an option for the particular election. The sections following provide the state-specific requirements. This field, and fields associated with registering to vote by mail are not available for elections in New Hampshire or North Dakota.
+
+            '
+        instructions:
+          type: object
+          description: 'Lists the state-specific signature block language and ID requirements for registering to vote by mail.
+
+            '
+          properties:
+            signature:
+              description: 'Provides the state-specific language for voters to affirm when they complete and sign their paper registration form. This language varies from state to state.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+            idnumber:
+              description: 'Provides the state-specific identification requirements for registering to vote by mail.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+        acceptable-forms:
+          type: array
+          description: 'Lists the paper registration form accepted by the state.
+
+            '
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: 'Display name for the state-accepted registration form. Most states accept the National Voter Registration Form (`nvrf`). Voters in Wyoming must use the state-specific registration form (`wy_reg`). This field is left blank in New Hampshire and North Dakota.
+
+                  '
+        deadline-received:
+          type: string
+          format: date-time
+          description: 'Indicates that a by mail voter registration application must be received by the designated election office by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        deadline-postmarked:
+          type: string
+          format: date-time
+          description: 'Indicates that a by mail voter registration applications must be postmarked by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        deadline-in-person:
+          type: string
+          format: date-time
+          description: 'Indicates that a by mail voter registration must be delivered/completed in person (by the voter) by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        new-voter:
+          type: string
+    ElectionDayRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - election-day
+          description: 'Indicates whether voter registration is available for the particular election at voting locations.
+
+            '
+    InPersonRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - in-person
+          description: 'Indicates that in-person voter registration is an option in the state. This field and fields associated with in-person voter registration are only populated in states where it is available.
+
+            '
+        start:
+          type: string
+          format: date-time
+          description: 'This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        end:
+          type: string
+          format: date-time
+          description: 'This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+    OnlineRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - online
+          description: 'Indicates that online voter registration is an option in the state. The sections following provide the state-specific requirements. This field and fields associated with online voter registration are only populated in states where it is available.
+
+            '
+        instructions:
+          type: object
+          description: 'Lists the state-specific requirements for registering to vote online.
+
+            '
+          properties:
+            registration:
+              description: 'Provides the identification requirements and other instructions for registering to vote online.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+        supports-iframe:
+          type: boolean
+          description: 'Indicates whether the state online voter registration site can be iframed. `true`: can be iframed, `false`: cannot be iframed.
+
+            '
+        deadline-online:
+          type: string
+          format: date-time
+          description: 'Provides the deadline date for registering online to vote for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        url:
+          type: string
+          format: uri
+          description: 'Provides the link to the state online voter registration system.
+
+            '
+    DistrictDivision:
+      type: object
+      properties:
+        ocd-id:
+          type: string
+          example: ocd-division/country:us/state:nc/sldl:1
+          description: 'The political division of the election. Represented as an Open Civic Data Identifier. Voters within these political jurisdictions are covered by this election.
+
+            '
+        voter-registration-authority-level:
+          type: string
+        election-authority-level:
+          type: string
+        voting-methods:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ByMailVotingMethod'
+            - $ref: '#/components/schemas/EarlyVotingVotingMethod'
+            - $ref: '#/components/schemas/InPersonVotingMethod'
+        voter-registration-methods:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ByMailRegistrationMethod'
+            - $ref: '#/components/schemas/ElectionDayRegistrationMethod'
+            - $ref: '#/components/schemas/InPersonRegistrationMethod'
+            - $ref: '#/components/schemas/OnlineRegistrationMethod'
+        primary-voting-method-source:
+          type: string
+    UpcomingElectionsResponse:
+      type: object
+      required:
+      - date
+      - description
+      - type
+      - id
+      - qa-status
+      properties:
+        description:
+          type: string
+          description: 'Displayable name for the election. Includes the political division affected by the election and the election type. Descriptions can also provide information on whether the election will be conducted via mail ballot if elections are not typically conducted that way in the state.
+
+            '
+        date:
+          type: string
+          format: date-time
+          description: 'Day of the election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+          example: '2022-11-08T00:00:00Z'
+        district-divisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistrictDivision'
+        type:
+          type: string
+          enum:
+          - congressional
+          - county
+          - municipal
+          - presidential-primary
+          - school
+          - state
+          - state-house
+          - state-senate
+          - sub-municipal
+          description: The election type
+        source:
+          type: object
+          description: 'Information about how the Election was researched. For internal use only.
+
+            '
+          properties:
+            type:
+              type: string
+            notes:
+              type: string
+            date:
+              type: string
+              format: date-time
+        polling-place-url:
+          type: string
+          format: uri
+          description: Provides a link to the state's polling place lookup page.
+        polling-place-url-shortened:
+          type: string
+          format: uri
+          example: https://tvote.org/abcd123
+          description: Shortened link for the state's polling place lookup page.
+        qa-status:
+          type: string
+          enum:
+          - complete
+          - incomplete
+          - none
+          description: 'Only `complete` elections are shown in the API by default, but early access to `incomplete` data is available. See [QA Status](#tag/QAStatus) for more discussion.
+
+            '
+        id:
+          type: string
+          description: 'Unique election ID for internal use only. This value may change.
+
+            '
+        population:
+          type: integer
+          description: 'Provides the affected population number for the given election using Census data, when available.
+
+            '
+        website:
+          type: string
+          format: uri
+          description: 'Provides a link to additional information on the upcoming election, when available.
+
+            '

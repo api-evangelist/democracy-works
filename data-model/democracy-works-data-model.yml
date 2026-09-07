@@ -1,0 +1,207 @@
+specification: API Commons Data Model
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: derived
+source: >-
+  Derived from components.schemas and the $ref graph of
+  openapi/_original/democracy-works-api-v2-openapi.json (harvested 2026-09-07 from
+  https://developers.democracy.works/api/v2); identifier semantics read from the contract's
+  "Open Civic Data IDs" section
+description: >-
+  Entity-relationship graph for the Democracy Works Elections API v2. The model has an
+  unusual property worth stating up front: its primary key is a SHARED PUBLIC identifier,
+  not a vendor id. Election, Authority, LocalAuthority, BallotMeasure and Contest are all
+  keyed on an Open Civic Data ID, so rows join to any other OCD-ID-keyed civic dataset
+  without a crosswalk.
+identifiers:
+- name: ocdId
+  type: Open Civic Data Division ID
+  form: ocd-division/country:us/state:<xx>[/county:<x>|/place:<x>|/sd:<x>|...]
+  exception: 'District of Columbia is ocd-division/country:us/district:dc'
+  unique_for: [authority, localAuthority]
+  not_unique_for: [election]
+  note: >-
+    Authorities are uniquely identifiable by ocdId. Elections ALWAYS carry one but are NOT
+    uniquely identified by it — several elections can share a division. Treat ocdId as a
+    join key, never as an election primary key.
+  standard: https://opencivicdata.info/en/latest/ocdids.html
+- name: id
+  type: opaque string
+  used_by: [ballotMeasure, candidate, contest, endorsement, votingLocationElection]
+  note: Required path/query parameter for the single-object lookups; not guessable.
+- name: uuid
+  type: uuid
+  used_by: [votingLocation]
+- name: ocdDivisionId
+  type: Open Civic Data Division ID
+  used_by: [votingLocationElection]
+  note: >-
+    Same scheme as ocdId under a different property name — the voting-locations surface is
+    modelled separately from the rest of the API and does not share its naming.
+entities:
+- name: election
+  description: A single election, with dates, deadlines, guidance and voter-facing URLs.
+  key: ocdId (non-unique)
+  operations: [getElections]
+  fields: [ocdId, createdAt, updatedAt, date, description, type, pollingLocationUrl,
+    canonicalUrl, website, guidancePhase, population, voting, registration,
+    questionAndAnswer, ballotMeasures, contests]
+  note: >-
+    guidancePhase is the freshness signal — past, known (upcoming, details not yet
+    confirmed) or active (vetted and confirmed). An agent should surface the phase rather
+    than presenting a `known` election's fields as final.
+- name: authority
+  description: Statewide evergreen registration and voting instructions plus office contacts.
+  key: ocdId (unique)
+  operations: [getStateAuthorities, getAuthorities]
+  fields: [ocdId, officeName, officialTitle, homepageUrl, pollingLocationUrl,
+    studentVotingUrl, votingWithDisabilitiesUrl, votingWithPastConvictionsUrl, canonicalUrl,
+    partyInstructions, updatedAt, timezone, secondaryTimezone,
+    localElectionAuthorityOfficeAlias, separateRegistrationAndElectionAuthorities,
+    localElectionAuthorityName, localRegistrationAuthorityName,
+    localRegistrationAuthorityLookupUrl, localElectionAuthorityLookupUrl,
+    registrationAuthorityLevel, electionAuthorityLevel, isRegistrationContact, contact,
+    voting, registration, youthRegistration, questionAndAnswer]
+- name: localAuthority
+  description: Sub-state election authority, a thinner projection of authority.
+  key: ocdId (unique)
+  operations: [getLocalAuthorities]
+  fields: [ocdId, officeName, officialTitle, homepageUrl, registrationAuthorityLevel,
+    electionAuthorityLevel, isRegistrationContact, contact]
+- name: contest
+  description: A race on a ballot, with its candidates and its primary/ranked-choice rules.
+  key: id
+  operations: [getContest]
+  fields: [id, name, title, body, level, branch, districtName, districtType, contestType,
+    ocdId, seatsUpForElection, rankedChoice, rankedChoiceExplainerURL,
+    rankedChoiceRankNumber, hasPrimary, primaryDate, generalDate, partisanPrimary,
+    partisanPrimaryExplainerUrl, partisanPrimaryExplainerEn, partisanPrimaryExplainerEs,
+    partisanPrimaryExplainerSharedId, cancelled, aboutOffice, candidates]
+- name: candidate
+  description: A person on a ballot.
+  key: id
+  operations: [getCandidate]
+  fields: [id, fullName, firstName, lastName, partyAffiliation, isIncumbent, isWriteIn,
+    ballotpediaUrl, status, runningMateFullName, runningMateTitle, rankedChoiceVotingRound,
+    endorsementCount, contact]
+- name: ballotMeasure
+  description: A measure or question on a ballot.
+  key: id
+  operations: [getBallotMeasure]
+  fields: [id, name, shortName, streamlinedName, districtName, districtType, type, topics,
+    topicAreas, summary, yesVote, noVote, yesVotesTotal, noVotesTotal, ballotQuestion,
+    ocdId, status, endorsementYesCount, endorsementNoCount]
+- name: endorsement
+  description: An endorsement of a candidate or of a position on a ballot measure.
+  key: id
+  operations: [getEndorsement, getEndorsementBulk]
+  fields: [id, type, name, source, position]
+- name: votingLocation
+  description: A polling place, early-voting site or drop box.
+  key: uuid
+  operations: [getVotingLocations]
+  fields: [uuid, address, latitude, longitude, startDate, endDate, pollingHours, notes,
+    sources]
+- name: votingLocationElection
+  description: The election a returned voting location belongs to.
+  key: id
+  operations: [getVotingLocations]
+  fields: [id, name, electionDay, ocdDivisionId]
+- name: party
+  description: Party reference embedded in authority.registration.
+  key: none
+  operations: []
+- name: export
+  description: A contracted bulk data file, delivered as a one-hour presigned S3 URL.
+  key: exportName
+  operations: [getExports]
+  fields: [exportName, exportUrl]
+- name: pagination
+  description: Envelope metadata, not a domain entity.
+  key: none
+- name: normalizedAddress
+  description: The address the voting-locations service resolved the request to.
+  key: none
+- name: state
+  description: State name plus its election administration body, on the voting-locations response.
+  key: none
+relationships:
+- from: election
+  to: ballotMeasure
+  type: has_many
+  via: ballotMeasures
+  ref: '#/components/schemas/ballotMeasure'
+  note: Populated only when getElections is called with includeBallotData=true.
+- from: election
+  to: contest
+  type: has_many
+  via: contests
+  ref: '#/components/schemas/contest'
+  note: Populated only when getElections is called with includeBallotData=true.
+- from: contest
+  to: candidate
+  type: has_many
+  via: candidates
+  ref: '#/components/schemas/candidate'
+- from: authority
+  to: party
+  type: has_one
+  via: registration
+  ref: '#/components/schemas/party'
+- from: election
+  to: authority
+  type: belongs_to
+  via: ocdId
+  binding: id-reference
+  confidence: medium
+  note: >-
+    Not a $ref. The contract states every election is run by some authority and that both
+    are keyed on OCD-IDs, so the join is by division identifier — an election's ocdId is
+    the division, and the authority for that division is fetched separately. Inferred from
+    the contract's own OCD-ID section, not from a declared link.
+- from: ballotMeasure
+  to: election
+  type: belongs_to
+  via: ocdId
+  binding: id-reference
+  confidence: medium
+- from: contest
+  to: election
+  type: belongs_to
+  via: ocdId
+  binding: id-reference
+  confidence: medium
+- from: endorsement
+  to: candidate
+  type: belongs_to
+  via: candidateId
+  binding: query-parameter
+  confidence: high
+  note: getEndorsementBulk takes candidateId; candidate carries endorsementCount.
+- from: endorsement
+  to: ballotMeasure
+  type: belongs_to
+  via: ballotMeasureId
+  binding: query-parameter
+  confidence: high
+  note: >-
+    getEndorsementBulk takes ballotMeasureId; ballotMeasure carries endorsementYesCount and
+    endorsementNoCount.
+- from: votingLocationElection
+  to: election
+  type: belongs_to
+  via: ocdDivisionId
+  binding: id-reference
+  confidence: medium
+  note: >-
+    Different property name for the same identifier scheme; the voting-locations surface
+    does not share the rest of the API's naming.
+counts:
+  entities: 17
+  declared_ref_relationships: 4
+  id_reference_relationships: 6
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

@@ -1,0 +1,83 @@
+specification: API Commons ChangeLog
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: searched
+source: >-
+  Probes of https://data.democracy.works/developer-updates and
+  https://www.democracy.works/developer-updates, the newsroom at
+  https://www.democracy.works/news, and both live API references
+description: >-
+  Democracy Works has NO live API changelog. It used to publish one and the page is gone;
+  what remains is an organizational newsroom and a Google Group. This file records that
+  regression with the probes that establish it, so the absence is legible rather than
+  looking unchecked.
+scheme: none
+current_version: '2.0'
+changelog_url: null
+availability: retired
+retired_changelog:
+  url: https://data.democracy.works/developer-updates
+  status: 200
+  result: dead
+  probed: '2026-09-07'
+  note: >-
+    Returns HTTP 200 but redirects to https://www.democracy.works/ and serves the homepage
+    (body md5 6c490738ce9cf569b59f7ebded4ef930, identical to a control probe of a nonsense
+    path). Indexed by search engines as "Developer Updates — Democracy Works Election Data",
+    so it existed; the whole data.democracy.works portal has been folded into the marketing
+    site and the developer-facing pages did not survive the move.
+alternate_probe:
+  url: https://www.democracy.works/developer-updates
+  status: 404
+  probed: '2026-09-07'
+  note: The page was not re-homed on the marketing domain either.
+stated_change_channel:
+  url: https://groups.google.com/a/democracy.works/g/democracy-works-data
+  status: 200
+  note: >-
+    Both the v2 contract and the v1 contract tell developers to "join the community of
+    developers in our Google Group for updates about our data and elections." That group is
+    the provider's declared change channel — a mailing list, not a dated machine-readable
+    changelog, and not readable without a Google account.
+entries:
+- version: '2.0'
+  date: '2024-01-09'
+  type: major
+  breaking: true
+  source: https://www.democracy.works/news/democracy-works-releases-new-version-of-elections-api
+  highlights:
+  - New /v2 base path, replacing the unversioned v1 surface.
+  - 'Auth header changed: v1 ''Authorization: apikey <key>'' became v2 ''X-API-KEY: <key>''.'
+  - Extended dataset covering the full range of Democracy Works election and voting data.
+  - Youth pre-registration instructions added.
+  - Address-level search for a voter's upcoming elections.
+  note: >-
+    Dated from the provider's own announcement post. Democracy Works published no migration
+    guide and no sunset date for v1, which is still live — see
+    lifecycle/democracy-works-lifecycle.yml.
+- version: '2.0'
+  date: null
+  type: additive
+  breaking: false
+  source: https://developers.democracy.works/api/v2
+  highlights:
+  - >-
+    Six operations exist in the live contract that were absent from the copy this catalog
+    harvested previously — getBallotMeasure, getCandidate, getContest, getEndorsement,
+    getEndorsementBulk and getVotingLocations — growing the surface from 5 to 11 operations
+    without an info.version bump.
+  note: >-
+    UNDATED BY THE PROVIDER. Observed by diffing the live spec against the copy in
+    openapi/_original/openapi-spec.yml (harvested 2026-05-03). Because info.version stayed
+    at "2.0" and no changelog exists, a consumer has no way to detect this growth except by
+    re-fetching the spec. Recorded here as an observation with its evidence, not as a
+    provider-published release note.
+gaps:
+- No dated changelog, release notes page, or RSS/Atom feed for the API.
+- No version bump accompanies additive changes to the contract.
+- The one former changelog URL now soft-404s and is still linked from search results.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

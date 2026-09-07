@@ -1,4 +1,4 @@
-openapi: 3.0.2
+openapi: 3.2.0
 info:
   title: Democracy Works Elections API
   version: '2.0'
@@ -141,16 +141,6 @@ components:
             $ref: '#/components/schemas/gatewayErrors'
           example:
             message: Too Many Requests
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
     badRequestError:
       description: Bad Request
       content:
@@ -161,97 +151,17 @@ components:
             status: 400
             message:
             - Something has gone wrong parsing your query string. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
   schemas:
-    candidate:
-      description: A representation of a candidate.
-      type: object
-      required:
-      - id
-      - fullName
-      - firstName
-      - lastName
-      - partyAffiliation
-      - isWriteIn
-      properties:
-        id:
-          type: string
-          description: The ID of the candidate.
-        fullName:
-          type: string
-          description: The full name of the candidate.
-        firstName:
-          type: string
-          description: The first name of the candidate.
-        lastName:
-          type: string
-          description: The last name of the candidate.
-        partyAffiliation:
-          type: array
-          description: Describes the party affiliation of the candidate.
-          items:
-            type: string
-        ballotpediaUrl:
-          type: string
-        status:
-          type: string
-        isWriteIn:
-          type: boolean
-          description: Indicates whether a candidate is a write-in candidate.
-        runningMateFullName:
-          type: string
-        runningMateTitle:
-          type: string
-        contact:
-          type: object
-          properties:
-            campaign:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: The candidates campaign email address.
-                website:
-                  type: string
-                  description: The candidates campaign website.
-                facebook:
-                  type: string
-                  description: The candidates campaign Facebook.
-                twitter:
-                  type: string
-                  description: The candidates campaign Twitter.
-                instagram:
-                  type: string
-                  description: The candidates campaign Instagram.
-                youtube:
-                  type: string
-                  description: The candidates campaign YouTube.
-                mailingAddress:
-                  type: string
-                  description: The candidates campaign mailing address.
-                phone:
-                  type: string
-                  description: The candidates campaign phone number.
-            personal:
-              type: object
-              properties:
-                website:
-                  type: string
-                  description: The candidates personal website.
-                facebook:
-                  type: string
-                  description: The candidates personal Facebook.
-                twitter:
-                  type: string
-                  description: The candidates personal Twitter.
-                instagram:
-                  type: string
-                  description: The candidates personal Instagram.
-                youtube:
-                  type: string
-                  description: The candidates personal YouTube.
-                linkedIn:
-                  type: string
-                  description: The candidates personal LinkedIn.
     pagination:
       type: object
       properties:
@@ -844,101 +754,6 @@ components:
           $ref: '#/components/schemas/ballotMeasure'
         contests:
           $ref: '#/components/schemas/contest'
-    errors:
-      type: object
-      properties:
-        status:
-          type: integer
-        message:
-          type: array
-      required:
-      - status
-      - message
-    contest:
-      description: Information on the race for the specific office up for election, including the list of candidates and candidate information.
-      type: object
-      required:
-      - id
-      - name
-      - level
-      - districtName
-      - ocdId
-      - seatsUpForElection
-      - candidates
-      properties:
-        id:
-          type: string
-          description: The ID of the contest.
-        name:
-          type: string
-          description: 'The name of the office  (ex: President).'
-        level:
-          type: string
-          description: The level of the contest.
-          enum:
-          - federal
-          - state
-          - local
-        branch:
-          type: string
-          description: The branch of government of the office.
-          enum:
-          - executive
-          - judicial
-          - legislative
-        districtName:
-          type: string
-          description: The name of the district that elects the office.
-        districtType:
-          type: string
-          description: The type of district that elects the office.
-          enum:
-          - cityTown
-          - cityTownSubdivision
-          - congress
-          - county
-          - countySubdivision
-          - judicialDistrict
-          - judicialDistrictSubdivision
-          - schoolDistrict
-          - schoolDistrictSubdivision
-          - specialDistrict
-          - specialDistrictSubdivision
-          - state
-          - stateLegislativeLower
-          - stateLegislativeUpper
-          - stateSubdivision
-        contestType:
-          type: string
-          description: The type of contest.
-          enum:
-          - regular
-          - special
-          - recall
-        ocdId:
-          type: string
-          description: The OCD-ID of the contest.
-        seatsUpForElection:
-          type: string
-          description: The number of seats up for election.
-        hasPrimary:
-          type: boolean
-          description: For a general election, indicates if an associated primary election exists.
-        primaryDate:
-          type: string
-          description: For a general election, provides the date of the associated primary election.
-        candidates:
-          type: array
-          items:
-            $ref: '#/components/schemas/candidate'
-          description: A list of candidates running for election for the contest.
-    gatewayErrors:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
     ballotMeasure:
       description: Information on the ballot measures on the ballot, including a summary and the full text of the ballot measure.
       type: object
@@ -1025,6 +840,191 @@ components:
           description: The OCD-ID associated with the jurisidiction covered by the ballot measure.
         status:
           type: string
+    contest:
+      description: Information on the race for the specific office up for election, including the list of candidates and candidate information.
+      type: object
+      required:
+      - id
+      - name
+      - level
+      - districtName
+      - ocdId
+      - seatsUpForElection
+      - candidates
+      properties:
+        id:
+          type: string
+          description: The ID of the contest.
+        name:
+          type: string
+          description: 'The name of the office  (ex: President).'
+        level:
+          type: string
+          description: The level of the contest.
+          enum:
+          - federal
+          - state
+          - local
+        branch:
+          type: string
+          description: The branch of government of the office.
+          enum:
+          - executive
+          - judicial
+          - legislative
+        districtName:
+          type: string
+          description: The name of the district that elects the office.
+        districtType:
+          type: string
+          description: The type of district that elects the office.
+          enum:
+          - cityTown
+          - cityTownSubdivision
+          - congress
+          - county
+          - countySubdivision
+          - judicialDistrict
+          - judicialDistrictSubdivision
+          - schoolDistrict
+          - schoolDistrictSubdivision
+          - specialDistrict
+          - specialDistrictSubdivision
+          - state
+          - stateLegislativeLower
+          - stateLegislativeUpper
+          - stateSubdivision
+        contestType:
+          type: string
+          description: The type of contest.
+          enum:
+          - regular
+          - special
+          - recall
+        ocdId:
+          type: string
+          description: The OCD-ID of the contest.
+        seatsUpForElection:
+          type: string
+          description: The number of seats up for election.
+        hasPrimary:
+          type: boolean
+          description: For a general election, indicates if an associated primary election exists.
+        primaryDate:
+          type: string
+          description: For a general election, provides the date of the associated primary election.
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/candidate'
+          description: A list of candidates running for election for the contest.
+    candidate:
+      description: A representation of a candidate.
+      type: object
+      required:
+      - id
+      - fullName
+      - firstName
+      - lastName
+      - partyAffiliation
+      - isWriteIn
+      properties:
+        id:
+          type: string
+          description: The ID of the candidate.
+        fullName:
+          type: string
+          description: The full name of the candidate.
+        firstName:
+          type: string
+          description: The first name of the candidate.
+        lastName:
+          type: string
+          description: The last name of the candidate.
+        partyAffiliation:
+          type: array
+          description: Describes the party affiliation of the candidate.
+          items:
+            type: string
+        ballotpediaUrl:
+          type: string
+        status:
+          type: string
+        isWriteIn:
+          type: boolean
+          description: Indicates whether a candidate is a write-in candidate.
+        runningMateFullName:
+          type: string
+        runningMateTitle:
+          type: string
+        contact:
+          type: object
+          properties:
+            campaign:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The candidates campaign email address.
+                website:
+                  type: string
+                  description: The candidates campaign website.
+                facebook:
+                  type: string
+                  description: The candidates campaign Facebook.
+                twitter:
+                  type: string
+                  description: The candidates campaign Twitter.
+                instagram:
+                  type: string
+                  description: The candidates campaign Instagram.
+                youtube:
+                  type: string
+                  description: The candidates campaign YouTube.
+                mailingAddress:
+                  type: string
+                  description: The candidates campaign mailing address.
+                phone:
+                  type: string
+                  description: The candidates campaign phone number.
+            personal:
+              type: object
+              properties:
+                website:
+                  type: string
+                  description: The candidates personal website.
+                facebook:
+                  type: string
+                  description: The candidates personal Facebook.
+                twitter:
+                  type: string
+                  description: The candidates personal Twitter.
+                instagram:
+                  type: string
+                  description: The candidates personal Instagram.
+                youtube:
+                  type: string
+                  description: The candidates personal YouTube.
+                linkedIn:
+                  type: string
+                  description: The candidates personal LinkedIn.
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
   examples:
     elections:
       summary: Sample elections response
@@ -1494,4 +1494,4 @@ components:
     ApiKeyAuth:
       type: apiKey
       in: header
-      name: x-api-key
+      name: X-API-KEY

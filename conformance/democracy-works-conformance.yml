@@ -1,0 +1,155 @@
+specification: API Commons Conformance
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: searched
+source: https://developers.democracy.works/api/v2 (the live OpenAPI 3.0.2 behind the reference, harvested
+  to openapi/_original/democracy-works-api-v2-openapi.json) plus https://www.democracy.works/llms.txt
+  and https://www.democracy.works/voting-info-project
+description: Cross-cutting and domain-standard conformance for the Democracy Works Elections API, asserted
+  from the contract itself rather than from marketing prose. The API is a read-only REST surface with
+  API-key auth; the standard that actually matters here is the civic-data identifier scheme it is built
+  on.
+conformance:
+- id: openapi-3.0
+  conforms: true
+  evidence: https://developers.democracy.works/api/v2
+  note: The reference is a Redoc render of a first-party OpenAPI 3.0.2 document (info.title "Democracy
+    Works API", servers https://api.democracy.works/v2). Refined copies live in openapi/.
+- id: rest
+  conforms: true
+  evidence: https://developers.democracy.works/api/v2#section/Introduction/Base-URL
+  note: Resource-oriented JSON over HTTPS, GET-only, one base URL.
+- id: api-key-auth
+  conforms: true
+  evidence: https://developers.democracy.works/api/v2#section/Introduction/Authentication
+  note: X-API-KEY request header, declared as securitySchemes.ApiKeyAuth in the contract.
+- id: oauth2
+  conforms: false
+  evidence: https://developers.democracy.works/api/v2#section/Introduction/Authentication
+  note: No OAuth. The only declared scheme is the API key; there are no scopes to model.
+- id: rfc9457
+  conforms: false
+  evidence: https://developers.democracy.works/api/v2
+  note: Errors are a first-party envelope ({status, message[]} and a gateway {message} form), served as
+    application/json — not application/problem+json. See errors/democracy-works-problem-types.yml.
+- id: pagination
+  conforms: true
+  evidence: https://developers.democracy.works/api/v2#section/Standard-Parameters/Pagination
+  note: Page-number pagination on every collection endpoint — page and pageSize query params (default
+    10, max 100) with a pagination object (totalRecordCount, currentPage, pageSize) on the response.
+- id: idempotency
+  conforms: false
+  evidence: https://developers.democracy.works/api/v2
+  note: Not applicable rather than missing — every one of the 11 published operations is a GET. There
+    is no mutating surface to make idempotent.
+- id: content-negotiation-i18n
+  conforms: true
+  evidence: https://developers.democracy.works/api/v2#section/Standard-Parameters/Localization
+  note: Accept-Language header honoured with the tags en, en-US, es and es-US; unlocalized fields return
+    null rather than falling back silently.
+domain_standards:
+- id: ocd-division-ids
+  name: Open Civic Data Division Identifiers (OCD-IDs)
+  conforms: true
+  evidence: https://developers.democracy.works/api/v2#section/Open-Civic-Data-IDs-(OCD-IDs)
+  note: The contract does not merely mention OCD-IDs, it is keyed on them. `ocdId` is a property of the
+    election, authority, localAuthority, ballotMeasure and contest schemas and a filter parameter on getElections;
+    the voting-location schema carries ocdDivisionId. Values take the published ocd-division/country:us/state:xx[/...]
+    form. A consumer already speaking OCD-IDs joins this API to any other civic dataset with no bespoke
+    crosswalk — which is the whole point of the scheme.
+  spec_location: components.schemas.election.properties.ocdId
+  standard_url: https://opencivicdata.info/en/latest/ocdids.html
+  provider_role: Democracy Works is not only a consumer of the scheme — it hosts the canonical ocd-division-ids
+    repository at https://github.com/democracyworks/ocd-division-ids.
+- id: google-field-mask
+  name: google.protobuf.FieldMask field paths
+  conforms: true
+  evidence: https://developers.democracy.works/api/v2#section/Standard-Parameters/Fields
+  note: Sparse fieldsets use protobuf FieldMask symbolic path syntax (fields="ocdId,date,contact.email"),
+    validated server-side with a 400 on an invalid path. The contract cites the FieldMask reference directly.
+  standard_url: https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask
+- id: vip-voting-information-project
+  name: Voting Information Project (VIP) election data feed
+  conforms: true
+  evidence: https://www.democracy.works/voting-info-project
+  note: Democracy Works co-runs VIP, the program through which 40+ states and DC publish official polling-place
+    and ballot data. Recorded as a program-level standard the organization operates, NOT as a conformance
+    claim of the v2 REST contract, whose voting-locations schema is first-party rather than VIP-shaped.
+not_applicable:
+- id: fhir
+  reason: Not a healthcare API.
+- id: fapi
+  reason: Not a financial-grade API; no OAuth surface.
+- id: scim
+  reason: No identity or provisioning surface.
+- id: odata
+  reason: No $metadata surface; the contract is OpenAPI.
+- id: psd2
+  reason: Not a payments or banking API.
+compliance:
+  certifications: []
+  note: No trust center, no SOC 2 / ISO 27001 / FedRAMP claim, and no published compliance program was
+    found on democracy.works or the developer reference. Democracy Works is a 501(c)(3) nonprofit; the
+    only formal status it publishes is its charitable registration. No Compliance pointer is wired into
+    apis.yml.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
+surfaces_probed:
+  note: STEP 0b contract discovery, 2026-09-07. Recorded so a later round does not re-probe blindly.
+  found:
+  - kind: OpenAPI 3.0.2 (v2)
+    url: https://developers.democracy.works/api/v2
+    status: 200
+    note: Embedded in the Redoc page state; 11 operations. Saved to openapi/_original/democracy-works-api-v2-openapi.json.
+  - kind: OpenAPI 3.1.1 (v1, legacy)
+    url: https://developers.democracy.works/api/v1
+    status: 200
+    note: Also what the portal root serves. 3 operations. Saved to openapi/_original/democracy-works-api-v1-openapi.json.
+  - kind: llms.txt
+    url: https://www.democracy.works/llms.txt
+    status: 200
+    note: 19,504 bytes, provider-authored, last updated February 2026. Saved verbatim to llms/.
+  absent:
+  - kind: OpenAPI at the API host root
+    urls:
+    - https://api.democracy.works/openapi.json
+    - https://api.democracy.works/openapi.yaml
+    - https://api.democracy.works/swagger.json
+    - https://api.democracy.works/api-docs
+    - https://api.democracy.works/docs
+    - https://api.democracy.works/redoc
+    status: 404
+  - kind: GraphQL
+    status: null
+    note: No /graphql surface and zero mentions of GraphQL in either contract, the reference, or llms.txt.
+  - kind: MCP
+    status: null
+    note: No hosted endpoint, no npm/PyPI package, nothing in the democracyworks GitHub org. See mcp/democracy-works-mcp.yml.
+  - kind: A2A agent card
+    urls:
+    - /.well-known/agent-card.json
+    - /.well-known/agent.json
+    status: 404
+    note: 404 on democracy.works, www, api and developers; SPA catch-all 200 on data.democracy.works,
+      verified a miss with a control probe. Nothing written to a2a/.
+  - kind: WSDL / SOAP
+    urls:
+    - https://api.democracy.works/v2?wsdl
+    - https://api.democracy.works/v2?singleWsdl
+    status: 404
+  - kind: gRPC / Protobuf
+    status: null
+    note: No .proto in the GitHub org, on buf.build, or referenced in the docs. The only "proto" hits
+      in the reference are links to protobuf.dev documenting FieldMask syntax.
+  - kind: AsyncAPI / webhooks / events
+    status: null
+    note: No webhooks key in either contract and zero occurrences of "webhook", "event stream", "subscribe"
+      or "asyncapi" in the reference or llms.txt. The API is request/response only; bulk delivery is the
+      /exports pull, not a push.
+  - kind: OGC
+    status: null
+    note: Not probed — no evidence points at an OGC surface. The API returns lat/long on voting locations
+      but publishes no WMS/WFS/OGC API endpoint and no conformance document.

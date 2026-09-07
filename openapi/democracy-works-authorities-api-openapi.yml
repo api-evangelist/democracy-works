@@ -1,4 +1,4 @@
-openapi: 3.0.2
+openapi: 3.2.0
 info:
   title: Democracy Works Authorities API
   version: '2.0'
@@ -175,7 +175,86 @@ paths:
       tags:
       - Authorities
 components:
+  responses:
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your query string. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
   examples:
+    localAuthorities:
+      summary: Sample local authorities response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        data:
+          authorities:
+          - ocdId: ocd-division/country:us/state:ak/borough:juneau
+            officeName: Juneau City And Borough
+            officialTitle: Region I Elections Office
+            homepageUrl: https://juneau.org/clerk/elections
+            registrationAuthorityLevel: county
+            electionAuthorityLevel: null
+            isRegistrationContact: false
+            contact:
+              email: electionsr1@alaska.gov
+              physicalAddress:
+                street: 9109 MENDENHALL MALL RD STE 3
+                city: JUNEAU
+                state: AK
+                zip: 99801-7136
+              mailingAddress:
+                street: PO BOX 110018
+                city: JUNEAU
+                state: AK
+                zip: 99811-0018
+          - ocdId: ocd-division/country:us/state:ri/place:coventry
+            officeName: Coventry Town
+            officialTitle: Board of Canvassers
+            homepageUrl: https://www.coventryri.org/board-canvassers
+            registrationAuthorityLevel: municipal
+            electionAuthorityLevel: municipal
+            isRegistrationContact: false
+            contact:
+              email: landerson@coventryri.org
+              physicalAddress:
+                street: 1675 FLAT RIVER RD
+                city: COVENTRY
+                state: RI
+                zip: 02816
+              mailingAddress:
+                street: 1670 FLAT RIVER RD
+                city: COVENTRY
+                state: RI
+                zip: 02816
+        pagination:
+          totalRecordCount: 2
+          currentPage: 1
+          pageSize: 10
     allAuthorities:
       summary: Sample authorities response
       description: 'This is **fictional** data to provide examples of fields values.
@@ -286,7 +365,7 @@ components:
                 - excuse: illnessDisability
                   example: I am physically incapacitated and will not be able to vote in person on election day.
                 - excuse: illnessAgeDisability
-                  example: "I have a physical illness or infirmity which prevents my attendance at the polls. I am unable to access my assigned polling place due to a neurological, musculoskeletal, respiratory (including speech organs), cardiovascular, or other life-altering disorder that affects my ability to perform manual tasks, stand for any length of time, walk unassisted, see, hear or speak and: \ra) I am an elderly voter aged 65 or older; or \rb) I am a voter with a disability."
+                  example: 'I have a physical illness or infirmity which prevents my attendance at the polls. I am unable to access my assigned polling place due to a neurological, musculoskeletal, respiratory (including speech organs), cardiovascular, or other life-altering disorder that affects my ability to perform manual tasks, stand for any length of time, walk unassisted, see, hear or speak and: a) I am an elderly voter aged 65 or older; or b) I am a voter with a disability.'
                 - excuse: employment
                   example: I expect to work a shift which has at least ten (10) hours that coincide with the polling hours at my regular polling place.
                 - excuse: student
@@ -533,7 +612,7 @@ components:
                 - excuse: illnessDisability
                   example: I am physically incapacitated and will not be able to vote in person on election day.
                 - excuse: illnessAgeDisability
-                  example: "I have a physical illness or infirmity which prevents my attendance at the polls. I am unable to access my assigned polling place due to a neurological, musculoskeletal, respiratory (including speech organs), cardiovascular, or other life-altering disorder that affects my ability to perform manual tasks, stand for any length of time, walk unassisted, see, hear or speak and: \ra) I am an elderly voter aged 65 or older; or \rb) I am a voter with a disability."
+                  example: 'I have a physical illness or infirmity which prevents my attendance at the polls. I am unable to access my assigned polling place due to a neurological, musculoskeletal, respiratory (including speech organs), cardiovascular, or other life-altering disorder that affects my ability to perform manual tasks, stand for any length of time, walk unassisted, see, hear or speak and: a) I am an elderly voter aged 65 or older; or b) I am a voter with a disability.'
                 - excuse: employment
                   example: I expect to work a shift which has at least ten (10) hours that coincide with the polling hours at my regular polling place.
                 - excuse: student
@@ -830,56 +909,6 @@ components:
               whatsOnTheBallot:
                 question: How do I see what's on my ballot?
                 answer: ' <a href="https://myballot.sos.colorado.gov/app/sb/vr">View your sample ballot</a> on the Colorado Secretary of State''s website. Available ballot information may vary depending on the upcoming election.  '
-        pagination:
-          totalRecordCount: 2
-          currentPage: 1
-          pageSize: 10
-    localAuthorities:
-      summary: Sample local authorities response
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        data:
-          authorities:
-          - ocdId: ocd-division/country:us/state:ak/borough:juneau
-            officeName: Juneau City And Borough
-            officialTitle: Region I Elections Office
-            homepageUrl: https://juneau.org/clerk/elections
-            registrationAuthorityLevel: county
-            electionAuthorityLevel: null
-            isRegistrationContact: false
-            contact:
-              email: electionsr1@alaska.gov
-              physicalAddress:
-                street: 9109 MENDENHALL MALL RD STE 3
-                city: JUNEAU
-                state: AK
-                zip: 99801-7136
-              mailingAddress:
-                street: PO BOX 110018
-                city: JUNEAU
-                state: AK
-                zip: 99811-0018
-          - ocdId: ocd-division/country:us/state:ri/place:coventry
-            officeName: Coventry Town
-            officialTitle: Board of Canvassers
-            homepageUrl: https://www.coventryri.org/board-canvassers
-            registrationAuthorityLevel: municipal
-            electionAuthorityLevel: municipal
-            isRegistrationContact: false
-            contact:
-              email: landerson@coventryri.org
-              physicalAddress:
-                street: 1675 FLAT RIVER RD
-                city: COVENTRY
-                state: RI
-                zip: 02816
-              mailingAddress:
-                street: 1670 FLAT RIVER RD
-                city: COVENTRY
-                state: RI
-                zip: 02816
         pagination:
           totalRecordCount: 2
           currentPage: 1
@@ -1561,6 +1590,13 @@ components:
         pageSize:
           type: number
           description: The number of records returned.
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
     errors:
       type: object
       properties:
@@ -1571,44 +1607,8 @@ components:
       required:
       - status
       - message
-    gatewayErrors:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
-  responses:
-    tooManyRequestsError:
-      description: TooManyRequestsError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/gatewayErrors'
-          example:
-            message: Too Many Requests
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
-    badRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your query string. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
       in: header
-      name: x-api-key
+      name: X-API-KEY

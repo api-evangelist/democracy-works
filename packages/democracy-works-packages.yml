@@ -1,0 +1,60 @@
+specification: API Commons Packages
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: searched
+source: >-
+  npm registry search + registry.npmjs.org, pypi.org/pypi/<pkg>/json, rubygems.org API,
+  https://api.github.com/orgs/democracyworks/repos (42 repos), and the API reference at
+  https://developers.democracy.works/api/v2
+description: >-
+  Registry sweep for a first-party client library for the Democracy Works Elections API.
+  None exists. The API is a plain REST + X-API-KEY surface and the provider ships no SDK
+  in any language; consumers call it with an ordinary HTTP client. This is a measured
+  absence, not an unchecked field — no SDKs pointer is wired into apis.yml.
+packages: []
+searched:
+- registry: npm
+  query: '"democracy works", "democracyworks", "turbovote", "elections api"'
+  url: https://registry.npmjs.org/-/v1/search
+  result: no first-party package
+- registry: pypi
+  query: democracy-works, democracyworks, dw-elections, turbovote
+  url: https://pypi.org/pypi/
+  result: 404 on every candidate name
+- registry: rubygems
+  query: democracy-works
+  url: https://rubygems.org/api/v1/gems/democracy-works.json
+  result: 'gem not found'
+- registry: github
+  query: orgs/democracyworks repos
+  url: https://github.com/democracyworks
+  result: >-
+    42 public repos, 30 of them archived. All are internal Clojure/Ruby/Python
+    infrastructure (datomic-toolbox, kehaar, synapse, votebot-*), coding exercises, or
+    civic-data reference data. None is a client for the v2 Elections API.
+related:
+- name: ocd-division-ids
+  registry: github
+  url: https://github.com/democracyworks/ocd-division-ids
+  official: true
+  version: null
+  published: null
+  note: >-
+    Not an SDK. The canonical repository of Open Civic Data Division IDs — the identifier
+    scheme the Elections API uses for every ocdId field. No package registry publishes it,
+    so version and published are honestly null.
+- name: google-civic
+  registry: rubygems
+  url: https://rubygems.org/gems/google-civic
+  official: false
+  version: 0.0.2
+  published: '2013-12-11'
+  note: >-
+    Present in the democracyworks GitHub org (archived) but published to RubyGems by a
+    third party and wrapping GOOGLE's Civic Information API, not the Democracy Works
+    Elections API. Recorded only so a future sweep does not mistake it for a first-party SDK.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

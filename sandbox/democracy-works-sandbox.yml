@@ -1,0 +1,58 @@
+specification: API Commons Sandbox
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: searched
+source: >-
+  https://developers.democracy.works/api/v2#section/Introduction/Authentication and probes
+  of https://data.democracy.works/api-signup, https://www.democracy.works/elections-api
+description: >-
+  Democracy Works publishes NO self-service sandbox. A test key exists but is issued by a
+  human after a conversation, and there is no separate test host, no test-mode key prefix,
+  no published fixtures and no time simulation. This file records what the provider
+  actually offers so the gap is legible.
+sandbox_available: false
+self_service: false
+test_credentials:
+  offered: true
+  mechanism: request-a-test-key
+  quote: >-
+    "For pricing information and to obtain a test key, please contact us."
+  contract_location: https://developers.democracy.works/api/v2#section/Introduction/Authentication
+  contact: partnerships@democracy.works
+  note: >-
+    The contract's "contact us" link points at https://data.democracy.works/api-signup,
+    which is now a soft-404 redirecting to the marketing homepage (probed 2026-09-07). The
+    working route is the email address the same contract publishes for support, or
+    https://www.democracy.works/contact.
+environments:
+- name: production
+  base_url: https://api.democracy.works/v2
+  note: The only host. There is no sandbox or staging base URL.
+key_modes:
+  test_live_distinguishable: false
+  key_prefix: none published
+  note: >-
+    Nothing in the contract or the docs distinguishes a test key from a live key by shape,
+    so a client cannot tell from the credential which environment it is in.
+test_data:
+  published_fixtures: false
+  time_simulation: false
+  triggers: false
+  note: >-
+    No test cards, fixtures, clocks or trigger tooling — none of which the domain calls for.
+    What a would-be integrator would want instead is a small public sample of election data
+    to code against before a key arrives, and that is not published either. The contract's
+    inline response examples (real Wisconsin, Colorado and Alabama elections) are the only
+    sample payloads available.
+free_read_surface:
+  available: false
+  evidence:
+  - url: https://api.democracy.works/v2/elections
+    status: 403
+    probed: '2026-09-07'
+    note: Every operation requires a key; nothing is readable anonymously.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

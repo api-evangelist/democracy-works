@@ -1,0 +1,109 @@
+specification: API Commons Authentication
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: searched
+docs: https://developers.democracy.works/api/v2#section/Introduction/Authentication
+source: >-
+  Derived from the securitySchemes of the eight refined OpenAPI documents in openapi/, then
+  upgraded from the provider's own authentication section at
+  https://developers.democracy.works/api/v2 and a live probe of
+  https://api.democracy.works/v2/elections on 2026-09-07
+description: >-
+  A single API-key header, no OAuth, no scopes, and no self-service issuance. Note that the
+  two live generations of this API use DIFFERENT auth headers — the v1 surface, still
+  served, uses an Authorization header with an "apikey" prefix.
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+  oauth2: false
+  scopes: false
+  mtls: false
+  openid_connect: false
+schemes:
+- name: ApiKeyAuth
+  type: apiKey
+  in: header
+  parameter: X-API-KEY
+  applies_to: 'API v2 (https://api.democracy.works/v2) — all 11 operations'
+  example: 'curl "https://api.democracy.works/v2/elections" --header "X-API-KEY: <YOUR API KEY>"'
+  sources:
+  - openapi/democracy-works-authorities-api-openapi.yml
+  - openapi/democracy-works-ballot-measures-api-openapi.yml
+  - openapi/democracy-works-candidates-api-openapi.yml
+  - openapi/democracy-works-contests-api-openapi.yml
+  - openapi/democracy-works-elections-api-openapi.yml
+  - openapi/democracy-works-endorsements-api-openapi.yml
+  - openapi/democracy-works-exports-api-openapi.yml
+  - openapi/democracy-works-voting-locations-api-openapi.yml
+  note: >-
+    The contract's prose writes the header as "X-API-Key" and its curl example as
+    "X-API-KEY"; HTTP header names are case-insensitive so either is accepted. The
+    catalog's refined specs were normalized to the published curl form.
+- name: AuthorizationApiKey
+  type: apiKey
+  in: header
+  parameter: Authorization
+  value_format: 'apikey <YOUR_API_KEY>'
+  applies_to: 'API v1 (https://api.democracy.works, unversioned paths) — legacy, still live'
+  example: 'curl -H "Accept: application/json" -H "Authorization: apikey $YOUR_API_KEY" "https://api.democracy.works/elections/upcoming"'
+  sources:
+  - openapi/democracy-works-elections-v1-api-openapi.yml
+  note: >-
+    Documented at https://developers.democracy.works/api/v1, which is also what the portal
+    root serves. The v1 contract declares no securityScheme object — the header is described
+    only in prose and as a request parameter on the upcoming-elections operation.
+issuance:
+  self_service: false
+  signup_url: null
+  process: >-
+    Keys are issued by Democracy Works after a partnership conversation. The contract points
+    at https://data.democracy.works/api-signup, which now soft-404s to the marketing
+    homepage; the working routes are partnerships@democracy.works and
+    https://www.democracy.works/contact.
+  test_key: >-
+    A test key is available on the same request path. There is no separate sandbox host and
+    no key prefix distinguishing test from live. See sandbox/democracy-works-sandbox.yml.
+observed_behavior:
+- url: https://api.democracy.works/v2/elections
+  request: no credential
+  status: 403
+  body: '{"message":"Forbidden"}'
+  headers_of_note: 'x-amzn-errortype: ForbiddenException'
+  probed: '2026-09-07'
+- url: https://api.democracy.works/v2/elections
+  request: 'X-API-KEY: not-a-real-key'
+  status: 403
+  body: '{"message":"Forbidden"}'
+  probed: '2026-09-07'
+  note: >-
+    An invalid key and an absent key are indistinguishable — same status, same body. A
+    client cannot tell "I forgot the header" from "my key was revoked" without out-of-band
+    information.
+- url: https://api.democracy.works/elections/upcoming
+  request: no credential
+  status: 403
+  body: '{:message "Missing Authorization apikey header"}'
+  content_type: application/edn
+  probed: '2026-09-07'
+  note: >-
+    The v1 surface DOES name the missing header, and answers in EDN rather than JSON.
+transport:
+  https_only: true
+  tls: TLSv1.3
+  hsts: false
+  note: >-
+    api.democracy.works serves TLS 1.3 but sends no Strict-Transport-Security header on the
+    v2 surface; the v1 surface does (max-age=31536000; includeSubdomains). See
+    security/democracy-works-domain-security.yml.
+gaps:
+- No key rotation, expiry or scoping documented.
+- No per-key permission model — one key grants the whole surface.
+- No OAuth or delegated-authorization path, so an agent cannot act on a voter's behalf with
+  a scoped, revocable grant; it holds a full-surface key.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

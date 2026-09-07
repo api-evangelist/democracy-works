@@ -1,0 +1,148 @@
+specification: API Commons Error Catalog
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: derived
+source: >-
+  Derived from the responses and components.responses of
+  openapi/_original/democracy-works-api-v2-openapi.json, harvested 2026-09-07 from
+  https://developers.democracy.works/api/v2, plus a live unauthenticated probe of
+  https://api.democracy.works/v2/elections
+format: custom
+description: >-
+  The Elections API does not use RFC 9457 problem+json. It returns two first-party JSON
+  envelopes, and which one you get depends on whether the request reached the application
+  or was stopped at the AWS API Gateway edge. Agents must handle both shapes.
+envelopes:
+- name: errors
+  applies_to: application-level failures (400, 404, 413, 500)
+  content_type: application/json
+  schema:
+    status: integer
+    message: array of string
+  example:
+    status: 400
+    message:
+    - Something has gone wrong parsing your request. Please refer to our documentation at
+      https://developers.democracy.works/api/v2 to confirm all required fields are present
+      and all fields are formatted correctly.
+- name: gatewayErrors
+  applies_to: edge/gateway failures (403, 429)
+  content_type: application/json
+  schema:
+    message: string
+  example:
+    message: Too Many Requests
+- name: votingLocationError
+  applies_to: the /voting-locations operation only
+  content_type: application/json
+  schema:
+    message: string
+  example:
+    message: Forbidden
+problem_types:
+- code: 400
+  name: badRequestError
+  envelope: errors
+  title: Bad Request
+  meaning: >-
+    A parameter is missing, malformed, or a `fields` field-mask path does not resolve
+    against the schema.
+  remediation: >-
+    Re-read the parameter list for the operation. For getVotingLocations and getElections
+    an address must be supplied either as the single `address` string or as the complete
+    set of component parameters — a partial component set is a 400.
+  retryable: false
+  operations: [getStateAuthorities, getAuthorities, getLocalAuthorities, getElections,
+    getBallotMeasure, getCandidate, getContest, getEndorsement, getEndorsementBulk,
+    getVotingLocations]
+- code: 403
+  name: forbidden
+  envelope: gatewayErrors
+  title: Forbidden
+  meaning: >-
+    Missing or invalid X-API-KEY. Observed live: an unauthenticated GET of
+    https://api.democracy.works/v2/elections returns HTTP 403 with
+    {"message":"Forbidden"} and an x-amzn-errortype ForbiddenException header. An invalid
+    key returns the identical body — the API does not distinguish absent from wrong.
+  remediation: >-
+    Send the X-API-KEY header. Keys are issued by Democracy Works on request; there is no
+    self-service signup.
+  retryable: false
+  documented_in_contract: only on getVotingLocations
+  observed: '2026-09-07'
+  operations: [all]
+- code: 404
+  name: notFoundError
+  envelope: errors
+  title: Not Found Error
+  meaning: The requested object does not exist.
+  example_message: Object not found.
+  remediation: Verify the id. Ids are opaque and not guessable.
+  retryable: false
+  operations: [getBallotMeasure, getCandidate, getContest, getEndorsement]
+- code: 413
+  name: contentTooLargeError
+  envelope: errors
+  title: Content Too Large Error
+  meaning: The response the query would produce exceeds the size the API will serve.
+  example_message: Response size too large. Try again with a smaller pageSize.
+  remediation: >-
+    Lower pageSize (max 100) and page through, and/or narrow the response with the `fields`
+    field mask. This is the error a naive "fetch everything" agent hits first.
+  retryable: true
+  retry_strategy: retry the same query with a smaller pageSize, not with a delay
+  operations: [getStateAuthorities, getAuthorities, getLocalAuthorities, getElections,
+    getEndorsementBulk]
+- code: 422
+  name: unprocessableEntity
+  envelope: votingLocationError
+  title: Unprocessable Entity
+  meaning: >-
+    The address was syntactically acceptable but could not be resolved to a jurisdiction.
+  remediation: Re-prompt the user for a complete street address; a ZIP alone is not enough.
+  retryable: false
+  operations: [getVotingLocations]
+- code: 429
+  name: tooManyRequestsError
+  envelope: gatewayErrors
+  title: TooManyRequestsError
+  meaning: Request throttled at the API Gateway.
+  example_message: Too Many Requests
+  remediation: >-
+    Back off and retry. No rate-limit headers are documented and none were observed on a
+    live response, so a client cannot read its remaining budget — use exponential backoff
+    with jitter. See rate-limits/democracy-works-rate-limits.yml.
+  retryable: true
+  operations: [all]
+- code: 500
+  name: internalServerError
+  envelope: errors
+  title: InternalServerError
+  meaning: Unhandled server-side failure.
+  example_message: Something went wrong.
+  remediation: Retry with backoff; if it persists, contact partnerships@democracy.works.
+  retryable: true
+  operations: [all]
+- code: 503
+  name: serviceUnavailable
+  envelope: votingLocationError
+  title: Service Unavailable
+  meaning: The voting-locations service is temporarily unavailable.
+  remediation: >-
+    Retry with backoff. https://status.democracy.works publishes uptime for
+    api.democracy.works (99.449% over the trailing 90 days as of 2026-09-07).
+  retryable: true
+  operations: [getVotingLocations]
+gaps:
+- >-
+  No machine-readable error code beyond the HTTP status: `message` is prose, and on the
+  `errors` envelope it is an ARRAY of prose. An agent cannot branch on a stable symbolic
+  code.
+- >-
+  403 is documented in the contract only for getVotingLocations, but every operation
+  returns it without a key. Confirmed by live probe.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

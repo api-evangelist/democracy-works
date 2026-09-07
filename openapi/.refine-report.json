@@ -1,27 +1,23 @@
 {
   "provider": "democracy-works",
   "sources": [
-    "openapi-spec.yml"
+    "democracy-works-authorities-api-openapi.yml",
+    "democracy-works-elections-api-openapi.yml",
+    "democracy-works-exports-api-openapi.yml"
   ],
   "outputs": [
     "democracy-works-authorities-api-openapi.yml",
     "democracy-works-elections-api-openapi.yml",
     "democracy-works-exports-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/openapi-spec.yml"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
-    "openapi-spec.yml: tagged GET /authorities/state/{stateCode} -> Authorities",
-    "openapi-spec.yml: tagged GET /authorities -> Authorities",
-    "openapi-spec.yml: tagged GET /authorities/local -> Authorities",
-    "openapi-spec.yml: tagged GET /elections -> Elections",
-    "openapi-spec.yml: tagged GET /exports -> Exports",
-    "openapi-spec.yml: declared missing tag: Authorities",
-    "openapi-spec.yml: declared missing tag: Elections",
-    "openapi-spec.yml: declared missing tag: Exports"
+    "democracy-works-authorities-api-openapi.yml: upgraded openapi 3.0.2 -> OpenAPI 3.2.0",
+    "democracy-works-elections-api-openapi.yml: upgraded openapi 3.0.2 -> OpenAPI 3.2.0",
+    "democracy-works-exports-api-openapi.yml: upgraded openapi 3.0.2 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
   ],
   "skipped": []
 }

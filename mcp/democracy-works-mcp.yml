@@ -1,0 +1,103 @@
+specification: API Commons MCP
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: derived
+status: candidate
+source: >-
+  Derived from the 11 operations in openapi/_original/democracy-works-api-v2-openapi.json,
+  harvested 2026-09-07 from https://developers.democracy.works/api/v2. Searched for a
+  published server first: no MCP endpoint, no npm/PyPI package, nothing in the
+  democracyworks GitHub org, and no MCP mention on democracy.works or the API reference.
+description: >-
+  CANDIDATE tool surface only. Democracy Works publishes NO MCP server. The tools below are
+  a faithful one-to-one projection of the published REST operations, offered as a design
+  sketch for whoever builds one. Each tool inherits the parameters of the operation named in
+  `rest`. Nobody can call these today.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: api-key
+  verified: derived
+  note: >-
+    No hosted endpoint and no stdio package exist. `auth: api-key` describes what a server
+    would need (the X-API-KEY header the REST API requires), not something a server enforces
+    today. Democracy Works' own AI integration guide names the Model Context Protocol as an
+    open standard a developer MAY use to wire the Elections API into a model harness, but it
+    ships no server of its own — the work is left to the integrator.
+    Source: "AI Guidance for Democracy Works API" (PDF), linked from
+    https://www.democracy.works/search-social-ai
+tools:
+- name: list_elections
+  description: >-
+    Find elections for an address, a state, or an OCD-ID, optionally windowed by date and
+    filtered by election type. The primary voter-guidance lookup.
+  rest: getElections
+  method: GET
+  path: /elections
+- name: get_state_authority
+  description: >-
+    Statewide evergreen registration and voting instructions plus election-office contact
+    details for one state (or all 51 when stateCode is omitted).
+  rest: getStateAuthorities
+  method: GET
+  path: /authorities/state/{stateCode}
+- name: list_authorities
+  description: Election authorities matching an address or state code.
+  rest: getAuthorities
+  method: GET
+  path: /authorities
+- name: list_local_authorities
+  description: Local (sub-state) election authorities matching an address or state code.
+  rest: getLocalAuthorities
+  method: GET
+  path: /authorities/local
+- name: get_ballot_measure
+  description: One ballot measure by id, including summary, ballot question and yes/no framing.
+  rest: getBallotMeasure
+  method: GET
+  path: /ballot-measures
+- name: get_candidate
+  description: One candidate by id, including party affiliation, incumbency and Ballotpedia link.
+  rest: getCandidate
+  method: GET
+  path: /candidates
+- name: get_contest
+  description: One contest by id, including its candidate list and ranked-choice/primary rules.
+  rest: getContest
+  method: GET
+  path: /contests
+- name: get_endorsement
+  description: One endorsement by id.
+  rest: getEndorsement
+  method: GET
+  path: /endorsements
+- name: list_endorsements_bulk
+  description: Endorsements in bulk for a candidate id or a ballot-measure id.
+  rest: getEndorsementBulk
+  method: GET
+  path: /endorsements/bulk/byMatchingEntity
+- name: list_voting_locations
+  description: >-
+    Polling places, early-voting sites and drop boxes for an address, with hours, dates and
+    source attribution.
+  rest: getVotingLocations
+  method: GET
+  path: /voting-locations
+- name: list_exports
+  description: >-
+    Presigned S3 URLs for contracted bulk data exports. URLs expire after one hour and grant
+    access to the caller's data — never share them.
+  rest: getExports
+  method: GET
+  path: /exports
+coverage:
+  rest_operations: 11
+  tools_derived: 11
+  tools_published_by_provider: 0
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

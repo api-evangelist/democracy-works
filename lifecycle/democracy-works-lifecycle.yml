@@ -1,0 +1,119 @@
+specification: API Commons Lifecycle
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: searched
+source: >-
+  https://developers.democracy.works/api/v2 and https://developers.democracy.works/api/v1
+  (both live first-party Redoc renders), https://status.democracy.works,
+  https://www.democracy.works/news/democracy-works-releases-new-version-of-elections-api,
+  plus live probes of api.democracy.works recorded below
+description: >-
+  Versioning, deprecation and availability posture for the Democracy Works Elections API.
+  The headline finding is that TWO generations are live at once and neither is marked
+  deprecated.
+versioning:
+  scheme: url-path-major
+  current: '2.0'
+  base_url: https://api.democracy.works/v2
+  documentation: https://developers.democracy.works/api/v2
+  note: >-
+    v2 is announced at info.version "2.0" and lives under the /v2 path prefix. There is no
+    version header, no date-pinning, and no changelog inside the contract.
+generations:
+- version: '2.0'
+  status: current
+  base_url: https://api.democracy.works/v2
+  auth: 'X-API-KEY: <key>'
+  documentation: https://developers.democracy.works/api/v2
+  operations: 11
+  announced: '2024-01-09'
+  announcement: https://www.democracy.works/news/democracy-works-releases-new-version-of-elections-api
+  spec: openapi/_original/democracy-works-api-v2-openapi.json
+- version: 1.0.0
+  status: live-undeprecated
+  base_url: https://api.democracy.works
+  auth: 'Authorization: apikey <key>'
+  documentation: https://developers.democracy.works/api/v1
+  operations: 3
+  spec: openapi/_original/democracy-works-api-v1-openapi.json
+  evidence:
+    url: https://api.democracy.works/elections/upcoming
+    status: 403
+    body: '{:message "Missing Authorization apikey header"}'
+    content_type: application/edn
+    probed: '2026-09-07'
+  note: >-
+    v1 is still served, still documented, and is the DEFAULT page of the developer portal:
+    https://developers.democracy.works/ returns the v1 reference byte-for-byte
+    (md5 8559ec154341096583488d3e6fde6e97), so a developer who lands on the portal root
+    reads the older contract first. v1 uses a different auth header, a different base path
+    (unversioned) and kebab-case fields, and returns application/edn error bodies. Nothing
+    on either reference marks it deprecated.
+deprecation:
+  policy_published: false
+  policy_url: null
+  rfc8594_headers: false
+  sunset_header_observed: false
+  deprecation_header_observed: false
+  deprecated_operations: []
+  evidence:
+  - url: https://api.democracy.works/elections/upcoming
+    status: 403
+    note: >-
+      No Deprecation and no Sunset response header on the live v1 surface; headers observed
+      were strict-transport-security, x-frame-options, content-security-policy,
+      x-content-type-options, x-xss-protection and the CloudFront/API Gateway set.
+  - url: https://api.democracy.works/v2/elections
+    status: 403
+    note: No Deprecation or Sunset header on the v2 surface either.
+  note: >-
+    Democracy Works publishes no deprecation or sunset policy. A consumer on v1 has no
+    published signal that v2 supersedes it and no dated migration window. This is the
+    single largest lifecycle gap on this provider.
+status_page:
+  url: https://status.democracy.works
+  platform: Better Stack
+  status: 200
+  probed: '2026-09-07'
+  monitored_services:
+  - name: api.democracy.works
+    uptime_90d: 99.449%
+    note: 'Trailing-90-day figure as published on 2026-09-07; one incident, 11h45m of downtime.'
+  - name: turbovote.org
+    uptime_90d: 100%
+  incident_feed: https://status.democracy.works/feed.rss
+  note: >-
+    The status page names the API host explicitly rather than a generic "platform" service,
+    which is what makes it useful to an API consumer.
+sla:
+  published: false
+  note: >-
+    No public SLA. The Elections API is sold through partnership agreements
+    (partnerships@democracy.works); availability terms, if any, live in the contract.
+support:
+  email: partnerships@democracy.works
+  community: https://groups.google.com/a/democracy.works/g/democracy-works-data
+  note: >-
+    The contract points developers at the Google Group for data and election updates —
+    that group, not a changelog page, is the provider's stated change channel.
+retired_surfaces:
+- url: https://data.democracy.works/api-signup
+  status: 200
+  result: dead
+  probed: '2026-09-07'
+  note: >-
+    Soft-404. Redirects to https://www.democracy.works/ and serves the homepage. This URL
+    is still cited inside BOTH the live v2 OpenAPI description and this catalog's previous
+    record; the catalog pointer has been removed.
+- url: https://data.democracy.works/developer-updates
+  status: 200
+  result: dead
+  probed: '2026-09-07'
+  note: >-
+    The former "Developer Updates" changelog. Now a soft-404 redirecting to the homepage.
+    See changelog/democracy-works-changelog.yml.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

@@ -1,0 +1,133 @@
+specification: API Evangelist Well-Known Probe
+specificationVersion: '0.1'
+provider: Democracy Works
+providerId: democracy-works
+generated: '2026-09-07'
+method: probed
+source: live unauthenticated HTTPS GETs of /.well-known/* on every host this record knows
+description: >-
+  Probe of the five canonical /.well-known discovery documents plus both A2A agent-card
+  paths across every Democracy Works host in this record: the registrable domain and www,
+  the API base host, the legacy data portal host, and the developer documentation host.
+  Nothing is served. NO WellKnown, SecurityTxt or AgentCard pointer is wired into apis.yml
+  because no path returned a real document — this file records a measured absence.
+notes:
+  - >-
+    data.democracy.works answers 200 for EVERY path, including nonsense ones: it is a
+    Webflow catch-all that redirects to https://www.democracy.works/. Verified with a
+    control probe of /zzz-garbage-path-xyz, which returned the identical body
+    (md5 6c490738ce9cf569b59f7ebded4ef930, 129712 bytes). Every 200 below on that host is
+    an SPA/marketing shell, not a document, and is recorded as a miss.
+  - >-
+    democracy.works and www.democracy.works return a genuine 404 body reading
+    "Invalid .well-known request" — the edge handles the namespace and serves nothing.
+  - >-
+    api.democracy.works is AWS API Gateway behind CloudFront; unknown paths return a
+    404 {"message":"Not Found"} and known paths without a key return 403 ForbiddenException.
+hosts:
+- host: democracy.works
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: www.democracy.works
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: api.democracy.works
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: developers.democracy.works
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: data.democracy.works
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    result: miss
+    note: HTML marketing shell (Webflow catch-all), not a document
+  - path: /.well-known/openid-configuration
+    status: 200
+    result: miss
+    note: HTML marketing shell (Webflow catch-all), not a document
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    result: miss
+    note: HTML marketing shell (Webflow catch-all), not a document
+  - path: /.well-known/api-catalog
+    status: 200
+    result: miss
+    note: HTML marketing shell (Webflow catch-all), not a document
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    result: miss
+    note: HTML marketing shell (Webflow catch-all), not a document
+  - path: /.well-known/agent-card.json
+    status: 200
+    result: miss
+    note: HTML marketing shell (Webflow catch-all), not a document
+  - path: /.well-known/agent.json
+    status: 200
+    result: miss
+    note: HTML marketing shell (Webflow catch-all), not a document
+control:
+  url: https://data.democracy.works/zzz-garbage-path-xyz
+  status: 200
+  note: >-
+    Control probe proving the 200s above are a catch-all, not documents. Same body md5 as
+    the homepage.
+summary:
+  hosts_probed: 5
+  documents_found: 0
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
