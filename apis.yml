@@ -77,7 +77,8 @@ apis:
     url: json-schema/democracy-works-authority-schema.json
   - type: PostmanCollection
     url: collections/democracy-works-authorities-api.postman_collection.json
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
+  image: >-
+    https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
 - aid: democracy-works:democracy-works-elections-api
   name: Democracy Works Elections API
   description: The Elections API from Democracy Works — 1 operation(s) for elections.
@@ -102,7 +103,8 @@ apis:
     url: json-schema/democracy-works-authority-schema.json
   - type: PostmanCollection
     url: collections/democracy-works-elections-api.postman_collection.json
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
+  image: >-
+    https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
 - aid: democracy-works:democracy-works-exports-api
   name: Democracy Works Exports API
   description: The Exports API from Democracy Works — 1 operation(s) for exports.
@@ -129,11 +131,13 @@ apis:
     url: json-schema/democracy-works-authority-schema.json
   - type: PostmanCollection
     url: collections/democracy-works-exports-api.postman_collection.json
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
+  image: >-
+    https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
 - aid: democracy-works:democracy-works-ballot-measures-api
   name: Democracy Works Ballot Measures API
-  description: The Ballot Measures API from Democracy Works — 1 operation retrieving a single ballot measure
-    by id, with its ballot question, summary, yes/no framing, topics, status and endorsement counts. Sourced
+  description: >-
+    The Ballot Measures API from Democracy Works — 1 operation retrieving a single ballot measure by id,
+    with its ballot question, summary, yes/no framing, topics, status and endorsement counts. Sourced
     from Ballotpedia.
   humanURL: https://developers.democracy.works/api/v2
   baseURL: https://api.democracy.works/v2
@@ -148,12 +152,13 @@ apis:
     url: https://developers.democracy.works/api/v2
   - type: APIReference
     url: https://developers.democracy.works/api/v2
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
+  image: >-
+    https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
 - aid: democracy-works:democracy-works-candidates-api
   name: Democracy Works Candidates API
-  description: The Candidates API from Democracy Works — 1 operation retrieving a single candidate by
-    id, with party affiliation, incumbency, write-in status, running mate, ranked-choice round and Ballotpedia
-    link.
+  description: >-
+    The Candidates API from Democracy Works — 1 operation retrieving a single candidate by id, with party
+    affiliation, incumbency, write-in status, running mate, ranked-choice round and Ballotpedia link.
   humanURL: https://developers.democracy.works/api/v2
   baseURL: https://api.democracy.works/v2
   tags:
@@ -167,12 +172,13 @@ apis:
     url: https://developers.democracy.works/api/v2
   - type: APIReference
     url: https://developers.democracy.works/api/v2
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
+  image: >-
+    https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
 - aid: democracy-works:democracy-works-contests-api
   name: Democracy Works Contests API
-  description: The Contests API from Democracy Works — 1 operation retrieving a single contest by id,
-    with its candidate list, seats up for election, ranked-choice rules, partisan-primary rules and cancellation
-    status.
+  description: >-
+    The Contests API from Democracy Works — 1 operation retrieving a single contest by id, with its candidate
+    list, seats up for election, ranked-choice rules, partisan-primary rules and cancellation status.
   humanURL: https://developers.democracy.works/api/v2
   baseURL: https://api.democracy.works/v2
   tags:
@@ -186,12 +192,14 @@ apis:
     url: https://developers.democracy.works/api/v2
   - type: APIReference
     url: https://developers.democracy.works/api/v2
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
+  image: >-
+    https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
 - aid: democracy-works:democracy-works-endorsements-api
   name: Democracy Works Endorsements API
-  description: 'The Endorsements API from Democracy Works — 2 operations: one endorsement by id, and endorsements
+  description: >-
+    The Endorsements API from Democracy Works — 2 operations: one endorsement by id, and endorsements
     in bulk for a candidate id or a ballot-measure id. Every endorsement carries the endorsing organization
-    and its source.'
+    and its source.
   humanURL: https://developers.democracy.works/api/v2
   baseURL: https://api.democracy.works/v2
   tags:
@@ -205,10 +213,12 @@ apis:
     url: https://developers.democracy.works/api/v2
   - type: APIReference
     url: https://developers.democracy.works/api/v2
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
+  image: >-
+    https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
 - aid: democracy-works:democracy-works-voting-locations-api
   name: Democracy Works Voting Locations API
-  description: The Voting Locations API from Democracy Works — 1 operation returning polling places, early-voting
+  description: >-
+    The Voting Locations API from Democracy Works — 1 operation returning polling places, early-voting
     sites and ballot drop boxes for a street address, with hours, open/close dates, coordinates, source
     attribution and the normalized address the service resolved.
   humanURL: https://developers.democracy.works/api/v2
@@ -224,29 +234,26 @@ apis:
     url: https://developers.democracy.works/api/v2
   - type: APIReference
     url: https://developers.democracy.works/api/v2
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
-- aid: democracy-works:democracy-works-elections-v1-api
-  name: Democracy Works Elections API v1 (legacy)
-  description: 'The first generation of the Democracy Works Elections API — 3 operations for upcoming
-    elections and state election authorities. Still served at the unversioned base path and still documented
-    (it is what the developer portal root returns), superseded by v2 in January 2024 but never marked
-    deprecated and carrying no Sunset header. Uses a different auth header (Authorization: apikey) and
-    returns application/edn error bodies.'
-  humanURL: https://developers.democracy.works/api/v1
-  baseURL: https://api.democracy.works
+  image: >-
+    https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
+- aid: democracy-works:democracy-works-election-authorities-api
+  name: Democracy Works Election Authorities API
+  description: >-
+    The Election Authorities API from Democracy Works — 2 operation(s) for election authorities.
+  humanURL: https://developers.democracy.works/api/v2
+  baseURL: https://api.democracy.works/v2
   tags:
-  - Elections v1
+  - Election Authorities
   properties:
   - type: OpenAPI
-    url: openapi/democracy-works-elections-v1-api-openapi.yml
-  - type: Overlay
-    url: overlays/democracy-works-elections-v1-api-overlay.yaml
+    url: openapi/democracy-works-election-authorities-api-openapi.yml
   - type: Documentation
     url: https://developers.democracy.works/api/v1
   - type: APIReference
     url: https://developers.democracy.works/api/v1
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
 common:
+- type: Overlay
+  url: overlays/democracy-works-elections-v1-api-overlay.yaml
 - type: Authentication
   url: authentication/democracy-works-authentication.yml
 - type: DomainSecurity

@@ -2,6 +2,13 @@
   "repo": "democracy-works",
   "feeds": [
     {
+      "source": "https://www.democracy.works/news",
+      "feed_url": "https://www.democracy.works/news",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    },
+    {
       "source": "https://www.democracy.works/newsroom",
       "feed_url": "https://www.democracy.works/newsroom",
       "title": "",
@@ -9,7 +16,7 @@
       "method": "none"
     }
   ],
-  "fetched": "2026-09-06T19:17:18Z",
+  "fetched": "2026-09-13T13:00:00Z",
   "post_count": 5,
   "feed_nature": "vendor-blog",
   "feed_nature_basis": "path_blog",
