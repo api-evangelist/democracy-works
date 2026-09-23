@@ -1,23 +1,65 @@
 {
   "provider": "democracy-works",
   "sources": [
-    "democracy-works-authorities-api-openapi.yml",
-    "democracy-works-elections-api-openapi.yml",
-    "democracy-works-exports-api-openapi.yml"
+    "_original/democracy-works-api-v1-openapi.json",
+    "_original/democracy-works-api-v2-openapi.json"
   ],
   "outputs": [
-    "democracy-works-authorities-api-openapi.yml",
+    "democracy-works-election-authorities-api-openapi.yml",
     "democracy-works-elections-api-openapi.yml",
-    "democracy-works-exports-api-openapi.yml"
+    "democracy-works-authorities-api-openapi.yml",
+    "democracy-works-ballot-measures-api-openapi.yml",
+    "democracy-works-candidates-api-openapi.yml",
+    "democracy-works-contests-api-openapi.yml",
+    "democracy-works-endorsements-api-openapi.yml",
+    "democracy-works-exports-api-openapi.yml",
+    "democracy-works-voting-locations-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
-    "democracy-works-authorities-api-openapi.yml: upgraded openapi 3.0.2 -> OpenAPI 3.2.0",
-    "democracy-works-elections-api-openapi.yml: upgraded openapi 3.0.2 -> OpenAPI 3.2.0",
-    "democracy-works-exports-api-openapi.yml: upgraded openapi 3.0.2 -> OpenAPI 3.2.0",
+    "1 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "democracy-works-api-v1-openapi.json: upgraded openapi 3.1.1 -> OpenAPI 3.2.0",
+    "democracy-works-api-v1-openapi.json: tagged paths GET /election-authorities/state-urls/{stateAbbreviation} -> Election Authorities",
+    "democracy-works-api-v1-openapi.json: tagged paths GET /election-authorities/states -> Election Authorities",
+    "democracy-works-api-v1-openapi.json: tagged paths GET /elections/upcoming -> Elections",
+    "democracy-works-api-v1-openapi.json: declared missing tag: Election Authorities",
+    "democracy-works-api-v1-openapi.json: declared missing tag: Elections",
+    "democracy-works-api-v2-openapi.json: upgraded openapi 3.0.2 -> OpenAPI 3.2.0",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /authorities/state/{stateCode} -> Authorities",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /authorities -> Authorities",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /authorities/local -> Authorities",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /elections -> Elections",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /ballot-measures -> Ballot Measures",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /candidates -> Candidates",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /contests -> Contests",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /endorsements -> Endorsements",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /endorsements/bulk/byMatchingEntity -> Endorsements",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /exports -> Exports",
+    "democracy-works-api-v2-openapi.json: tagged paths GET /voting-locations -> Voting Locations",
+    "democracy-works-api-v2-openapi.json: declared missing tag: Authorities",
+    "democracy-works-api-v2-openapi.json: declared missing tag: Ballot Measures",
+    "democracy-works-api-v2-openapi.json: declared missing tag: Candidates",
+    "democracy-works-api-v2-openapi.json: declared missing tag: Contests",
+    "democracy-works-api-v2-openapi.json: declared missing tag: Elections",
+    "democracy-works-api-v2-openapi.json: declared missing tag: Endorsements",
+    "democracy-works-api-v2-openapi.json: declared missing tag: Exports",
+    "democracy-works-api-v2-openapi.json: declared missing tag: Voting Locations",
+    "tag 'Elections' spans 2 source specs (democracy-works-api-v1-openapi.json, democracy-works-api-v2-openapi.json): per-path servers applied",
     "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "_original/openapi-spec.yml: archived document superseded by a larger archived document",
+    "democracy-works-authorities-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "democracy-works-ballot-measures-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "democracy-works-candidates-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "democracy-works-contests-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "democracy-works-election-authorities-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "democracy-works-elections-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "democracy-works-endorsements-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "democracy-works-exports-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "democracy-works-voting-locations-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

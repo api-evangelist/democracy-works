@@ -1,18 +1,220 @@
 openapi: 3.2.0
 info:
   title: Democracy Works Elections API
-  version: '2.0'
-  description: "# Introduction\n\nThe Democracy Works Elections API provides your application with comprehensive elections data and voting guidance, surfacing our unparalleled coverage of upcoming local, state, and federal elections. Power your platforms, apps, reminders, outreach campaigns, and much more.\n\nJoin the community of developers in our [Google Group](https://groups.google.com/a/democracy.works/g/democracy-works-data)\nfor updates about our data and elections.\n\n## Authentication\nAccess to the Democracy Works Elections API requires authentication. To access the DW API, include an X-API-Key header with each API request. The value of that header should be your API key. For example:\n\n```sh\ncurl \"https://api.democracy.works/v2/elections\" \\\n    --header \"X-API-KEY: <YOUR API KEY>\"\n```\n\nFor pricing information and to obtain a test key, please [contact us](https://data.democracy.works/api-signup).\n\n## Base URL\nThe base URL for all API endpoints is: https://api.democracy.works/v2\n\n## Support\nIf you have any further questions or issues, please contact us at partnerships@democracy.works.\n\n## Data\n\nData is captured in two entities, an __Election__ and an __Authority__. The __Election__ has election-specific dates and deadlines, URLs for voters to get more information and take action, and detailed guidance in both English and Spanish. The __Authority__ includes statewide evergreen information and instructions on how to register and vote for each state, as well as election office contact information. \n\n# Open Civic Data IDs (OCD-IDs)\n\nWe use Open Civic Data IDs [(OCD-IDs)](https://opencivicdata.info/en/latest/ocdids.html) \nthroughout the API to describe entities and filter results. \n\nOCD-IDs start with what is being identified, and in our case it is always \n`ocd-division`.\n\nSince all authorities are, or are contained within, a state and all elections \nare run by some authority, almost every OCD-ID in our system starts with \n`ocd-division/country:us/state:__`, where `__` is a two-letter state postal code.\n\nThe only exception to this is for the District of Columbia, which has the OCD-ID \n`ocd-division/country:us/district:dc`.\n\n## OCD-ID on the Authority\nThe OCD-ID associated with an authority describes the political district covered\nby an authority. Authorities are uniquely identifiable by the associated OCD-ID.\n\nFor example:\n- The OCD-ID `ocd-division/country:us/state:ak/place:anderson` is associated \n  with the authority for Anderson, Alaska.\n- The OCD-ID `ocd-division/country:us/state:ny/county:albany/council_district:2` \n  is not associated with an authority because Albany's 2nd Ward is a legislative \n  ward which does not run its own elections.\n\n## OCD-ID on the Election\nThe OCD-ID associated with an election describes the highest-level district \nin which all voters have something to vote for on the ballot on Election Day. \nElections always have an associated OCD-ID, but are not uniquely\nidentifiable by the associated OCD-ID.\n\nFor example:\n- If there is a mayoral race in Philadelphia as well as a state-wide \nmeasure contest in Pennsylvania on a given day, there will be one election \nentity with OCD-ID `ocd-division/country:us/state:pa`.\n- If there is only a mayoral race in Pittsburgh in Allegheny County on a given \nday, there will be an election entity with OCD-ID \n`ocd-division/country:us/state:pa/county:allegheny`.\n\n# Standard Parameters\nFunctionality shared between API endpoints is noted here. Each endpoint will\nspecify whether it supports the following functionality.\n\n## Pagination\nAny endpoint that returns multiple results supports pagination. An endpoint that \nsupports pagination accepts two related query parameters:\n- `pageSize`\n  - Specifies the number of results requested. Defaults to 10 if not specified. The maximum value is 100.\n  - Example: `pageSize=15`\n- `page`\n  - Specifies the page to return, based on `pageSize`. Defaults to 1 if not specified.\n  - Example: `page=2`\n\nYou can send none, one, or both of these parameters. Each endpoint that supports\npagination will have a `pagination` field in the response, which details what\npage of information is returned, what page size was used for the request, and the\ntotal number of results found. \n\n## Localization\nSome endpoints support localization. An endpoint that supports localization accepts a\nheader parameter:\n- `Accept-Language`\n  - Specifies the language tag for localization. Accepted values are `en`, `en-US`, `es`, and `es-US`.\n  - Example: `Accept-Language: es`\n\nNot all fields on the response of a localized endpoint are localized. Each field that supports localization\nwill have a `Localized` tag on its field description.\n\nIf no localization in the requested language is found,\nlocalized fields will return `null`.\n\n## Content Formatting\nSome endpoints support content formatting. An endpoint that supports formatting accepts a\nquery parameter:\n- `contentFormatType`\n  - Specifies the format of certain fields in the response.\n    Accepted values are `html` and `json`. Defaults to `html` if not specified.\n  - Example: `contentFormatType=json`\n\nNot all fields on the response of a formatted endpoint are formatted. \nFormatting is generally supported on prose-like fields, including Question and Answer content and most instruction fields.\nEach field that supports formatting will have a `Formatted` tag on its field description.\n\nThe `json`-formatted content is the content represented as an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).\n\n## Fields\nSome endpoints support field masking to specify a list of fields to include in the API response. This helps to avoid unnecessary computation and improve performance. An endpoint that supports field masking accepts a\nquery parameter:\n- `fields`\n  - Specifies the symbolic field paths to include in the response, provided as comma-separated list. See more about [Field Masks](https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask).\n  - Example: `fields=\"ocdId,date,contact.email\"`\n\nPaths are validated against all possible fields, and providing an invalid path will result in a 400 response.\n"
+  version: '1.0'
+  description: 'Operations tagged Elections across 2 of this provider''s published API definitions: democracy-works-api-v1-openapi.json, democracy-works-api-v2-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
+- description: Democracy Works API
+  url: https://api.democracy.works
 - url: https://api.democracy.works/v2
 tags:
 - name: Elections
 paths:
+  /elections/upcoming:
+    get:
+      summary: Upcoming elections
+      description: 'An “upcoming” Election is one that is in our system and the date is in
+
+        the future, including the day that the request is made. Both statewide
+
+        and local Elections are part of this data set. We define a statewide
+
+        Election as any election where all voters in the state have something on
+
+        the ballot or any federal congressional election. These generally end in
+
+        a two-letter state code. All other elections are considered local.
+
+
+        There are two ways to request Upcoming Elections:
+
+
+        1. all at once
+
+        2. one (or more) OCD-ID(s) at a time
+
+
+        Be sure to include the `Accept` header because the default
+
+        `Content-Type` is the lesser known EDN (application/edn). The two
+
+        `Content-Type`s supported are `application/json` and `application/edn`.
+
+
+        ### All Upcoming Elections
+
+
+        Returns a list of all upcoming elections.
+
+
+        An example response is available, and all field definitions are in the
+
+        Upcoming Elections API Reference.
+
+
+        ```bash
+
+        curl -H "Accept: application/json" \
+
+        -H "Authorization: apikey $YOUR_API_KEY" \
+
+        https://api.democracy.works/elections/upcoming
+
+        ```
+
+
+        ### Upcoming Elections by OCD-ID
+
+
+        Returns a list of all upcoming elections for the provided OCD-ID(s).
+
+        Same as the above, but filtered.
+
+
+        ```bash
+
+        curl -H "Accept: application/json" \
+
+        -H "Authorization: apikey $YOUR_API_KEY" \
+
+        "https://api.democracy.works/elections/upcoming?district-divisions=ocd-division/country:us/state:il/place:chicago"
+
+        ```'
+      parameters:
+      - in: query
+        name: district-divisions
+        schema:
+          type: string
+        description: 'A **comma-separated** list, supplied as a string, of OCD IDs that will
+
+          return upcoming elections only for the OCD IDs provided.
+
+          '
+      - in: query
+        name: language
+        description: 'By default, responses include instructions in English. At this time we
+
+          support 2 languages: English (`en`) and Spanish (`es`). Use this parameter to receive
+
+          instructions in a single language.
+
+
+          You may also use `all` to receive instructions in both English and
+
+          Spanish. Note that this changes the structure of the response; any
+
+          field which supports localized instructions will be an object keyed by all
+
+          supported languages, exemplified by the following JSON fragment:
+
+
+          ```
+
+          {"instructions": {"en": "...", "es": "..."}}
+
+          ```
+
+          '
+        schema:
+          type: string
+          enum:
+          - en
+          - es
+          - all
+      - in: query
+        name: qa-status
+        schema:
+          type: string
+          default: complete
+          enum:
+          - incomplete
+          - complete
+          - all
+        description: 'See [QA Status](#tag/QAStatus) for a more in-depth discussion of the
+
+          meaning of this parameter.
+
+          '
+      - in: header
+        name: Accept
+        schema:
+          type: string
+          enum:
+          - application/json
+          - application/edn
+      - in: header
+        name: Authorization
+        schema:
+          type: string
+          example: apikey $YOUR_API_KEY
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UpcomingElectionsResponse'
+      tags:
+      - Elections
+      operationId: getElectionsUpcoming
+      x-operation-id-source: derived
+    servers:
+    - description: Democracy Works API
+      url: https://api.democracy.works
   /elections:
     get:
       operationId: getElections
       summary: Elections
-      description: "This endpoint has election-specific dates and deadlines, URLs for voters to get more information and take action, and detailed guidance in both English and Spanish. The information included reflects the voter registration and voting methods available in the state for that election, such as online, in-person, and by-mail registration as well as by-mail, in-person, and early voting. The election also contains some information from the related state authority. The default is to return all elections, though you can limit the response to upcoming elections through the use of the start date parameter. Elections are returned sorted chronologically by election date. \n\nAfter an election is confirmed to be occurring, Democracy Works surfaces information about an election as details become available. An elections guidance phase describes the state of the currently available guidance.\n\nA `past` election is an election whose election date is in the past. A `known` election is an upcoming election for which key details and deadlines have yet to be released. An `active` election is an upcoming election for which details have been vetted and confirmed by the Democracy Works team.\n\nElections are returned sorted chronologically by election date. \n\nSupports the following standard parameters: see __[Pagination](#section/Standard-Parameters/Pagination)__, __[Localization](#section/Standard-Parameters/Localization)__, __[Content Formatting](#section/Standard-Parameters/Content-Formatting)__, and __[Fields](#section/Standard-Parameters/Fields)__.\n\n### Ballot Measure Information\n\nInformation about measures on the ballot are available for the following elections:\n- All federal elections\n- All statewide elections\n\nBallot measure information is not included in the default response for an election. For ballot measure information to be included with the response, include the `includeBallotData` parameter with a value of `true`.\n\nBallot data is sourced from [Ballotpedia](https://ballotpedia.org/).\n\n### Candidate and Contest Information\n\nFor the November 5, 2024 elections, our ballot information will include the following:\n- All federal contests and candidates, including president, vice president, senate, and house of representatives\n- All state contests and candidates, including governor, treasurer, secretary of state, state legislative seats, state supreme court, district court, and court of appeals\n- Local candidates and contests including mayor, county judge, county clerk, commissioners, and city councils in the top 100 cities by population, plus state capitals and school board elections in 475 districts\n    - Local coverage may be limited by mapping constraints and in states where primaries have not yet been held.\n\nBallot data is sourced from [Ballotpedia](https://ballotpedia.org/).\n"
+      description: 'This endpoint has election-specific dates and deadlines, URLs for voters to get more information and take action, and detailed guidance in both English and Spanish. The information included reflects the voter registration and voting methods available in the state for that election, such as online, in-person, and by-mail registration as well as by-mail, in-person, and early voting. The election also contains some information from the related state authority. The default is to return all elections, though you can limit the response to upcoming elections through the use of the start date parameter. Elections are returned sorted chronologically by election date.
+
+
+        After an election is confirmed to be occurring, Democracy Works surfaces information about an election as details become available. An election’s guidance phase describes the state of the currently available guidance.
+
+
+        A `past` election is an election whose election date is in the past. An `expected` election is an upcoming election that is expected to occur but for which Democracy Works has not yet published specific guidance for. A `not currently expected` election is an election that Democracy Works expect to happen but will not publish guidance for. An `active` election is an upcoming election for which Democracy Works has published specific guidance.
+
+
+        Elections are returned sorted chronologically by election date.
+
+
+        Supports the following standard parameters: see __Pagination__, __Localization__, __Content Formatting__, and __Fields__.
+
+
+        ### Ballot Measure Information
+
+
+        Information about measures on the ballot will include:
+
+        - All federal ballot measures
+
+        - All statewide ballot measures
+
+        - Local ballot measures in the top 100 cities by population
+
+
+        Ballot measure information is not included in the default response for an election. For ballot measure information to be included with the response, include the `includeBallotData` parameter with a value of `true`.
+
+
+        Ballot data is sourced from Ballotpedia.
+
+
+        ### Candidate and Contest Information
+
+
+        Information about contests and candidates on the ballot will include:
+
+        - All federal contests and candidates, including senate and house of representatives
+
+        - All state contests and candidates, including governor, treasurer, secretary of state, state legislative seats, state supreme court, district court, and court of appeals
+
+        - Local contests and candidates including mayor, county judge, county clerk, commissioners, and city councils in the top 100 cities by population, plus school board elections in 475 districts
+
+        - Note that local coverage may be limited by mapping constraints.
+
+
+        Ballot data is sourced from Ballotpedia.'
       security:
       - ApiKeyAuth: []
       parameters:
@@ -20,42 +222,42 @@ paths:
         in: query
         schema:
           type: string
-          description: If sending an address as a single string, the street, city, state, and zip code of an address to get elections for. Using separate parameters for each address element (as shown below) is preferred.
+          description: The full street address as a single string. Required unless all of `addressStreet`, `addressCity`, `addressStateCode`, and `addressZip` are provided.
           example: 813%20Howard%20Street%20Oswego%20NY%2013126
         required: false
       - name: addressStreet
         in: query
         schema:
           type: string
-          description: The street to get elections for in conjunction with other required address parameters.  Include Apt numbers or other additional information.
+          description: The street portion of the address. Must be provided together with `addressCity`, `addressStateCode`, and `addressZip`.
           example: 813%20Howard%20Street
         required: false
       - name: addressCity
         in: query
         schema:
           type: string
-          description: The city to get elections for in conjunction with other required address parameters.
+          description: The city portion of the address. Must be provided together with `addressStreet`, `addressStateCode`, and `addressZip`.
           example: Oswego
         required: false
       - name: addressStateCode
         in: query
         schema:
           type: string
-          description: The 2 letter postal code to get elections for in conjunction with other required address parameters.  DC is also accepted.
+          description: The 2-letter postal abbreviation for the state. DC is also accepted. Must be provided together with `addressStreet`, `addressCity`, and `addressZip`.
           example: NY
         required: false
       - name: addressZip
         in: query
         schema:
           type: string
-          description: The zip code to get elections for in conjunction with other required address parameters.
+          description: The 5-digit ZIP code. Must be provided together with `addressStreet`, `addressCity`, and `addressStateCode`.
           example: '13126'
         required: false
       - name: addressZip4
         in: query
         schema:
           type: string
-          description: OPTIONAL. The zip plus 4 to get elections for in conjunction with other required address parameters.
+          description: The optional 4-digit ZIP+4 extension. May be added alongside `addressStreet`, `addressCity`, `addressStateCode`, and `addressZip`.
           example: '9029'
         required: false
       - name: stateCode
@@ -85,6 +287,12 @@ paths:
           type: date
           description: The latest date to get elections for, inclusive, in UTC ISO 8601 format.
           example: '2023-01-02'
+        required: false
+      - name: electionTypes
+        in: query
+        schema:
+          type: string
+          description: The election types (options are presidentialPrimary, state, stateSenate, stateHouse, congressional, senate, county, subCounty, municipal, subMunicipal, school, and special). Comma-separated list.
         required: false
       - name: includeQuestionAndAnswer
         in: query
@@ -125,43 +333,425 @@ paths:
                   $ref: '#/components/examples/elections'
         '400':
           $ref: '#/components/responses/badRequestError'
+        '413':
+          $ref: '#/components/responses/contentTooLargeError'
         '429':
           $ref: '#/components/responses/tooManyRequestsError'
         '500':
           $ref: '#/components/responses/internalServerError'
       tags:
       - Elections
+    servers:
+    - url: https://api.democracy.works/v2
 components:
-  responses:
-    tooManyRequestsError:
-      description: TooManyRequestsError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/gatewayErrors'
-          example:
-            message: Too Many Requests
-    badRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your query string. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
   schemas:
+    OnlineRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - online
+          description: 'Indicates that online voter registration is an option in the state. The sections following provide the state-specific requirements. This field and fields associated with online voter registration are only populated in states where it is available.
+
+            '
+        instructions:
+          type: object
+          description: 'Lists the state-specific requirements for registering to vote online.
+
+            '
+          properties:
+            registration:
+              description: 'Provides the identification requirements and other instructions for registering to vote online.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+        supports-iframe:
+          type: boolean
+          description: 'Indicates whether the state online voter registration site can be iframed. `true`: can be iframed, `false`: cannot be iframed.
+
+            '
+        deadline-online:
+          type: string
+          format: date-time
+          description: 'Provides the deadline date for registering online to vote for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        url:
+          type: string
+          format: uri
+          description: 'Provides the link to the state online voter registration system.
+
+            '
+    DistrictDivision:
+      type: object
+      properties:
+        ocd-id:
+          type: string
+          example: ocd-division/country:us/state:nc/sldl:1
+          description: 'The political division of the election. Represented as an Open Civic Data Identifier. Voters within these political jurisdictions are covered by this election.
+
+            '
+        voter-registration-authority-level:
+          type: string
+        election-authority-level:
+          type: string
+        voting-methods:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ByMailVotingMethod'
+            - $ref: '#/components/schemas/EarlyVotingVotingMethod'
+            - $ref: '#/components/schemas/InPersonVotingMethod'
+        voter-registration-methods:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ByMailRegistrationMethod'
+            - $ref: '#/components/schemas/ElectionDayRegistrationMethod'
+            - $ref: '#/components/schemas/InPersonRegistrationMethod'
+            - $ref: '#/components/schemas/OnlineRegistrationMethod'
+        primary-voting-method-source:
+          type: string
+    LocalizedField:
+      oneOf:
+      - type: object
+        properties:
+          en:
+            type: string
+            description: English text
+          es:
+            type: string
+            description: Spanish text
+      - type: string
+        description: Localized text dependent on the `language` parameter
+    EarlyVotingVotingMethod:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - early-voting
+          description: 'Indicates that early voting is an option for the particular election. The sections following provide the state-specific requirements. This field and fields associated with early voting are only populated in states where it is available.
+
+            '
+        primary:
+          type: boolean
+          description: 'Indicates whether voting early is the primary voting method for the particular election or not. `true`: primary voting method; `false`: not primary voting method.
+
+            '
+        excuse-required:
+          type: boolean
+          description: 'Indicates whether you need an excuse to vote early. `true`: excuse required; `false`: excuse not required.
+
+            '
+        start:
+          type: string
+          format: date-time
+          description: 'Indicates the start date for early voting for the particular election. Early voting dates often vary within a state. This date can either be the earliest date or the latest date any jurisdiction is required to begin. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        end:
+          type: string
+          format: date-time
+          description: 'Indicates the end date for early voting for the particular election. Early voting dates often vary within a state. This date can either be the earliest day or the latest date any jurisdiction is required to end. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        alias:
+          type: string
+          enum:
+          - early-voting
+          - absentee-in-person
+          description: 'Default is empty, meaning election officials in the state use the term "early voting" or the value can explicitly list `early-voting`. If the value is `absentee-in-person` that means election officials in the state use the term "absentee in person". We don''t distinguish these two in the data because they are functionally equivalent.
+
+            '
+        exact-dates:
+          type: boolean
+          deprecated: true
+          description: Deprecated field as we reconsider date display.
+        url:
+          type: string
+          format: uri
+          description: 'If there is a website that provides information about the election or how to participate, we will provide it here. This field is often an election-specific URL, though we may include voter information portals.
+
+            '
+    UpcomingElectionsResponse:
+      type: object
+      required:
+      - date
+      - description
+      - type
+      - id
+      - qa-status
+      properties:
+        description:
+          type: string
+          description: 'Displayable name for the election. Includes the political division affected by the election and the election type. Descriptions can also provide information on whether the election will be conducted via mail ballot if elections are not typically conducted that way in the state.
+
+            '
+        date:
+          type: string
+          format: date-time
+          description: 'Day of the election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+          example: '2022-11-08T00:00:00Z'
+        district-divisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistrictDivision'
+        type:
+          type: string
+          enum:
+          - congressional
+          - county
+          - municipal
+          - presidential-primary
+          - school
+          - state
+          - state-house
+          - state-senate
+          - sub-municipal
+          description: The election type
+        source:
+          type: object
+          description: 'Information about how the Election was researched. For internal use only.
+
+            '
+          properties:
+            type:
+              type: string
+            notes:
+              type: string
+            date:
+              type: string
+              format: date-time
+        polling-place-url:
+          type: string
+          format: uri
+          description: Provides a link to the state's polling place lookup page.
+        polling-place-url-shortened:
+          type: string
+          format: uri
+          example: https://tvote.org/abcd123
+          description: Shortened link for the state's polling place lookup page.
+        qa-status:
+          type: string
+          enum:
+          - complete
+          - incomplete
+          - none
+          description: 'Only `complete` elections are shown in the API by default, but early access to `incomplete` data is available. See [QA Status](#tag/QAStatus) for more discussion.
+
+            '
+        id:
+          type: string
+          description: 'Unique election ID for internal use only. This value may change.
+
+            '
+        population:
+          type: integer
+          description: 'Provides the affected population number for the given election using Census data, when available.
+
+            '
+        website:
+          type: string
+          format: uri
+          description: 'Provides a link to additional information on the upcoming election, when available.
+
+            '
+    InPersonVotingMethod:
+      type: object
+      required:
+      - type
+      - primary
+      properties:
+        type:
+          type: string
+          enum:
+          - in-person
+          description: 'Indicates that voting in-person is an option for the particular election. The sections following provide the state-specific requirements. This field, and fields associated with voting in-person, are not available in Oregon.
+
+            '
+        primary:
+          type: boolean
+          description: 'Indicates whether voting in person is the primary voting method for the particular election or not. `true`: primary voting method; `false`: not primary voting method.
+
+            '
+        excuse-required:
+          type: boolean
+          description: "Indicates whether you need an excuse to vote in-person. `true`:\n  excuse required; `false`: excuse not required.\n"
+        instructions:
+          type: object
+          description: 'Lists the state-specific requirements for voting in-person. See [our notes on instruction fields](#tag/Instructions) for more information on interpreting these fields.
+
+            '
+          properties:
+            voting-id:
+              description: 'Provides the identification requirements and other instructions for voting in-person.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+    ElectionDayRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - election-day
+          description: 'Indicates whether voter registration is available for the particular election at voting locations.
+
+            '
+    InPersonRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - in-person
+          description: 'Indicates that in-person voter registration is an option in the state. This field and fields associated with in-person voter registration are only populated in states where it is available.
+
+            '
+        start:
+          type: string
+          format: date-time
+          description: 'This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        end:
+          type: string
+          format: date-time
+          description: 'This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+    ByMailRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - by-mail
+          description: 'Indicates that registering to vote by mail is an option for the particular election. The sections following provide the state-specific requirements. This field, and fields associated with registering to vote by mail are not available for elections in New Hampshire or North Dakota.
+
+            '
+        instructions:
+          type: object
+          description: 'Lists the state-specific signature block language and ID requirements for registering to vote by mail.
+
+            '
+          properties:
+            signature:
+              description: 'Provides the state-specific language for voters to affirm when they complete and sign their paper registration form. This language varies from state to state.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+            idnumber:
+              description: 'Provides the state-specific identification requirements for registering to vote by mail.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+        acceptable-forms:
+          type: array
+          description: 'Lists the paper registration form accepted by the state.
+
+            '
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: 'Display name for the state-accepted registration form. Most states accept the National Voter Registration Form (`nvrf`). Voters in Wyoming must use the state-specific registration form (`wy_reg`). This field is left blank in New Hampshire and North Dakota.
+
+                  '
+        deadline-received:
+          type: string
+          format: date-time
+          description: 'Indicates that a by mail voter registration application must be received by the designated election office by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        deadline-postmarked:
+          type: string
+          format: date-time
+          description: 'Indicates that a by mail voter registration applications must be postmarked by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        deadline-in-person:
+          type: string
+          format: date-time
+          description: 'Indicates that a by mail voter registration must be delivered/completed in person (by the voter) by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        new-voter:
+          type: string
+    ByMailVotingMethod:
+      type: object
+      required:
+      - type
+      - primary
+      properties:
+        type:
+          type: string
+          enum:
+          - by-mail
+        primary:
+          type: boolean
+          description: 'Indicates whether voting by mail is the primary voting method for the particular election or not. `true`: primary voting method; `false`: not primary voting method.
+
+            '
+        ballot-request-form-url:
+          $ref: '#/components/schemas/LocalizedField'
+          description: 'URL for a form that a voter can use to request an absentee/by-mail ballot.
+
+            '
+        ballot-request-deadline-received:
+          type: string
+          format: date-time
+          description: 'Indicates the date that a ballot request application must be received by the designated election official for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        ballot-return-deadline-postmarked:
+          type: string
+          format: date-time
+          description: 'Indicates the date that a completed ballot must be postmarked by the voter for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        ballot-return-deadline-received:
+          type: string
+          format: date-time
+          description: 'Indicates the date that a completed ballot must be received by the designated election official for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        ballot-return-deadline-in-person:
+          type: string
+          format: date-time
+          description: 'Indicates the date that a completed ballot must be returned in-person by the voter at a designated election office/dropbox for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        vbm-alias:
+          $ref: '#/components/schemas/LocalizedField'
+          description: 'The name used by the jurisdiction to refer to voting by mail.
+
+            '
+        excuse-required:
+          type: boolean
+          description: 'Indicates whether you need an excuse to vote by-mail. `true`: excuse required; `false`: excuse not required.
+
+            '
+        acceptable-forms:
+          type: array
+          description: 'Lists the acceptable ballot request application form.
+
+            '
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: 'For internal use only. Name for the ballot request application.
+
+                  '
     pagination:
       type: object
       properties:
@@ -215,6 +805,7 @@ components:
           - stateHouse
           - stateSenate
           - subMunicipal
+          - subCounty
         pollingLocationUrl:
           type: string
           description: Lookup URL for voting location information. If an election is all-mail, this URL will link to information for election-specific dropbox locations.
@@ -236,16 +827,14 @@ components:
             '
         guidancePhase:
           type: string
-          description: 'After an election is confirmed to be occurring, Democracy Works surfaces information about an election as details become available. An elections guidance phase describes the state of the currently available guidance.
-
-
-            A past election is an election whose election date is in the past. A known election is an upcoming election for which key details have yet to be released. An active election is an upcoming election for which details have been vetted and confirmed by the Democracy Works team.
+          description: 'After an election is confirmed to be occurring, Democracy Works surfaces information about an election as details become available. An election’s guidance phase describes the state of the currently available guidance.
 
             '
           enum:
           - past
-          - known
           - active
+          - expected
+          - not currently expected
         population:
           type: string
           description: Provides the affected population number for the given election using Census data or government data. This field will be null if the population is less than 5,000.
@@ -506,7 +1095,7 @@ components:
                       description: Provides the last date to register by mail for the election.
                     timestamp:
                       type: string
-                      description: Provides the ISO timestamp deadline to register by mail for the election on the last day to registrer to vote. Only collected for specific elections.
+                      description: Provides the ISO timestamp deadline to register by mail for the election on the last day to register to vote. Only collected for specific elections.
                     description:
                       type: string
                       description: 'Provides the time deadline to register by mail for the election on the last day to register to vote if the deadline is expressed in a phrase as opposed to an ISO timestamp. Examples include "close of business" or "close of polls". Only collected for specific elections.
@@ -750,10 +1339,115 @@ components:
                   type: string
                 answer:
                   type: string
+            aboutInfo:
+              type: object
+              description: 'Provides information about how Democracy Works election guidance is sourced and updated.
+
+
+                `Localized` `Formatted`
+
+                '
+              properties:
+                question:
+                  type: string
+                answer:
+                  type: string
+            voteEarly:
+              type: object
+              description: 'Provides information on voting in person without an excuse before Election Day, if available. Only provided for specific elections.
+
+
+                `Localized` `Formatted`
+
+                '
+              properties:
+                question:
+                  type: string
+                answer:
+                  type: string
+            urgentNotices:
+              type: object
+              description: 'Provides information on key voting or registration process changes for an election, if available.
+
+
+                `Localized` `Formatted`
+
+                '
+              properties:
+                question:
+                  type: string
+                answer:
+                  type: string
+            aboutThisElection:
+              type: object
+              description: 'Provides information that affects voter participation in an election and resources or options to learn more, if available.
+
+
+                `Localized` `Formatted`
+
+                '
+              properties:
+                question:
+                  type: string
+                answer:
+                  type: string
+            youShouldKnow:
+              type: object
+              description: '
+
+                `Localized` `Formatted`
+
+                '
+              properties:
+                question:
+                  type: string
+                answer:
+                  type: string
+            actNow:
+              type: object
+              description: '
+
+                `Localized` `Formatted`
+
+                '
+              properties:
+                question:
+                  type: string
+                answer:
+                  type: string
+            actNowRegistration:
+              type: object
+              description: '
+
+                `Localized` `Formatted`
+
+                '
+              properties:
+                question:
+                  type: string
+                answer:
+                  type: string
         ballotMeasures:
           $ref: '#/components/schemas/ballotMeasure'
         contests:
           $ref: '#/components/schemas/contest'
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
     ballotMeasure:
       description: Information on the ballot measures on the ballot, including a summary and the full text of the ballot measure.
       type: object
@@ -768,7 +1462,6 @@ components:
       - summary
       - yesVote
       - noVote
-      - ballotQuestion
       - ocdId
       properties:
         id:
@@ -805,6 +1498,7 @@ components:
           - stateLegislativeLower
           - stateLegislativeUpper
           - stateSubdivision
+          - township
         type:
           type: string
           description: The type of ballot measure.
@@ -832,6 +1526,12 @@ components:
         noVote:
           type: string
           description: Describes what a vote opposed to the ballot measure means.
+        yesVotesTotal:
+          type: number
+          description: The number of YES votes this ballot measure received.
+        noVotesTotal:
+          type: number
+          description: The number of NO votes this ballot measure received.
         ballotQuestion:
           type: string
           description: The full text of the ballot measure.
@@ -840,6 +1540,126 @@ components:
           description: The OCD-ID associated with the jurisidiction covered by the ballot measure.
         status:
           type: string
+        endorsementYesCount:
+          type: number
+          description: The number of "support" endorsements for this ballot measure.
+        endorsementNoCount:
+          type: number
+          description: The number of "oppose" endorsements for this ballot measure
+    candidate:
+      description: A representation of a candidate.
+      type: object
+      required:
+      - id
+      - fullName
+      - firstName
+      - lastName
+      - partyAffiliation
+      - isWriteIn
+      properties:
+        id:
+          type: string
+          description: The ID of the candidate.
+        fullName:
+          type: string
+          description: The full name of the candidate.
+        firstName:
+          type: string
+          description: The first name of the candidate.
+        lastName:
+          type: string
+          description: The last name of the candidate.
+        partyAffiliation:
+          type: array
+          description: Describes the party affiliation of the candidate.
+          items:
+            type: string
+        isIncumbent:
+          type: boolean
+          description: Indicates whether a candidate is an incumbent.
+        isWriteIn:
+          type: boolean
+          description: Indicates whether a candidate is a write-in candidate.
+        ballotpediaUrl:
+          type: string
+          description: The URL of the candidate's Ballotpedia page.
+        status:
+          type: string
+          description: The status of the candidate in that contest.
+          enum:
+          - won
+          - lost
+          - advanced
+          - declared
+          - disqualified
+          - onBallot
+          - withdrew
+          - notable
+          - acclaimed
+          - withdrewStillOnBallot
+        runningMateFullName:
+          type: string
+          description: The full name of the candidate's running mate.
+        runningMateTitle:
+          type: string
+          description: The title of the candidate's running mate.
+        rankedChoiceVotingRound:
+          type: number
+          description: RCV results are reported in “rounds” of calculations. Ballotpedia reports each round of these results, so a candidate in an RCV will have a row for each round of calculation in that stage. The first round of results reported will have this attribute = 1. Rounds will count up until the final round.
+        endorsementCount:
+          type: number
+          description: The number of endorsements available for this candidate.
+        contact:
+          type: object
+          properties:
+            campaign:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The candidate’s campaign email address.
+                website:
+                  type: string
+                  description: The candidate’s campaign website.
+                facebook:
+                  type: string
+                  description: The candidate’s campaign Facebook.
+                twitter:
+                  type: string
+                  description: The candidate’s campaign Twitter.
+                instagram:
+                  type: string
+                  description: The candidate’s campaign Instagram.
+                youtube:
+                  type: string
+                  description: The candidate’s campaign YouTube.
+                mailingAddress:
+                  type: string
+                  description: The candidate’s campaign mailing address.
+                phone:
+                  type: string
+                  description: The candidate’s campaign phone number.
+            personal:
+              type: object
+              properties:
+                website:
+                  type: string
+                  description: The candidate’s personal website.
+                facebook:
+                  type: string
+                  description: The candidate’s personal Facebook.
+                twitter:
+                  type: string
+                  description: The candidate’s personal Twitter.
+                instagram:
+                  type: string
+                  description: The candidate’s personal Instagram.
+                youtube:
+                  type: string
+                  description: The candidate’s personal YouTube.
+                linkedIn:
+                  type: string
+                  description: The candidate’s personal LinkedIn.
     contest:
       description: Information on the race for the specific office up for election, including the list of candidates and candidate information.
       type: object
@@ -857,7 +1677,13 @@ components:
           description: The ID of the contest.
         name:
           type: string
-          description: 'The name of the office  (ex: President).'
+          description: 'The name of the office  (ex: “President”).'
+        title:
+          type: string
+          description: Human readable title of the office (e.g. Senator)
+        body:
+          type: string
+          description: Label of legislative or judicial body to which the contest belongs
         level:
           type: string
           description: The level of the contest.
@@ -894,6 +1720,7 @@ components:
           - stateLegislativeLower
           - stateLegislativeUpper
           - stateSubdivision
+          - township
         contestType:
           type: string
           description: The type of contest.
@@ -907,124 +1734,87 @@ components:
         seatsUpForElection:
           type: string
           description: The number of seats up for election.
+        rankedChoice:
+          type: boolean
+          description: If the contest is conducted by ranked choice voting (RCV), then TRUE; else FALSE.
+        rankedChoiceExplainerURL:
+          type: string
+          description: Link to state or local election administrator website explaining how ranked choice voting works.
+        rankedChoiceRankNumber:
+          type: number
+          description: Number of candidates a voter can rank on a ballot in a Ranked Choice Election.
         hasPrimary:
           type: boolean
           description: For a general election, indicates if an associated primary election exists.
         primaryDate:
           type: string
           description: For a general election, provides the date of the associated primary election.
+        generalDate:
+          type: string
+        partisanPrimary:
+          type: string
+        partisanPrimaryExplainerUrl:
+          type: string
+          description: URL where voter can learn more about how to vote in the party primary contest.
+        partisanPrimaryExplainerEn:
+          type: string
+          description: English-language sentence explaining to voters how to vote in the party primary contest.
+        partisanPrimaryExplainerEs:
+          type: string
+          description: Spanish-language sentence explaining to voters how to vote in the party primary contest.
+        partisanPrimaryExplainerSharedId:
+          type: string
+          description: Hash for all contests (associated with the election) sharing the same guidance.
+        cancelled:
+          type: boolean
+          description: TRUE if contest does not appear on ballot due to a cancellation. Contests may be cancelled if the number of candidates filed is less than or equal to the number of positions up for election. Not all jurisdictions cancel contests under these circumstances as write-in votes may be allowed in some case
+        aboutOffice:
+          type: string
+          description: A brief summary of the role and responsibilities associated with an office.
         candidates:
           type: array
           items:
             $ref: '#/components/schemas/candidate'
           description: A list of candidates running for election for the contest.
-    candidate:
-      description: A representation of a candidate.
-      type: object
-      required:
-      - id
-      - fullName
-      - firstName
-      - lastName
-      - partyAffiliation
-      - isWriteIn
-      properties:
-        id:
-          type: string
-          description: The ID of the candidate.
-        fullName:
-          type: string
-          description: The full name of the candidate.
-        firstName:
-          type: string
-          description: The first name of the candidate.
-        lastName:
-          type: string
-          description: The last name of the candidate.
-        partyAffiliation:
-          type: array
-          description: Describes the party affiliation of the candidate.
-          items:
-            type: string
-        ballotpediaUrl:
-          type: string
-        status:
-          type: string
-        isWriteIn:
-          type: boolean
-          description: Indicates whether a candidate is a write-in candidate.
-        runningMateFullName:
-          type: string
-        runningMateTitle:
-          type: string
-        contact:
-          type: object
-          properties:
-            campaign:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: The candidates campaign email address.
-                website:
-                  type: string
-                  description: The candidates campaign website.
-                facebook:
-                  type: string
-                  description: The candidates campaign Facebook.
-                twitter:
-                  type: string
-                  description: The candidates campaign Twitter.
-                instagram:
-                  type: string
-                  description: The candidates campaign Instagram.
-                youtube:
-                  type: string
-                  description: The candidates campaign YouTube.
-                mailingAddress:
-                  type: string
-                  description: The candidates campaign mailing address.
-                phone:
-                  type: string
-                  description: The candidates campaign phone number.
-            personal:
-              type: object
-              properties:
-                website:
-                  type: string
-                  description: The candidates personal website.
-                facebook:
-                  type: string
-                  description: The candidates personal Facebook.
-                twitter:
-                  type: string
-                  description: The candidates personal Twitter.
-                instagram:
-                  type: string
-                  description: The candidates personal Instagram.
-                youtube:
-                  type: string
-                  description: The candidates personal YouTube.
-                linkedIn:
-                  type: string
-                  description: The candidates personal LinkedIn.
-    gatewayErrors:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
-    errors:
-      type: object
-      properties:
-        status:
-          type: integer
-        message:
-          type: array
-      required:
-      - status
-      - message
+  responses:
+    contentTooLargeError:
+      description: Content Too Large Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 413
+            message:
+            - Response size too large. Try again with a smaller pageSize.
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
   examples:
     elections:
       summary: Sample elections response
@@ -1066,7 +1856,7 @@ components:
 
                   An indefinitely confined voter does not need to provide a copy of Photo ID.
 
-                  Instead, the witness signature on the Absentee Ballot Certificate Envelope
+                  Instead, the witness’ signature on the Absentee Ballot Certificate Envelope
 
                   satisfies the Photo ID requirement. For all other absentee voters, you will
 
@@ -1243,7 +2033,7 @@ components:
                 answer: <div>You can look up where to vote the state website.</div>
               voteByMail:
                 question: How do I vote by mail?
-                answer: '   <div>In Wisconsin, any registered voter can request to get a ballot by mail. Fill out the <a href="https://elections.wi.gov/wec-form/absentee-ballot-request-el-121-121h-121s">mail ballot application</a> and mail or return it in person to your <a href="https://myvote.wi.gov/en-US/MyMunicipalClerk">local election office</a>. </div><h4>What should I do if I dont get my ballot? </h4><div>If you dont receive your ballot in the mail, then contact your <a href="https://myvote.wi.gov/en-US/MyMunicipalClerk">local election office</a>. </div><h4>How do I return my ballot? </h4><ul><li>Read the instructions carefully on how to mark and return your ballot. </li><li>You can return your ballot by mail or by visiting a dedicated drop off location. </li><li><a href="https://myvote.wi.gov/en-us/Vote-Absentee-Guide">Find a ballot drop off location near you</a>.</li><li>If you choose to return your ballot by mail, the <a href="https://about.usps.com/what/government-services/election-mail/">United States Postal Service (USPS)</a> recommends that voters mail their completed ballots at least one week before the due date. <a href="https://tools.usps.com/find-location.htm">Find a USPS location near you</a>.</li></ul><h4>What do I need to do if Ive moved? </h4><div>Whats on your ballot depends on where you live, so your voter registration is tied to your exact address. If youve moved, you need to re-register with your new address.</div> <br> <h4>How can I check the status of my ballot?</h4><div>You can check the status of your ballot on <a href="https://myvote.wi.gov/en-us/Track-My-Ballot">Wisconsins site</a>.</div>  '
+                answer: '   <div>In Wisconsin, any registered voter can request to get a ballot by mail. Fill out the <a href="https://elections.wi.gov/wec-form/absentee-ballot-request-el-121-121h-121s">mail ballot application</a> and mail or return it in person to your <a href="https://myvote.wi.gov/en-US/MyMunicipalClerk">local election office</a>. </div><h4>What should I do if I don’t get my ballot? </h4><div>If you don’t receive your ballot in the mail, then contact your <a href="https://myvote.wi.gov/en-US/MyMunicipalClerk">local election office</a>. </div><h4>How do I return my ballot? </h4><ul><li>Read the instructions carefully on how to mark and return your ballot. </li><li>You can return your ballot by mail or by visiting a dedicated drop off location. </li><li><a href="https://myvote.wi.gov/en-us/Vote-Absentee-Guide">Find a ballot drop off location near you</a>.</li><li>If you choose to return your ballot by mail, the <a href="https://about.usps.com/what/government-services/election-mail/">United States Postal Service (USPS)</a> recommends that voters mail their completed ballots at least one week before the due date. <a href="https://tools.usps.com/find-location.htm">Find a USPS location near you</a>.</li></ul><h4>What do I need to do if I’ve moved? </h4><div>What’s on your ballot depends on where you live, so your voter registration is tied to your exact address. If you’ve moved, you need to re-register with your new address.</div> <br> <h4>How can I check the status of my ballot?</h4><div>You can check the status of your ballot on <a href="https://myvote.wi.gov/en-us/Track-My-Ballot">Wisconsin’s site</a>.</div>  '
               whoCanVote:
                 question: Who can register to vote?
                 answer: '<div>To register in Wisconsin you must: <ul>  <li>be a citizen of the United States </li><li>be a resident of Wisconsin and have resided at the registration address for at least 28 days prior to the election</li><li>be 18 years old on or before Election Day</li><li>not have been convicted of treason, felony or bribery, or if you have, your civil rights have been restored after completion of your sentence or a pardon </li><li>not have been found by a court to be incapable of understanding the objective of the electoral process </li><li>not make or benefit from a bet or wage depending on the result of an election </li><li>not have voted at any other location, if registering on Election Day</li></ul></div>'
@@ -1252,7 +2042,7 @@ components:
                 answer: '<ul><li>Wisconsin offers <a href="https://myvote.wi.gov/en-us/RegisterToVote">online voter registration</a>.</li><li>You should know: you need a Wisconsin driver''s license or state ID card to use Wisconsin''s online voter registration system. The address where you''re registering needs to match the address the DMV has on file for you. If you don''t have a Wisconsin ID, you can still register by mail to vote.</li></ul> '
               byMailRegistration:
                 question: Can I submit voter registration forms by mail?
-                answer: '<div>Yes, you can print, complete and mail the <a href="https://www.eac.gov/assets/1/6/Federal_Voter_Registration_ENG.pdf">National Voter Registration Form</a> to register to vote in Wisconsin. <br><br>Heres some advice on how to complete the form:</div><ul><li>Box 6 - ID Number<ul><li><div>Provide your unexpired Wisconsin driver license or DOT-issued ID card number. </div><ul><li>If you do not have one of these ID numbers, provide the last four digits of your Social Security number (SSN).</li><li>If you do not have one of these ID numbers or SSN, you will still be able to register to vote. </li></ul><div>You must also provide Proof of Residence documentation when registering. All Proof of Residence documents must show your name and current residential address. Acceptable forms include but are not limited to:</div><ul><li>current and valid State of Wisconsin Driver License or State ID card</li><li>any official ID card or license issued by the Wisconsin government</li></ul><div>Find additional forms of proof of residence from the <a href="https://elections.wi.gov/Register">Wisconsin Election Commission</a>. </div></li></ul></li><li>Box 7 - Choice of Party: Wisconsin does NOT require that you register with a party to participate in partisan primary elections.</li><li>Box 8 - Race or Ethnic Group: Not required.</li><li>Review the "Who can register to vote?" section and check that you''re eligible.</li><li>Sign the form.</li><li>Send the completed form to your <a href="https://myvote.wi.gov/en-US/MyMunicipalClerk">local election office</a></li></ul><div></div><h4>What if I''m registering to vote for the first time in my jurisdiction and mailing this registration application?</h4><ul></ul>'
+                answer: '<div>Yes, you can print, complete and mail the <a href="https://www.eac.gov/assets/1/6/Federal_Voter_Registration_ENG.pdf">National Voter Registration Form</a> to register to vote in Wisconsin. <br><br>Here’s some advice on how to complete the form:</div><ul><li>Box 6 - ID Number<ul><li><div>Provide your unexpired Wisconsin driver license or DOT-issued ID card number. </div><ul><li>If you do not have one of these ID numbers, provide the last four digits of your Social Security number (SSN).</li><li>If you do not have one of these ID numbers or SSN, you will still be able to register to vote. </li></ul><div>You must also provide Proof of Residence documentation when registering. All Proof of Residence documents must show your name and current residential address. Acceptable forms include but are not limited to:</div><ul><li>current and valid State of Wisconsin Driver License or State ID card</li><li>any official ID card or license issued by the Wisconsin government</li></ul><div>Find additional forms of proof of residence from the <a href="https://elections.wi.gov/Register">Wisconsin Election Commission</a>. </div></li></ul></li><li>Box 7 - Choice of Party: Wisconsin does NOT require that you register with a party to participate in partisan primary elections.</li><li>Box 8 - Race or Ethnic Group: Not required.</li><li>Review the "Who can register to vote?" section and check that you''re eligible.</li><li>Sign the form.</li><li>Send the completed form to your <a href="https://myvote.wi.gov/en-US/MyMunicipalClerk">local election office</a></li></ul><div></div><h4>What if I''m registering to vote for the first time in my jurisdiction and mailing this registration application?</h4><ul></ul>'
               electionDayRegistration:
                 question: Can I register to vote on Election Day?
                 answer: Wisconsin <em>does</em> offer in person registration on Election Day.
@@ -1335,7 +2125,7 @@ components:
                 answer: '<div><a href="https://elections.wi.gov/">Elections Commission</a></div><ul><li><a href="https://www.google.com/maps/place/201%20West%20Washington%20Avenue,%20Second%20Floor%20Madison,%20WI%2053703">201 West Washington Avenue, Second Floor Madison, WI 53703</a></li><li>Telephone: <a href="tel:(608)%20266-8005">(608) 266-8005</a></li></ul>'
               localContactInfo:
                 question: How do I contact my local election office?
-                answer: ' Visit your states site to find your<strong> </strong><a href="https://myvote.wi.gov/en-US/MyMunicipalClerk">local election office</a>.'
+                answer: ' Visit your state’s site to find your<strong> </strong><a href="https://myvote.wi.gov/en-US/MyMunicipalClerk">local election office</a>.'
           - ocdId: ocd-division/country:us/state:ca/county:marin/school_district:novato_unified
             createdAt: '2023-02-22T15:54:43.000-05:00'
             updatedAt: '2023-03-05T23:31:00.000-05:00'
@@ -1385,11 +2175,11 @@ components:
                     description: null
               inPerson:
                 idRequiredAllVoters: false
-                idInstructions: 'If you choose to vote in person and youve voted in California
+                idInstructions: 'If you choose to vote in person and you’ve voted in California
 
-                  before, you dont need to show ID.<br><br>If youre a first time voter in a
+                  before, you don’t need to show ID.<br><br>If you’re a first time voter in a
 
-                  federal election who registered by mail and didnt include your drivers license
+                  federal election who registered by mail and didn’t include your driver’s license
 
                   number, California ID number, or the last four digits of your Social Security
 
@@ -1423,7 +2213,7 @@ components:
                   description: null
               online:
                 url: https://registertovote.ca.gov/?t=s
-                instructions: 'You should know: you will need a California-issued driver license or California identification card number, the last four digits of your Social Security number, and consent to the use of your DMV-stored digital signature to use Californias online voter registration system. If you dont have a California-issued ID or dont want to provide consent for the use of your digital signature, you can still register by mail to vote.'
+                instructions: 'You should know: you will need a California-issued driver license or California identification card number, the last four digits of your Social Security number, and consent to the use of your DMV-stored digital signature to use California’s online voter registration system. If you don’t have a California-issued ID or don’t want to provide consent for the use of your digital signature, you can still register by mail to vote.'
                 deadline:
                   date: '2023-02-20'
                   timestamp: null
@@ -1452,7 +2242,7 @@ components:
                 answer: null
               voteByMail:
                 question: How do I vote by mail?
-                answer: <div>California mails a ballot to every registered voter a few weeks before the election. Keep an eye on the mailbox, and be sure to mail it back or drop it in a drop-box before Election Day.</div><h4>What should I do if I dont get my ballot? </h4><div>If you dont receive your ballot in the mail, then contact your <a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/">local election office</a>. </div><h4>How do I return my ballot? </h4><ul><li>Read the instructions carefully on how to mark and return your ballot. After you have voted, insert your ballot in the envelope provided, making sure you complete all required information on the envelope.</li><li>You may return your voted ballot by mail, in person, or to a drop box. </li><li>If you are returning your ballot by mail, it must be postmarked on or before Election Day and received by your <a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/">local election office</a> no later than 7 days after Election Day. <a href="https://about.usps.com/what/government-services/election-mail/">USPS recommends</a> that voters mail their completed ballots at least one week before the due date. <a href="https://tools.usps.com/find-location.htm">Find a USPS location near you</a>.</li><li>If you are returning your ballot in person or dropping it in a drop box, it must be delivered no later than the close of polls at 8:00 p.m. on Election Day. Find your closest drop box on <a href="https://voterstatus.sos.ca.gov">California's site</a>.</li><li>Anyone may return your ballot for you, as long as they do not get paid on a per ballot basis. In order for your ballot to be counted, you must fill out the authorization section found on the outside of your ballot envelope. </li></ul><h4>What do I need to do if Ive moved? </h4><div>Whats on your ballot depends on where you live, so your voter registration is tied to your exact address. If youve moved, you need to re-register with your new address.</div><div> <h4>How can I check the status of my ballot?</h4><div>You can check the status of your ballot on <a href="https://www.sos.ca.gov/elections/ballot-status/wheres-my-ballot/">Californias site</a>.</div>  </div>
+                answer: <div>California mails a ballot to every registered voter a few weeks before the election. Keep an eye on the mailbox, and be sure to mail it back or drop it in a drop-box before Election Day.</div><h4>What should I do if I don’t get my ballot? </h4><div>If you don’t receive your ballot in the mail, then contact your <a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/">local election office</a>. </div><h4>How do I return my ballot? </h4><ul><li>Read the instructions carefully on how to mark and return your ballot. After you have voted, insert your ballot in the envelope provided, making sure you complete all required information on the envelope.</li><li>You may return your voted ballot by mail, in person, or to a drop box. </li><li>If you are returning your ballot by mail, it must be postmarked on or before Election Day and received by your <a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/">local election office</a> no later than 7 days after Election Day. <a href="https://about.usps.com/what/government-services/election-mail/">USPS recommends</a> that voters mail their completed ballots at least one week before the due date. <a href="https://tools.usps.com/find-location.htm">Find a USPS location near you</a>.</li><li>If you are returning your ballot in person or dropping it in a drop box, it must be delivered no later than the close of polls at 8:00 p.m. on Election Day. Find your closest drop box on <a href="https://voterstatus.sos.ca.gov">California's site</a>.</li><li>Anyone may return your ballot for you, as long as they do not get paid on a per ballot basis. In order for your ballot to be counted, you must fill out the authorization section found on the outside of your ballot envelope. </li></ul><h4>What do I need to do if I’ve moved? </h4><div>What’s on your ballot depends on where you live, so your voter registration is tied to your exact address. If you’ve moved, you need to re-register with your new address.</div><div> <h4>How can I check the status of my ballot?</h4><div>You can check the status of your ballot on <a href="https://www.sos.ca.gov/elections/ballot-status/wheres-my-ballot/">California’s site</a>.</div>  </div>
               keyChanges:
                 question: What key changes should voters know about?
                 answer: <div>Key changes to voting requirements in California:</div><ul><li>California now conducts all elections primarily by mail. All active registered voters will receive a mail ballot.</li></ul><div>Learn more by visiting the <a href="https://www.sos.ca.gov/elections/">California Secretary of State</a>'s website or contacting your <a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/">local election office</a>.</div>
@@ -1461,10 +2251,10 @@ components:
                 answer: <div>To register in California you must:<ul>  <li>be a United States citizen</li><li>be a resident of California</li><li>be at least 18 years old or older on Election Day </li><li>not be currently serving a state or federal prison term for the conviction of a felony</li><li>not be currently found to be mentally incompetent to vote by a court</li></ul></div>
               onlineVoterRegistration:
                 question: Can I register to vote online?
-                answer: '<ul><li>California offers <a href="https://registertovote.ca.gov/?t=s">online voter registration</a>.</li><li>You should know: you will need a California-issued driver license or California identification card number, the last four digits of your Social Security number, and consent to the use of your DMV-stored digital signature to use Californias online voter registration system. If you dont have a California-issued ID or dont want to provide consent for the use of your digital signature, you can still register by mail to vote.<br><br><br></li></ul> '
+                answer: '<ul><li>California offers <a href="https://registertovote.ca.gov/?t=s">online voter registration</a>.</li><li>You should know: you will need a California-issued driver license or California identification card number, the last four digits of your Social Security number, and consent to the use of your DMV-stored digital signature to use California’s online voter registration system. If you don’t have a California-issued ID or don’t want to provide consent for the use of your digital signature, you can still register by mail to vote.<br><br><br></li></ul> '
               byMailRegistration:
                 question: Can I submit voter registration forms by mail?
-                answer: '<div><div><h4>Use the National Voter Registration Form</h4><ol><li>Print and fill out the <a href="https://www.eac.gov/assets/1/6/Federal_Voter_Registration_ENG.pdf"> National Voter Registration Form.</a></li><li>Box 6 - ID Number: When you register to vote, you must provide your California driver''s license or California identification card number, if you have one. If you do not have a driver''s license or ID card, you must provide the last four digits of your Social Security number (SSN). If youdo not include this information, you will be required to provide identification when you vote if it is your first time voting in a federal election.</li><li>Box 7 - Choice of Party: California does NOT require that you register with a party to participate in partisan primary elections. However some parties do not allow unaffiliated voters to participate in their partys presidential, local, or county committee primary elections.</li><li>Box 8 - Race or Ethnic Group: Leave blank. This information is not required.</li><li>Review the "Who can register to vote?" section above and check that you''re eligible.</li><li>Sign the form.</li><li>Send the completed form to your <a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/">local election office</a></li><li>If you are registering to vote for the first time in your jurisdiction and are mailing this registration application, Federal law requires you to show proof of identification the first time you vote. Proof of identification includes:<ul>  <li>A current and valid photo identification or</li><li>A current utility bill, bank statement, government check, paycheck or government document that shows your name and address.</li><li>More information <a href="https://www.eac.gov/sites/default/files/eac_assets/1/6/Federal_Voter_Registration_ENG.pdf">here</a>.</li></ul></li></ol></div></div>'
+                answer: '<div><div><h4>Use the National Voter Registration Form</h4><ol><li>Print and fill out the <a href="https://www.eac.gov/assets/1/6/Federal_Voter_Registration_ENG.pdf"> National Voter Registration Form.</a></li><li>Box 6 - ID Number: When you register to vote, you must provide your California driver''s license or California identification card number, if you have one. If you do not have a driver''s license or ID card, you must provide the last four digits of your Social Security number (SSN). If youdo not include this information, you will be required to provide identification when you vote if it is your first time voting in a federal election.</li><li>Box 7 - Choice of Party: California does NOT require that you register with a party to participate in partisan primary elections. However some parties do not allow unaffiliated voters to participate in their party’s presidential, local, or county committee primary elections.</li><li>Box 8 - Race or Ethnic Group: Leave blank. This information is not required.</li><li>Review the "Who can register to vote?" section above and check that you''re eligible.</li><li>Sign the form.</li><li>Send the completed form to your <a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/">local election office</a></li><li>If you are registering to vote for the first time in your jurisdiction and are mailing this registration application, Federal law requires you to show proof of identification the first time you vote. Proof of identification includes:<ul>  <li>A current and valid photo identification or</li><li>A current utility bill, bank statement, government check, paycheck or government document that shows your name and address.</li><li>More information <a href="https://www.eac.gov/sites/default/files/eac_assets/1/6/Federal_Voter_Registration_ENG.pdf">here</a>.</li></ul></li></ol></div></div>'
               electionDayRegistration:
                 question: Can I register to vote on Election Day?
                 answer: California <em>does</em> offer in person registration on Election Day.
@@ -1476,7 +2266,7 @@ components:
                 answer: <div><div class="subsection"><span content="Registration deadlines"></span><span content="Registration deadlines"></span><span><span content="California"></span></span><span class="bold" content="2000-02-02"></span><span class="bold" content="2000-02-02"></span><h4 class="bold">Registration deadlines</h4><ul><li><span content="Registration deadlines"></span><span><a href="https://www.marincounty.org/depts/rv/election-info/march-7-2023/page-data/tabs-collection/vote-centers-and-drop-boxes/votecenters"><span>In person during early voting</span></a><span>:</span><span content="2023-02-06">Feb 6 - <span content="2023-03-06">Mar 6</span></span><span><span content="California"></span></span></span></li><li><span content="Registration deadlines"></span><span><a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/"><span>In-person at local election office on Election Day</span></a><span>:</span><span content="2023-03-07"><span content="2023-03-07">Mar 7</span></span><span><span content="California"></span></span></span></li><li><span content="Registration deadlines"></span><span><a href="https://registertovote.ca.gov/?t=s"><span>Online</span></a><span>:</span><span content="2023-02-20"><span content="2023-02-20">Feb 20</span></span><span><span content="California"></span></span></span></li><li><span content="Registration deadlines"></span><span><a href="https://www.sos.ca.gov/elections/voter-registration"><span>By mail (postmarked by)</span></a><span>:</span><span content="2023-02-20"><span content="2023-02-20">Feb 20</span></span><span><span content="California"></span></span></span></li></ul></div><div class="subsection"><span content="Voting deadlines"></span><span content="Voting deadlines"></span><span><span content="California"></span></span><span class="bold" content="2000-02-02"></span><span class="bold" content="2000-02-02"></span><h4 class="bold">Voting deadlines</h4><ul><li><span content="Voting deadlines"></span><span><a href="https://www.marincounty.org/depts/rv/election-info/march-7-2023/page-data/tabs-collection/vote-centers-and-drop-boxes/votecenters"><span>Early voting</span></a><span>:</span><span content="2023-02-06">Feb 6 - <span content="2023-03-06">Mar 6</span></span><span><span content="California"></span></span></span></li></ul></div></div>
               voterId:
                 question: Do I need to bring an ID to vote in person?
-                answer: '<div>If you choose to vote in person and youve voted in California before, you dont need to show ID.</div><br><div>If youre a first time voter in a federal election who registered by mail, and didnt include your drivers license number, California ID number, or the last 4 digits of your Social Security number on your registration, you may be asked to provide ID when you vote.</div><br><div>Acceptable forms include:<ul>  <li> copy of a recent utility bill</li><li> sample ballot booklet you received from your county elections office or another document sent to you by a government agency</li><li> US passport</li><li> driver license</li><li> official state identification card</li><li> student identification card showing your name and photograph</li></ul></div><br><div>Voters without ID: If you are unable to provide ID, you will be able to vote a provisional ballot.</div>'
+                answer: '<div>If you choose to vote in person and you’ve voted in California before, you don’t need to show ID.</div><br><div>If you’re a first time voter in a federal election who registered by mail, and didn’t include your driver’s license number, California ID number, or the last 4 digits of your Social Security number on your registration, you may be asked to provide ID when you vote.</div><br><div>Acceptable forms include:<ul>  <li> copy of a recent utility bill</li><li> sample ballot booklet you received from your county elections office or another document sent to you by a government agency</li><li> US passport</li><li> driver license</li><li> official state identification card</li><li> student identification card showing your name and photograph</li></ul></div><br><div>Voters without ID: If you are unable to provide ID, you will be able to vote a provisional ballot.</div>'
               militaryAndOverseas:
                 question: How do I vote if I'm in the military or live overseas?
                 answer: '<div>Active-duty military, their families, and overseas citizens can register to vote and request their absentee ballot using the Federal Post Card Application (FPCA). The FPCA process is done by mail, but your state may offer other options to request and return ballots. Please <a href="https://www.fvap.gov/search-offices">contact your local election office</a> for more information about delivery and return methods, including email, fax, and state online portals. To follow the FPCA process:</div><ol><li>Fill out the <a href="https://www.fvap.gov/fpca-privacy-notice">Federal Post Card Application (FPCA)</a>, or <a href="https://www.fvap.gov/uploads/FVAP/Forms/fpca.pdf">download a copy</a>. Your local election office may have questions, so please provide an email address or phone number where they can reach you.</li><li>Send the application to your <a href="https://www.fvap.gov/search-offices">local election office</a>.</li><li>It is never too early to submit an FPCA! Please do so as soon as possible.</li><li>Please fill out and send back your ballot as soon as you receive it.</li><li>States begin mailing absentee ballots at least 45 days before Election Day. If you haven''t received your ballot by 30 days before Election Day, contact your <a href="https://www.fvap.gov/search-offices">local election office</a>.</li></ol><div>If after submitting your FPCA, your ballot does not arrive, contact your local election office first. Then: </div><ul><li>You can still vote using the <a href="https://www.fvap.gov/fwab-privacy-notice">Federal Write-In Absentee Ballot (FWAB)</a>. Print, sign, and mail your FWAB to your <a href="https://www.fvap.gov/search-offices">local election office</a>.</li><li>If you mail a FWAB and then receive your regular absentee ballot, you should complete and mail your absentee ballot also. Election officials will ensure that only one ballot is counted.</li></ul><div>The <a href="https://www.fvap.gov/california">Federal Voting Assistance Program</a> offers additional information on military and overseas voting in California. You can also call <a href="tel:+18004388683">1-800-438-VOTE</a> (8683) or email <a href="mailto:vote@fvap.gov">vote@fvap.gov</a></div>'
@@ -1485,7 +2275,7 @@ components:
                 answer: You can look up your voter registration record and verify that your information is correct using <a href="https://voterstatus.sos.ca.gov">California's voter registration lookup tool</a>.
               localContactInfo:
                 question: How do I contact my local election office?
-                answer: ' Visit your states site to find your<strong> </strong><a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/">local election office</a>.'
+                answer: ' Visit your state’s site to find your<strong> </strong><a href="https://www.sos.ca.gov/elections/voting-resources/county-elections-offices/">local election office</a>.'
         pagination:
           totalRecordCount: 2
           currentPage: 1
@@ -1495,3 +2285,6 @@ components:
       type: apiKey
       in: header
       name: X-API-KEY
+x-refined-from:
+- democracy-works-api-v1-openapi.json
+- democracy-works-api-v2-openapi.json

@@ -1,0 +1,221 @@
+openapi: 3.2.0
+info:
+  title: Democracy Works Election Authorities API
+  version: 1.0.0
+  description: '# Overview
+
+    Democracy Works collects data about elections that happen in the US.'
+servers:
+- description: Democracy Works API
+  url: https://api.democracy.works
+tags:
+- name: Election Authorities
+paths:
+  /election-authorities/state-urls/{stateAbbreviation}:
+    get:
+      summary: State authority URLs
+      description: '```bash
+
+        curl -H "Accept: application/json" \
+
+        -H "Authorization: apikey $YOUR_API_KEY" \
+
+        "https://api.democracy.works/election-authorities/state-urls/ny"
+
+        ```
+
+
+        URLs are not required, and their availability depends on the state. The
+
+        Authority lookup URLs may be the same, depending on the state.'
+      parameters:
+      - in: path
+        name: stateAbbreviation
+        required: true
+        schema:
+          type: string
+          example: ny
+          description: 'The lowercase abbreviation of the state you want to retrieve information for.
+
+            '
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateAuthorityUrlResponse'
+      tags:
+      - Election Authorities
+      operationId: getElectionAuthoritiesStateUrlsByStateAbbreviation
+      x-operation-id-source: derived
+  /election-authorities/states:
+    get:
+      summary: All state authorities (contact information)
+      description: '```bash
+
+        curl -H "Accept: application/json" \
+
+        -H "Authorization: apikey $YOUR_API_KEY" \
+
+        "https://api.democracy.works/election-authorities/states"
+
+        ```
+
+
+        The response will be an object with a list of Authorities. Each
+
+        Authority will have a `district-division`, but we recommend that you
+
+        disregard and get that information from the Election. As a reminder, the
+
+        Election will have `voter-registration-methods` and the `voting-methods`
+
+        copied from the State and Local Authorities for the methods offered in
+
+        that particular Election, along with dates and deadlines. The only thing
+
+        the `district-division` has that the Election does not is the
+
+        `voter-registration-status-url`, which would be simpler to obtain from
+
+        the “State URLs” resource.'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StateAuthorityResponse'
+      tags:
+      - Election Authorities
+      operationId: getElectionAuthoritiesStates
+      x-operation-id-source: derived
+components:
+  schemas:
+    StateAuthorityAddress:
+      type: object
+      properties:
+        street:
+          type: string
+          description: 'Street address for state election office
+
+            '
+        city:
+          type: string
+          description: 'City for state election office
+
+            '
+        state:
+          type: string
+          description: 'State abbreviation
+
+            '
+        zip:
+          type: string
+          description: 'Zip code for state election office
+
+            '
+    StateAuthorityResponse:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: 'Unique ID, for internal use only.
+
+            '
+        types:
+          type: array
+          items:
+            type: string
+            enum:
+            - election
+            - registration
+            - none
+          description: "Describes whether the state handles voter registration form and/or\nballot request application processing.\n\n* `election`: state election authority processes ballot request\n  applications\n* `registration`: state election authority processes voter registration\n  applications\n* `none`: voter registration and ballot request applications are not\n  done at the state level\n"
+        physical-address:
+          $ref: '#/components/schemas/StateAuthorityAddress'
+          description: 'Lists each element of the state election office''s physical address.
+
+            '
+        email:
+          type: string
+          format: email
+          description: 'Email address for the state election office.
+
+            '
+        phone:
+          type: string
+          description: 'Phone number for the state election office.
+
+            '
+        mailing-address:
+          $ref: '#/components/schemas/StateAuthorityAddress'
+          description: ''
+        official-title:
+          type: string
+          description: "State election office name. \n"
+        instructions:
+          type: object
+          description: ''
+          properties:
+            party:
+              type: string
+        local-election-authority-lookup-url:
+          type: string
+          format: uri
+          description: ''
+        polling-place-url:
+          type: string
+          format: uri
+          description: 'Provides a link to the state''s polling place lookup page.
+
+            '
+        polling-place-url-shortened:
+          type: string
+          format: uri
+          example: https://tvote.org/asdf123
+          description: 'Shortened version of `polling-place-url`.
+
+            '
+        office-name:
+          type: string
+          description: 'Full state name
+
+            '
+        homepage-url:
+          type: string
+          format: uri
+          description: "Link to the state election website. \n"
+    StateAuthorityUrlResponse:
+      type: object
+      properties:
+        voter-registration-status-url:
+          type: string
+          format: uri
+          description: 'URL for voter to check their status
+
+            '
+        voter-registration-status-url-shortened:
+          type: string
+          format: uri
+          description: 'Shortened URL for a voter to check their status
+
+            '
+        local-election-authority-lookup-url:
+          type: string
+          format: uri
+          example: https://tvote.org/abcd123
+          description: 'URL for voter to contact their local Election Authority
+
+            '
+        local-reg-authority-lookup-url:
+          type: string
+          format: uri
+          description: 'URL for voter to contact their local Registration Authority
+
+            '
