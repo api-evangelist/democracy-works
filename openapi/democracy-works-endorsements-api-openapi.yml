@@ -106,55 +106,62 @@ paths:
       tags:
       - Endorsements
 components:
-  responses:
-    contentTooLargeError:
-      description: Content Too Large Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 413
-            message:
-            - Response size too large. Try again with a smaller pageSize.
-    badRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
-    notFoundError:
-      description: Not Found Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 404
-            message:
-            - Object not found.
-    tooManyRequestsError:
-      description: TooManyRequestsError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/gatewayErrors'
-          example:
-            message: Too Many Requests
+  schemas:
+    endorsement:
+      description: Information regarding an endorsement for a candidate or ballot measure.
+      type: object
+      required:
+      - id
+      - name
+      - source
+      properties:
+        id:
+          type: string
+          description: The ID of the endorsement.
+        type:
+          type: string
+          description: The type of endorsement
+        name:
+          type: string
+          description: The name of the endorsement
+        source:
+          type: string
+          description: Origin of the endorsement
+        position:
+          type: string
+          description: Indicates whether endorsement recommends a yes or no vote on a ballot measure endorsement
+          enum:
+          - 'yes'
+          - 'no'
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    pagination:
+      type: object
+      properties:
+        totalRecordCount:
+          type: number
+          description: Total records found for the given query.
+        currentPage:
+          type: number
+          description: The page of records returned.
+        pageSize:
+          type: number
+          description: The number of records returned.
   examples:
     cEndorsements:
       summary: Sample endorsements response by candidateId
@@ -210,62 +217,55 @@ components:
         name: Name of the Organization
         source: website
         position: 'yes'
-  schemas:
-    pagination:
-      type: object
-      properties:
-        totalRecordCount:
-          type: number
-          description: Total records found for the given query.
-        currentPage:
-          type: number
-          description: The page of records returned.
-        pageSize:
-          type: number
-          description: The number of records returned.
-    gatewayErrors:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
-    errors:
-      type: object
-      properties:
-        status:
-          type: integer
-        message:
-          type: array
-      required:
-      - status
-      - message
-    endorsement:
-      description: Information regarding an endorsement for a candidate or ballot measure.
-      type: object
-      required:
-      - id
-      - name
-      - source
-      properties:
-        id:
-          type: string
-          description: The ID of the endorsement.
-        type:
-          type: string
-          description: The type of endorsement
-        name:
-          type: string
-          description: The name of the endorsement
-        source:
-          type: string
-          description: Origin of the endorsement
-        position:
-          type: string
-          description: Indicates whether endorsement recommends a yes or no vote on a ballot measure endorsement
-          enum:
-          - 'yes'
-          - 'no'
+  responses:
+    contentTooLargeError:
+      description: Content Too Large Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 413
+            message:
+            - Response size too large. Try again with a smaller pageSize.
+    notFoundError:
+      description: Not Found Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 404
+            message:
+            - Object not found.
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

@@ -211,46 +211,316 @@ paths:
       tags:
       - Authorities
 components:
-  responses:
-    contentTooLargeError:
-      description: Content Too Large Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 413
-            message:
-            - Response size too large. Try again with a smaller pageSize.
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
-    badRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
-    tooManyRequestsError:
-      description: TooManyRequestsError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/gatewayErrors'
-          example:
-            message: Too Many Requests
   examples:
+    allAuthorities:
+      summary: Sample authorities response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+
+        The first authority is a state authority with all fields populated for demonstration purposes.
+
+
+        The second authority is a local authority.
+
+
+        Note that state and local authorities will both be returned by this endpoint; local authorities will only return required fields, plus an extra `isRegistrationContact` field that is not returned on state authorities.
+
+        '
+      value:
+        data:
+          authorities:
+          - ocdId: ocd-division/country:us/state:al
+            officeName: Alabama
+            officialTitle: Office of the Secretary of State
+            homepageUrl: https://sos.alabama.gov/alabama-votes
+            pollingLocationUrl: https://myinfo.alabamavotes.gov/voterview
+            votingWithDisabilitiesUrl: https://www.sos.alabama.gov/alabama-votes/voter/assistance-disability
+            votingWithPastConvictionsUrl: https://www.sos.alabama.gov/sites/default/files/Voting-Rights-Final-Version.pdf
+            canonicalUrl: https://staging.voting.democracy.works/en/vote/al.html
+            partyInstructions: If you choose not to declare a political preference at the primary election, you will not be eligible to vote in any political party’s primary election. You are, however, still eligible to vote on any proposed constitutional amendments that are up for a vote.
+            updatedAt: '2023-12-05T10:05:43.853825+00:00'
+            timezone: Central
+            secondaryTimezone: Eastern
+            localElectionAuthorityOfficeAlias: Absentee Election Manager
+            separateRegistrationAndElectionAuthorities: true
+            localElectionAuthorityName: Local Authority
+            localRegistrationAuthorityName: Board of Registrars
+            localRegistrationAuthorityLookupUrl: https://www.sos.alabama.gov/city-county-lookup/bor
+            localElectionAuthorityLookupUrl: https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager
+            registrationAuthorityLevel: county
+            electionAuthorityLevel: county
+            contact:
+              phone: (334) 242-7210
+              email: alavoter@vote.alabama.gov
+              physicalAddress:
+                street: 600 Dexter Ave, Suite E-206
+                city: Montgomery
+                state: AL
+                zip: '36130'
+              mailingAddress:
+                street: P. O. Box 5616
+                city: Montgomery
+                state: AL
+                zip: 36103-5616
+            voting:
+              inPersonVotingAvailable: true
+              mailBallotsSentAutomatically: false
+              inPerson:
+                idRequiredAllVoters: true
+                idInstructions: 'You will need to show photo ID to vote in Alabama.<br>Acceptable
+
+                  forms of valid photo ID include: Alabama driver''s license (may be expired up
+
+                  to 60 days); Alabama non-driver''s ID card (may be expired up to 60 days); Alabama
+
+                  photo voter ID card; digital driver''s license or non-driver ID issued by the
+
+                  Alabama Law Enforcement Agency; photo ID card issued by Alabama or any other
+
+                  state (examples include AL Department of Corrections Release - Temporary ID,
+
+                  AL Movement/Booking Sheet from Prison/Jail System, or a pistol permit); federal
+
+                  government issued ID; US passport; employee ID card issued by the federal government,
+
+                  the State of Alabama, county, municipality, board or other entity in Alabama;
+
+                  student or employee ID issued by a public or private college or university in
+
+                  Alabama; US military ID; valid tribal ID<br><br>Voters without ID: If you are
+
+                  unable to provide ID, you will be able to vote a provisional ballot. In order
+
+                  for your ballot to be counted, you must provide your ID, including your address
+
+                  and your telephone number, to the board of registrars no later than 5:00 P.M.
+
+                  on the Friday following the election. If you fail to provide ID to the board
+
+                  of registrars by that time, your ballot will not be counted. In addition, voters
+
+                  who do not show valid photo ID at the polls can vote a regular ballot if they
+
+                  are positively identified by two election officials as a voter on the poll list
+
+                  who is eligible to vote and the election officials sign a sworn affidavit.
+
+                  '
+              early:
+                supported: false
+                excuseRequired: false
+                alias: early vote
+              byMail:
+                ballotApplicationOnline: https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting
+                returnByMailUrl: https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting
+                eligibilityUrl: https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting
+                returnInPersonUrl: https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting
+                excuseRequired: true
+                excuses:
+                - excuse: absence
+                  example: I expect to be out of the county or the state on election day.
+                - excuse: illnessDisability
+                  example: I am physically incapacitated and will not be able to vote in person on election day.
+                - excuse: illnessAgeDisability
+                  example: 'I have a physical illness or infirmity which prevents my attendance at the polls. I am unable to access my assigned polling place due to a neurological, musculoskeletal, respiratory (including speech organs), cardiovascular, or other life-altering disorder that affects my ability to perform manual tasks, stand for any length of time, walk unassisted, see, hear or speak and: a) I am an elderly voter aged 65 or older; or b) I am a voter with a disability.'
+                - excuse: employment
+                  example: I expect to work a shift which has at least ten (10) hours that coincide with the polling hours at my regular polling place.
+                - excuse: student
+                  example: I am enrolled as a student at an educational institution located outside the county of my personal residence and am therefore unable to vote at my usual polling place on election day.
+                - excuse: uocava
+                  example: I am a member of, or a spouse or dependent of a member of, the Armed Forces of the United States or am otherwise similarly qualified to vote absentee pursuant to the Uniformed and Overseas Citizens Absentee Voting Act, 52 U.S.C. § 20302.
+                - excuse: electionWorker
+                  example: I have been appointed as an election officer at a polling place which is not my regular polling place.
+                - excuse: caregiver
+                  example: I am a caregiver for a family member to the second degree of kinship by affinity or consanguinity and the family member is confined to his or her home.
+                - excuse: incarcerated
+                  example: I am currently incarcerated in prison or jail and have not been convicted of a felony involving moral turpitude.
+                ballotTrackingUrl: https://myinfo.alabamavotes.gov/voterview
+                ballotApplicationDownload: https://www.sos.alabama.gov/alabama-votes/absentee-ballot-applications
+                idInstructions: ID is required for all voters.
+                alias: absentee
+            registration:
+              statusUrl: https://myinfo.alabamavotes.gov/voterview
+              formUrl: https://www.sos.alabama.gov/sites/default/files/voter-pdfs/nvra-2.pdf
+              noRegistrationRequiredInstructions: You cannot vote without valid registration.
+              methods:
+              - byMail
+              - online
+              byMail:
+                supported: true
+                url: https://www.sos.alabama.gov/alabama-votes/voter/register-to-vote
+                forms: nvrf
+                raceFieldRequired: false
+                raceFieldInstructions: You are required to fill in this box; however, your application will not be rejected if you fail to do so.
+                idInstructions: If you have one, you must provide your Alabama driver's license number or Alabama non-driver's identification card number. If you do not have an Alabama driver's license or non-driver's identification card, you must provide the last four digits of your Social Security number. If you have not been issued any of these numbers you must write the word "NONE" and a unique identifier will be provided for you.
+                signatureInstructions: 'To register in Alabama you must: <br>be a citizen of the United States<br>be a resident of Alabama and your county at the time of registration <br>be 18 years old on or before Election Day<br>not be barred from voting by reason of a disqualifying felony conviction, or if you have been convicted, you must have had your civil rights restored. You can find the list of disqualifying felonies on the Secretary of State’s website here at: <a href="http://www.sos.alabama.gov/mtfelonies" target="_blank">sos.alabama.gov/mtfelonies</a><br>not have been declared mentally incompetent in a court<br>swear or affirm to "support and defend the Constitution of the U.S. and the State of Alabama and further disavow any belief or affiliation with any group which advocates the overthrow of the governments of the U.S. or the State of Alabama by unlawful means and that the information contained herein is true"'
+                citizenInstructions: You must be a citizen to vote in Alabama.
+                newVoterInstructions: 'If you are registering to vote for the first time in your jurisdiction and are mailing this registration application, federal law requires you to show proof of identification the first time you vote. Proof of identification includes: current and valid photo identification or current utility bill, bank statement, government check, paycheck or government document that shows your name and address. <br>More information <a href="https://www.eac.gov/sites/default/files/eac_assets/1/6/Federal_Voter_Registration_ENG.pdf">here</a>.'
+              online:
+                supported: true
+                instructions: 'You should know: you need an Alabama driver''s license or non-driver
+
+                  ID to use Alabama''s online voter registration system. If you don''t have an
+
+                  Alabama-issued ID, you can still register by mail to vote.
+
+                  '
+                url: https://www.alabamainteractive.org/sos/voter_registration/voterRegistrationWelcome.action
+              inPerson:
+                supported: false
+                electionDayInstructions: You cannot register to vote in person on Election Day in Alabama.
+                advanceUrl: https://www.sos.alabama.gov/alabama-votes/voter-registration/general-info?_ga=2.13156215.1931915915.1655313501-640998901.1644592274
+              parties:
+              - partyLabelEn: Democratic
+                partyLabelEs: Demócrata
+                partyPhrasingEn: Democratic Party
+                partyPhrasingEs: Partido Demócrata
+              - partyLabelEn: Republican
+                partyLabelEs: Republicano
+                partyPhrasingEn: Republican Party
+                partyPhrasingEs: Partido Republicano
+            youthRegistration:
+              url: https://www.sos.alabama.gov/alabama-votes/youth-voter-registration
+              formUrl: https://www.sos.alabama.gov/alabama-votes/youth-voter-registration
+              supported: byElection
+              methods: online,by-mail,in-person
+              onlineInstructions: 'To register using the Alabama online voter registration system,
+
+                you are required to provide ONE of the following valid ID numbers: Alabama Driver''s
+
+                License; Alabama Non-Driver''s Identification card<br><br>If you don’t have an
+
+                Alabama-issued ID, you can still submit a voter registration application by mail
+
+                or in person.
+
+                '
+              inPersonInstructions: 'You can complete a voter registration application in person at your local County Board of Registrars in Alabama. <br><br>You can also obtain a voter registration application in person at any of the following public agencies in Alabama: driver''s licensing office; county and select municipal public libraries; public four-year universities and select private four-year universities<br><br>You can find a list of locations that provide voter registration services and voter registration application on the <a href="https://www.sos.alabama.gov/alabama-votes/voter-registration/general-info">Alabama Secretary of State’s</a> website.'
+              byMailInstructions: When submitting your application by mail in Alabama, you are required to provide your Alabama Driver’s License number or Alabama Non-Driver ID number. If you do not have one, you are required to provide the last four digits of your Social Security number. If you have not been issued any of these numbers, check the box that indicates you do not have an ID number. You may send with your application a copy of your valid photo ID.
+              eligibilityAge: '18'
+              statusAvailability: Unknown
+            questionAndAnswer:
+              whoCanVote:
+                question: Who can register to vote?
+                answer: '<div>To register in Alabama you must: <ul>  <li>be a citizen of the United States</li><li>be a resident of Alabama and your county at the time of registration </li><li>be 18 years old on or before Election Day</li><li>not be barred from voting by reason of a disqualifying felony conviction, or if you have been convicted, you must have had your civil rights restored. You can find the list of disqualifying felonies on the Secretary of State’s website here at: <a href="http://www.sos.alabama.gov/mtfelonies" target="_blank">sos.alabama.gov/mtfelonies</a></li><li>not have been declared mentally incompetent in a court</li><li>swear or affirm to "support and defend the Constitution of the U.S. and the State of Alabama and further disavow any belief or affiliation with any group which advocates the overthrow of the governments of the U.S. or the State of Alabama by unlawful means and that the information contained herein is true"</li></ul></div>'
+              byMailRegistration:
+                question: Can I submit voter registration forms by mail?
+                answer: '<div><div><h4>Use the National Voter Registration Form</h4><ol><li>Print and fill out the <a href="https://www.eac.gov/sites/default/files/eac_assets/1/6/Federal_Voter_Registration_ENG.pdf"> National Voter Registration Form.</a></li><li>Box 6 - ID Number: If you have one, you must provide your Alabama driver''s license number or Alabama non-driver''s identification card number. If you do not have an Alabama driver''s license or non-driver''s identification card, you must provide the last four digits of your Social Security number. If you have not been issued any of these numbers you must write the word "NONE" and a unique identifier will be provided for you.</li><li>Box 7 - Choice of Party: If you choose not to declare a political preference at the primary election, you will not be eligible to vote in any political party’s primary election. You are, however, still eligible to vote on any proposed constitutional amendments that are up for a vote.</li><li>Box 8 - Race or Ethnic Group: You are required to fill in this box; however, your application will not be rejected if you fail to do so.</li><li>Review the "Who can register to vote?" section above and check that you''re eligible.</li><li>Sign the form.</li><li>Send the completed form to your <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a></li><li>If you are registering to vote for the first time in your jurisdiction and are mailing this registration application, federal law requires you to show proof of identification the first time you vote. Proof of identification includes: current and valid photo identification or current utility bill, bank statement, government check, paycheck or government document that shows your name and address. <ul>  <li>More information <a href="https://www.eac.gov/sites/default/files/eac_assets/1/6/Federal_Voter_Registration_ENG.pdf">here</a>.</li></ul></li></ol></div></div>'
+              electionDayRegistration:
+                question: Can I register to vote on Election Day?
+                answer: Alabama <em>does not</em> offer registration on Election Day.
+              inPersonRegistration:
+                question: Can I submit voter registration forms in person?
+                answer: <ul><li>You can also register to vote in person. Contact your <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a> for information on when and where to register to vote.</li><li>Learn more by visiting the <a href="https://sos.alabama.gov/alabama-votes">Alabama Office of the Secretary of State</a>'s website or contacting your <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a>.</li></ul>
+              youthRegistrationEligibility:
+                question: Can I register to vote before I turn 18?
+                answer: ' You can register to vote in Alabama before you turn 18 if you:<ul>  <li> are at least 18 years old on or before Election Day</li><li> are a citizen of the United States</li><li> live in Alabama</li><li> have not been convicted of a disqualifying felony (or have had rights restored)</li><li> have not been legally declared "mentally incompetent" by a court</li></ul><br>You must be at least 18 years old to vote. <br> '
+              youthInPersonRegistration:
+                question: Can I complete a voter registration application in person before I turn 18?
+                answer: <a href="https://www.sos.alabama.gov/alabama-votes/voter-registration/general-info?_ga=2.13156215.1931915915.1655313501-640998901.1644592274">Yes, you can learn more about registering to vote in person on the Alabama Office of the Secretary of State website</a>. You can complete a voter registration application in person at your local County Board of Registrars in Alabama. <br>You can also obtain a voter registration application in person at any of the following public agencies in Alabama:<ul>  <li> driver's licensing office</li><li> county and select municipal public libraries</li><li> public four-year universities and select private four-year universities</li></ul><br>You can find a list of locations that provide voter registration services and voter registration application on the <a href="https://www.sos.alabama.gov/alabama-votes/voter-registration/general-info">Alabama Secretary of State’s</a> website.
+              youthOnlineVoterRegistration:
+                question: Can I submit a voter registration application online before I turn 18?
+                answer: ' <a href="https://www.alabamainteractive.org/sos/voter_registration/voterRegistrationWelcome.action">Yes, you can register online on the Alabama Office of the Secretary of State website</a>. To register using the Alabama online voter registration system, you are required to provide ONE of the following valid ID numbers:<ul>  <li> Alabama Driver''s License</li><li> Alabama Non-Driver''s Identification card</li></ul><br>If you don’t have an Alabama-issued ID, you can still submit a voter registration application by mail or in person.  '
+              youthByMailRegistration:
+                question: Can I submit a voter registration application by mail before I turn 18?
+                answer: '   <a href="https://www.sos.alabama.gov/sites/default/files/voter-pdfs/nvra-2.pdf">Yes, you can register to vote by mail using this form.</a> When submitting your application by mail in Alabama, you are required to provide your Alabama Driver’s License number or Alabama Non-Driver ID number. If you do not have one, you are required to provide the last four digits of your Social Security number. If you have not been issued any of these numbers, check the box that indicates you do not have an ID number. You may send with your application a copy of your valid photo ID.   '
+              militaryAndOverseas:
+                question: How do I vote if I'm in the military or live overseas?
+                answer: '<div>Active-duty military, their families, and overseas citizens can register to vote and request their absentee ballot using the Federal Post Card Application (FPCA). The FPCA process is done by mail, but your state may offer other options to request and return ballots. Please <a href="https://www.fvap.gov/search-offices">contact your Absentee Election Manager</a> for more information about delivery and return methods, including email, fax, and state online portals. To follow the FPCA process:</div><ol><li>Fill out the <a href="https://www.fvap.gov/fpca-privacy-notice">Federal Post Card Application (FPCA)</a>, or <a href="https://www.fvap.gov/uploads/FVAP/Forms/fpca.pdf">download a copy</a>. Your Absentee Election Manager may have questions, so please provide an email address or phone number where they can reach you.</li><li>Send the application to your <a href="https://www.fvap.gov/search-offices">Absentee Election Manager</a>.</li><li>It is never too early to submit an FPCA! Please do so as soon as possible.</li><li>Please fill out and send back your ballot as soon as you receive it.</li><li>States begin mailing absentee ballots at least 45 days before Election Day. If you haven''t received your ballot by 30 days before Election Day, contact your <a href="https://www.fvap.gov/search-offices">Absentee Election Manager</a>.</li></ol><div>If after submitting your FPCA, your ballot does not arrive, contact your Absentee Election Manager first. Then: </div><ul><li>You can still vote using the <a href="https://www.fvap.gov/fwab-privacy-notice">Federal Write-In Absentee Ballot (FWAB)</a>. Print, sign, and mail your FWAB to your <a href="https://www.fvap.gov/search-offices">Absentee Election Manager</a>.</li><li>If you mail a FWAB and then receive your regular absentee ballot, you should complete and mail your absentee ballot also. Election officials will ensure that only one ballot is counted.</li></ul><div>The <a href="https://www.fvap.gov/alabama">Federal Voting Assistance Program</a> offers additional information on military and overseas voting in Alabama. You can also call <a href="tel:+18004388683">1-800-438-VOTE</a> (8683) or email <a href="mailto:vote@fvap.gov">vote@fvap.gov</a></div>'
+              checkRegistration:
+                question: How can I check my voter registration status?
+                answer: You can look up your voter registration record and verify that your information is correct using <a href="https://myinfo.alabamavotes.gov/voterview">Alabama's voter registration lookup tool</a>.
+              contactElectionOffice:
+                question: Which election office should I contact?
+                answer: '<ul><li>In Alabama, the <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a> and <a href="https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager">Absentee Election Manager</a> run voter registration and elections in your area. The Board of Registrars can help you with questions about registering to vote, and the Absentee Election Manager can help you with questions about voting, including voting by mail. </li><li>The <a href="https://sos.alabama.gov/alabama-votes">Office of the Secretary of State</a> oversees elections and election administration in Alabama. They can help you with questions about voting in your state, election security, or issues you might have at the polls. If you have concerns about voter intimidation, reach out immediately. </li></ul> '
+              localContactInfo:
+                question: How do I contact my local election office?
+                answer: 'Visit your state’s site to find the contact information for the <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a> or the <a href="https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager">Absentee Election Manager</a>. '
+              stateContactInfo:
+                question: How do I contact my state election office?
+                answer: '<div><a href="https://sos.alabama.gov/alabama-votes">Office of the Secretary of State</a></div><ul><li><a href="https://www.google.com/maps/place/600%20Dexter%20Ave,%20Suite%20E-206%20Montgomery,%20AL%2036130">600 Dexter Ave, Suite E-206 Montgomery, AL 36130</a></li><li>Telephone: <a href="tel:(334)%20242-7210">(334) 242-7210</a></li></ul>'
+              voteInPerson:
+                question: How do I vote in person?
+                answer: '<h4>Where can I vote on Election Day?</h4><div>You can look up where to vote on <a href="https://myinfo.alabamavotes.gov/voterview">Alabama''s site</a>.<br><div></div></div><h4>Can I vote early?</h4><div>No, early voting in person before Election Day is not offered in this election. Alabama does offer absentee voting with an excuse in-person or by mail beginning 55 days prior to Election Day. <a href="https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting">Find the eligibility requirements for absentee voting</a> and contact your <a href="https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager">Absentee Election Manager</a> to check if you can visit their office to request and return an absentee ballot in person.</div><h4>What do I need to bring?</h4><div><div>You will need to show photo ID to vote in Alabama.</div><br><div>Acceptable forms of valid photo ID include:<ul>  <li> Alabama driver''s license (may be expired up to 60 days)</li><li> Alabama non-driver''s ID card (may be expired up to 60 days)</li><li> Alabama photo voter ID card</li><li> digital driver''s license or non-driver ID issued by the Alabama Law Enforcement Agency</li><li> photo ID card issued by Alabama or any other state (examples include AL Department of Corrections Release - Temporary ID, AL Movement/Booking Sheet from Prison/Jail System, or a pistol permit)</li><li> federal government issued ID</li><li> US passport</li><li> employee ID card issued by the federal government, the State of Alabama, county, municipality, board or other entity in Alabama</li><li> student or employee ID issued by a public or private college or university in Alabama</li><li> US military ID</li><li> valid tribal ID</li></ul></div><br><div>Voters without ID: If you are unable to provide ID, you will be able to vote a provisional ballot. In order for your ballot to be counted, you must provide your ID, including your address and your telephone number, to the board of registrars no later than 5:00 P.M. on the Friday following the election. If you fail to provide ID to the board of registrars by that time, your ballot will not be counted. In addition, voters who do not show valid photo ID at the polls can vote a regular ballot if they are positively identified by two election officials as a voter on the poll list who is eligible to vote and the election officials sign a sworn affidavit.</div></div>  <h4>How can I check the status of my ballot?</h4><div>You can check the status of your ballot on <a href="https://myinfo.alabamavotes.gov/voterview">Alabama’s site</a>.</div>  '
+              voteByMail:
+                question: How do I vote by mail?
+                answer: '  <div>Alabama allows eligible voters to request a mail ballot. All other voters are expected to vote in person. Check to see if you’re eligible to vote by mail on <a href="https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting">Alabama''s site</a>. </div><h4>How do I get my ballot? </h4><div>Request your mail-in ballot with a <a href="https://www.sos.alabama.gov/alabama-votes/absentee-ballot-applications">mail ballot application</a>.</div><h4>What should I do if I don’t get my ballot? </h4><div>If you don’t receive your ballot in the mail, then contact your <a href="https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager">Absentee Election Manager</a>. </div><h4>How do I return my ballot? </h4><ul><li>Read the instructions carefully on how to mark and return your ballot. </li><li>You can return your ballot by mail or by visiting a dedicated drop off location. </li><li><a href="https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting">Find a ballot drop off location near you</a>.</li><li>If you choose to return your ballot by mail, the <a href="https://about.usps.com/what/government-services/election-mail/">United States Postal Service (USPS)</a> recommends that voters mail their completed ballots at least one week before the due date. <a href="https://tools.usps.com/find-location.htm">Find a USPS location near you</a>.</li></ul><h4>What do I need to do if I’ve moved? </h4><div>What’s on your ballot depends on where you live, so your voter registration is tied to your exact address. If you’ve moved, you need to re-register with your new address.</div>  <br> <h4>How can I check the status of my ballot?</h4><div>You can check the status of your ballot on <a href="https://myinfo.alabamavotes.gov/voterview">Alabama’s site</a>.</div>  '
+              whatsOnTheBallot:
+                question: How do I see what's on my ballot?
+                answer: Learn more about what will be on your ballot by visiting the <a href="https://www.sos.alabama.gov/alabama-votes/2022-general-election-sample-ballots">Alabama website</a>.
+          - ocdId: ocd-division/country:us/state:ri/place:coventry
+            officeName: Coventry Town
+            officialTitle: Board of Canvassers
+            homepageUrl: https://www.coventryri.org/board-canvassers
+            registrationAuthorityLevel: municipal
+            electionAuthorityLevel: municipal
+            isRegistrationContact: false
+            contact:
+              email: landerson@coventryri.org
+              physicalAddress:
+                street: 1675 FLAT RIVER RD
+                city: COVENTRY
+                state: RI
+                zip: 02816
+              mailingAddress:
+                street: 1670 FLAT RIVER RD
+                city: COVENTRY
+                state: RI
+                zip: 02816
+        pagination:
+          totalRecordCount: 2
+          currentPage: 1
+          pageSize: 10
+    localAuthorities:
+      summary: Sample local authorities response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        data:
+          authorities:
+          - ocdId: ocd-division/country:us/state:ak/borough:juneau
+            officeName: Juneau City And Borough
+            officialTitle: Region I Elections Office
+            homepageUrl: https://juneau.org/clerk/elections
+            registrationAuthorityLevel: county
+            electionAuthorityLevel: null
+            isRegistrationContact: false
+            contact:
+              email: electionsr1@alaska.gov
+              physicalAddress:
+                street: 9109 MENDENHALL MALL RD STE 3
+                city: JUNEAU
+                state: AK
+                zip: 99801-7136
+              mailingAddress:
+                street: PO BOX 110018
+                city: JUNEAU
+                state: AK
+                zip: 99811-0018
+          - ocdId: ocd-division/country:us/state:ri/place:coventry
+            officeName: Coventry Town
+            officialTitle: Board of Canvassers
+            homepageUrl: https://www.coventryri.org/board-canvassers
+            registrationAuthorityLevel: municipal
+            electionAuthorityLevel: municipal
+            isRegistrationContact: false
+            contact:
+              email: landerson@coventryri.org
+              physicalAddress:
+                street: 1675 FLAT RIVER RD
+                city: COVENTRY
+                state: RI
+                zip: 02816
+              mailingAddress:
+                street: 1670 FLAT RIVER RD
+                city: COVENTRY
+                state: RI
+                zip: 02816
+        pagination:
+          totalRecordCount: 2
+          currentPage: 1
+          pageSize: 10
     stateAuthorities:
       summary: Sample state authorities response
       description: 'This is **fictional** data to provide examples of fields values.
@@ -677,438 +947,7 @@ components:
           totalRecordCount: 2
           currentPage: 1
           pageSize: 10
-    localAuthorities:
-      summary: Sample local authorities response
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        data:
-          authorities:
-          - ocdId: ocd-division/country:us/state:ak/borough:juneau
-            officeName: Juneau City And Borough
-            officialTitle: Region I Elections Office
-            homepageUrl: https://juneau.org/clerk/elections
-            registrationAuthorityLevel: county
-            electionAuthorityLevel: null
-            isRegistrationContact: false
-            contact:
-              email: electionsr1@alaska.gov
-              physicalAddress:
-                street: 9109 MENDENHALL MALL RD STE 3
-                city: JUNEAU
-                state: AK
-                zip: 99801-7136
-              mailingAddress:
-                street: PO BOX 110018
-                city: JUNEAU
-                state: AK
-                zip: 99811-0018
-          - ocdId: ocd-division/country:us/state:ri/place:coventry
-            officeName: Coventry Town
-            officialTitle: Board of Canvassers
-            homepageUrl: https://www.coventryri.org/board-canvassers
-            registrationAuthorityLevel: municipal
-            electionAuthorityLevel: municipal
-            isRegistrationContact: false
-            contact:
-              email: landerson@coventryri.org
-              physicalAddress:
-                street: 1675 FLAT RIVER RD
-                city: COVENTRY
-                state: RI
-                zip: 02816
-              mailingAddress:
-                street: 1670 FLAT RIVER RD
-                city: COVENTRY
-                state: RI
-                zip: 02816
-        pagination:
-          totalRecordCount: 2
-          currentPage: 1
-          pageSize: 10
-    allAuthorities:
-      summary: Sample authorities response
-      description: 'This is **fictional** data to provide examples of fields values.
-
-
-        The first authority is a state authority with all fields populated for demonstration purposes.
-
-
-        The second authority is a local authority.
-
-
-        Note that state and local authorities will both be returned by this endpoint; local authorities will only return required fields, plus an extra `isRegistrationContact` field that is not returned on state authorities.
-
-        '
-      value:
-        data:
-          authorities:
-          - ocdId: ocd-division/country:us/state:al
-            officeName: Alabama
-            officialTitle: Office of the Secretary of State
-            homepageUrl: https://sos.alabama.gov/alabama-votes
-            pollingLocationUrl: https://myinfo.alabamavotes.gov/voterview
-            votingWithDisabilitiesUrl: https://www.sos.alabama.gov/alabama-votes/voter/assistance-disability
-            votingWithPastConvictionsUrl: https://www.sos.alabama.gov/sites/default/files/Voting-Rights-Final-Version.pdf
-            canonicalUrl: https://staging.voting.democracy.works/en/vote/al.html
-            partyInstructions: If you choose not to declare a political preference at the primary election, you will not be eligible to vote in any political party’s primary election. You are, however, still eligible to vote on any proposed constitutional amendments that are up for a vote.
-            updatedAt: '2023-12-05T10:05:43.853825+00:00'
-            timezone: Central
-            secondaryTimezone: Eastern
-            localElectionAuthorityOfficeAlias: Absentee Election Manager
-            separateRegistrationAndElectionAuthorities: true
-            localElectionAuthorityName: Local Authority
-            localRegistrationAuthorityName: Board of Registrars
-            localRegistrationAuthorityLookupUrl: https://www.sos.alabama.gov/city-county-lookup/bor
-            localElectionAuthorityLookupUrl: https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager
-            registrationAuthorityLevel: county
-            electionAuthorityLevel: county
-            contact:
-              phone: (334) 242-7210
-              email: alavoter@vote.alabama.gov
-              physicalAddress:
-                street: 600 Dexter Ave, Suite E-206
-                city: Montgomery
-                state: AL
-                zip: '36130'
-              mailingAddress:
-                street: P. O. Box 5616
-                city: Montgomery
-                state: AL
-                zip: 36103-5616
-            voting:
-              inPersonVotingAvailable: true
-              mailBallotsSentAutomatically: false
-              inPerson:
-                idRequiredAllVoters: true
-                idInstructions: 'You will need to show photo ID to vote in Alabama.<br>Acceptable
-
-                  forms of valid photo ID include: Alabama driver''s license (may be expired up
-
-                  to 60 days); Alabama non-driver''s ID card (may be expired up to 60 days); Alabama
-
-                  photo voter ID card; digital driver''s license or non-driver ID issued by the
-
-                  Alabama Law Enforcement Agency; photo ID card issued by Alabama or any other
-
-                  state (examples include AL Department of Corrections Release - Temporary ID,
-
-                  AL Movement/Booking Sheet from Prison/Jail System, or a pistol permit); federal
-
-                  government issued ID; US passport; employee ID card issued by the federal government,
-
-                  the State of Alabama, county, municipality, board or other entity in Alabama;
-
-                  student or employee ID issued by a public or private college or university in
-
-                  Alabama; US military ID; valid tribal ID<br><br>Voters without ID: If you are
-
-                  unable to provide ID, you will be able to vote a provisional ballot. In order
-
-                  for your ballot to be counted, you must provide your ID, including your address
-
-                  and your telephone number, to the board of registrars no later than 5:00 P.M.
-
-                  on the Friday following the election. If you fail to provide ID to the board
-
-                  of registrars by that time, your ballot will not be counted. In addition, voters
-
-                  who do not show valid photo ID at the polls can vote a regular ballot if they
-
-                  are positively identified by two election officials as a voter on the poll list
-
-                  who is eligible to vote and the election officials sign a sworn affidavit.
-
-                  '
-              early:
-                supported: false
-                excuseRequired: false
-                alias: early vote
-              byMail:
-                ballotApplicationOnline: https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting
-                returnByMailUrl: https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting
-                eligibilityUrl: https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting
-                returnInPersonUrl: https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting
-                excuseRequired: true
-                excuses:
-                - excuse: absence
-                  example: I expect to be out of the county or the state on election day.
-                - excuse: illnessDisability
-                  example: I am physically incapacitated and will not be able to vote in person on election day.
-                - excuse: illnessAgeDisability
-                  example: 'I have a physical illness or infirmity which prevents my attendance at the polls. I am unable to access my assigned polling place due to a neurological, musculoskeletal, respiratory (including speech organs), cardiovascular, or other life-altering disorder that affects my ability to perform manual tasks, stand for any length of time, walk unassisted, see, hear or speak and: a) I am an elderly voter aged 65 or older; or b) I am a voter with a disability.'
-                - excuse: employment
-                  example: I expect to work a shift which has at least ten (10) hours that coincide with the polling hours at my regular polling place.
-                - excuse: student
-                  example: I am enrolled as a student at an educational institution located outside the county of my personal residence and am therefore unable to vote at my usual polling place on election day.
-                - excuse: uocava
-                  example: I am a member of, or a spouse or dependent of a member of, the Armed Forces of the United States or am otherwise similarly qualified to vote absentee pursuant to the Uniformed and Overseas Citizens Absentee Voting Act, 52 U.S.C. § 20302.
-                - excuse: electionWorker
-                  example: I have been appointed as an election officer at a polling place which is not my regular polling place.
-                - excuse: caregiver
-                  example: I am a caregiver for a family member to the second degree of kinship by affinity or consanguinity and the family member is confined to his or her home.
-                - excuse: incarcerated
-                  example: I am currently incarcerated in prison or jail and have not been convicted of a felony involving moral turpitude.
-                ballotTrackingUrl: https://myinfo.alabamavotes.gov/voterview
-                ballotApplicationDownload: https://www.sos.alabama.gov/alabama-votes/absentee-ballot-applications
-                idInstructions: ID is required for all voters.
-                alias: absentee
-            registration:
-              statusUrl: https://myinfo.alabamavotes.gov/voterview
-              formUrl: https://www.sos.alabama.gov/sites/default/files/voter-pdfs/nvra-2.pdf
-              noRegistrationRequiredInstructions: You cannot vote without valid registration.
-              methods:
-              - byMail
-              - online
-              byMail:
-                supported: true
-                url: https://www.sos.alabama.gov/alabama-votes/voter/register-to-vote
-                forms: nvrf
-                raceFieldRequired: false
-                raceFieldInstructions: You are required to fill in this box; however, your application will not be rejected if you fail to do so.
-                idInstructions: If you have one, you must provide your Alabama driver's license number or Alabama non-driver's identification card number. If you do not have an Alabama driver's license or non-driver's identification card, you must provide the last four digits of your Social Security number. If you have not been issued any of these numbers you must write the word "NONE" and a unique identifier will be provided for you.
-                signatureInstructions: 'To register in Alabama you must: <br>be a citizen of the United States<br>be a resident of Alabama and your county at the time of registration <br>be 18 years old on or before Election Day<br>not be barred from voting by reason of a disqualifying felony conviction, or if you have been convicted, you must have had your civil rights restored. You can find the list of disqualifying felonies on the Secretary of State’s website here at: <a href="http://www.sos.alabama.gov/mtfelonies" target="_blank">sos.alabama.gov/mtfelonies</a><br>not have been declared mentally incompetent in a court<br>swear or affirm to "support and defend the Constitution of the U.S. and the State of Alabama and further disavow any belief or affiliation with any group which advocates the overthrow of the governments of the U.S. or the State of Alabama by unlawful means and that the information contained herein is true"'
-                citizenInstructions: You must be a citizen to vote in Alabama.
-                newVoterInstructions: 'If you are registering to vote for the first time in your jurisdiction and are mailing this registration application, federal law requires you to show proof of identification the first time you vote. Proof of identification includes: current and valid photo identification or current utility bill, bank statement, government check, paycheck or government document that shows your name and address. <br>More information <a href="https://www.eac.gov/sites/default/files/eac_assets/1/6/Federal_Voter_Registration_ENG.pdf">here</a>.'
-              online:
-                supported: true
-                instructions: 'You should know: you need an Alabama driver''s license or non-driver
-
-                  ID to use Alabama''s online voter registration system. If you don''t have an
-
-                  Alabama-issued ID, you can still register by mail to vote.
-
-                  '
-                url: https://www.alabamainteractive.org/sos/voter_registration/voterRegistrationWelcome.action
-              inPerson:
-                supported: false
-                electionDayInstructions: You cannot register to vote in person on Election Day in Alabama.
-                advanceUrl: https://www.sos.alabama.gov/alabama-votes/voter-registration/general-info?_ga=2.13156215.1931915915.1655313501-640998901.1644592274
-              parties:
-              - partyLabelEn: Democratic
-                partyLabelEs: Demócrata
-                partyPhrasingEn: Democratic Party
-                partyPhrasingEs: Partido Demócrata
-              - partyLabelEn: Republican
-                partyLabelEs: Republicano
-                partyPhrasingEn: Republican Party
-                partyPhrasingEs: Partido Republicano
-            youthRegistration:
-              url: https://www.sos.alabama.gov/alabama-votes/youth-voter-registration
-              formUrl: https://www.sos.alabama.gov/alabama-votes/youth-voter-registration
-              supported: byElection
-              methods: online,by-mail,in-person
-              onlineInstructions: 'To register using the Alabama online voter registration system,
-
-                you are required to provide ONE of the following valid ID numbers: Alabama Driver''s
-
-                License; Alabama Non-Driver''s Identification card<br><br>If you don’t have an
-
-                Alabama-issued ID, you can still submit a voter registration application by mail
-
-                or in person.
-
-                '
-              inPersonInstructions: 'You can complete a voter registration application in person at your local County Board of Registrars in Alabama. <br><br>You can also obtain a voter registration application in person at any of the following public agencies in Alabama: driver''s licensing office; county and select municipal public libraries; public four-year universities and select private four-year universities<br><br>You can find a list of locations that provide voter registration services and voter registration application on the <a href="https://www.sos.alabama.gov/alabama-votes/voter-registration/general-info">Alabama Secretary of State’s</a> website.'
-              byMailInstructions: When submitting your application by mail in Alabama, you are required to provide your Alabama Driver’s License number or Alabama Non-Driver ID number. If you do not have one, you are required to provide the last four digits of your Social Security number. If you have not been issued any of these numbers, check the box that indicates you do not have an ID number. You may send with your application a copy of your valid photo ID.
-              eligibilityAge: '18'
-              statusAvailability: Unknown
-            questionAndAnswer:
-              whoCanVote:
-                question: Who can register to vote?
-                answer: '<div>To register in Alabama you must: <ul>  <li>be a citizen of the United States</li><li>be a resident of Alabama and your county at the time of registration </li><li>be 18 years old on or before Election Day</li><li>not be barred from voting by reason of a disqualifying felony conviction, or if you have been convicted, you must have had your civil rights restored. You can find the list of disqualifying felonies on the Secretary of State’s website here at: <a href="http://www.sos.alabama.gov/mtfelonies" target="_blank">sos.alabama.gov/mtfelonies</a></li><li>not have been declared mentally incompetent in a court</li><li>swear or affirm to "support and defend the Constitution of the U.S. and the State of Alabama and further disavow any belief or affiliation with any group which advocates the overthrow of the governments of the U.S. or the State of Alabama by unlawful means and that the information contained herein is true"</li></ul></div>'
-              byMailRegistration:
-                question: Can I submit voter registration forms by mail?
-                answer: '<div><div><h4>Use the National Voter Registration Form</h4><ol><li>Print and fill out the <a href="https://www.eac.gov/sites/default/files/eac_assets/1/6/Federal_Voter_Registration_ENG.pdf"> National Voter Registration Form.</a></li><li>Box 6 - ID Number: If you have one, you must provide your Alabama driver''s license number or Alabama non-driver''s identification card number. If you do not have an Alabama driver''s license or non-driver''s identification card, you must provide the last four digits of your Social Security number. If you have not been issued any of these numbers you must write the word "NONE" and a unique identifier will be provided for you.</li><li>Box 7 - Choice of Party: If you choose not to declare a political preference at the primary election, you will not be eligible to vote in any political party’s primary election. You are, however, still eligible to vote on any proposed constitutional amendments that are up for a vote.</li><li>Box 8 - Race or Ethnic Group: You are required to fill in this box; however, your application will not be rejected if you fail to do so.</li><li>Review the "Who can register to vote?" section above and check that you''re eligible.</li><li>Sign the form.</li><li>Send the completed form to your <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a></li><li>If you are registering to vote for the first time in your jurisdiction and are mailing this registration application, federal law requires you to show proof of identification the first time you vote. Proof of identification includes: current and valid photo identification or current utility bill, bank statement, government check, paycheck or government document that shows your name and address. <ul>  <li>More information <a href="https://www.eac.gov/sites/default/files/eac_assets/1/6/Federal_Voter_Registration_ENG.pdf">here</a>.</li></ul></li></ol></div></div>'
-              electionDayRegistration:
-                question: Can I register to vote on Election Day?
-                answer: Alabama <em>does not</em> offer registration on Election Day.
-              inPersonRegistration:
-                question: Can I submit voter registration forms in person?
-                answer: <ul><li>You can also register to vote in person. Contact your <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a> for information on when and where to register to vote.</li><li>Learn more by visiting the <a href="https://sos.alabama.gov/alabama-votes">Alabama Office of the Secretary of State</a>'s website or contacting your <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a>.</li></ul>
-              youthRegistrationEligibility:
-                question: Can I register to vote before I turn 18?
-                answer: ' You can register to vote in Alabama before you turn 18 if you:<ul>  <li> are at least 18 years old on or before Election Day</li><li> are a citizen of the United States</li><li> live in Alabama</li><li> have not been convicted of a disqualifying felony (or have had rights restored)</li><li> have not been legally declared "mentally incompetent" by a court</li></ul><br>You must be at least 18 years old to vote. <br> '
-              youthInPersonRegistration:
-                question: Can I complete a voter registration application in person before I turn 18?
-                answer: <a href="https://www.sos.alabama.gov/alabama-votes/voter-registration/general-info?_ga=2.13156215.1931915915.1655313501-640998901.1644592274">Yes, you can learn more about registering to vote in person on the Alabama Office of the Secretary of State website</a>. You can complete a voter registration application in person at your local County Board of Registrars in Alabama. <br>You can also obtain a voter registration application in person at any of the following public agencies in Alabama:<ul>  <li> driver's licensing office</li><li> county and select municipal public libraries</li><li> public four-year universities and select private four-year universities</li></ul><br>You can find a list of locations that provide voter registration services and voter registration application on the <a href="https://www.sos.alabama.gov/alabama-votes/voter-registration/general-info">Alabama Secretary of State’s</a> website.
-              youthOnlineVoterRegistration:
-                question: Can I submit a voter registration application online before I turn 18?
-                answer: ' <a href="https://www.alabamainteractive.org/sos/voter_registration/voterRegistrationWelcome.action">Yes, you can register online on the Alabama Office of the Secretary of State website</a>. To register using the Alabama online voter registration system, you are required to provide ONE of the following valid ID numbers:<ul>  <li> Alabama Driver''s License</li><li> Alabama Non-Driver''s Identification card</li></ul><br>If you don’t have an Alabama-issued ID, you can still submit a voter registration application by mail or in person.  '
-              youthByMailRegistration:
-                question: Can I submit a voter registration application by mail before I turn 18?
-                answer: '   <a href="https://www.sos.alabama.gov/sites/default/files/voter-pdfs/nvra-2.pdf">Yes, you can register to vote by mail using this form.</a> When submitting your application by mail in Alabama, you are required to provide your Alabama Driver’s License number or Alabama Non-Driver ID number. If you do not have one, you are required to provide the last four digits of your Social Security number. If you have not been issued any of these numbers, check the box that indicates you do not have an ID number. You may send with your application a copy of your valid photo ID.   '
-              militaryAndOverseas:
-                question: How do I vote if I'm in the military or live overseas?
-                answer: '<div>Active-duty military, their families, and overseas citizens can register to vote and request their absentee ballot using the Federal Post Card Application (FPCA). The FPCA process is done by mail, but your state may offer other options to request and return ballots. Please <a href="https://www.fvap.gov/search-offices">contact your Absentee Election Manager</a> for more information about delivery and return methods, including email, fax, and state online portals. To follow the FPCA process:</div><ol><li>Fill out the <a href="https://www.fvap.gov/fpca-privacy-notice">Federal Post Card Application (FPCA)</a>, or <a href="https://www.fvap.gov/uploads/FVAP/Forms/fpca.pdf">download a copy</a>. Your Absentee Election Manager may have questions, so please provide an email address or phone number where they can reach you.</li><li>Send the application to your <a href="https://www.fvap.gov/search-offices">Absentee Election Manager</a>.</li><li>It is never too early to submit an FPCA! Please do so as soon as possible.</li><li>Please fill out and send back your ballot as soon as you receive it.</li><li>States begin mailing absentee ballots at least 45 days before Election Day. If you haven''t received your ballot by 30 days before Election Day, contact your <a href="https://www.fvap.gov/search-offices">Absentee Election Manager</a>.</li></ol><div>If after submitting your FPCA, your ballot does not arrive, contact your Absentee Election Manager first. Then: </div><ul><li>You can still vote using the <a href="https://www.fvap.gov/fwab-privacy-notice">Federal Write-In Absentee Ballot (FWAB)</a>. Print, sign, and mail your FWAB to your <a href="https://www.fvap.gov/search-offices">Absentee Election Manager</a>.</li><li>If you mail a FWAB and then receive your regular absentee ballot, you should complete and mail your absentee ballot also. Election officials will ensure that only one ballot is counted.</li></ul><div>The <a href="https://www.fvap.gov/alabama">Federal Voting Assistance Program</a> offers additional information on military and overseas voting in Alabama. You can also call <a href="tel:+18004388683">1-800-438-VOTE</a> (8683) or email <a href="mailto:vote@fvap.gov">vote@fvap.gov</a></div>'
-              checkRegistration:
-                question: How can I check my voter registration status?
-                answer: You can look up your voter registration record and verify that your information is correct using <a href="https://myinfo.alabamavotes.gov/voterview">Alabama's voter registration lookup tool</a>.
-              contactElectionOffice:
-                question: Which election office should I contact?
-                answer: '<ul><li>In Alabama, the <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a> and <a href="https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager">Absentee Election Manager</a> run voter registration and elections in your area. The Board of Registrars can help you with questions about registering to vote, and the Absentee Election Manager can help you with questions about voting, including voting by mail. </li><li>The <a href="https://sos.alabama.gov/alabama-votes">Office of the Secretary of State</a> oversees elections and election administration in Alabama. They can help you with questions about voting in your state, election security, or issues you might have at the polls. If you have concerns about voter intimidation, reach out immediately. </li></ul> '
-              localContactInfo:
-                question: How do I contact my local election office?
-                answer: 'Visit your state’s site to find the contact information for the <a href="https://www.sos.alabama.gov/city-county-lookup/bor">Board of Registrars</a> or the <a href="https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager">Absentee Election Manager</a>. '
-              stateContactInfo:
-                question: How do I contact my state election office?
-                answer: '<div><a href="https://sos.alabama.gov/alabama-votes">Office of the Secretary of State</a></div><ul><li><a href="https://www.google.com/maps/place/600%20Dexter%20Ave,%20Suite%20E-206%20Montgomery,%20AL%2036130">600 Dexter Ave, Suite E-206 Montgomery, AL 36130</a></li><li>Telephone: <a href="tel:(334)%20242-7210">(334) 242-7210</a></li></ul>'
-              voteInPerson:
-                question: How do I vote in person?
-                answer: '<h4>Where can I vote on Election Day?</h4><div>You can look up where to vote on <a href="https://myinfo.alabamavotes.gov/voterview">Alabama''s site</a>.<br><div></div></div><h4>Can I vote early?</h4><div>No, early voting in person before Election Day is not offered in this election. Alabama does offer absentee voting with an excuse in-person or by mail beginning 55 days prior to Election Day. <a href="https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting">Find the eligibility requirements for absentee voting</a> and contact your <a href="https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager">Absentee Election Manager</a> to check if you can visit their office to request and return an absentee ballot in person.</div><h4>What do I need to bring?</h4><div><div>You will need to show photo ID to vote in Alabama.</div><br><div>Acceptable forms of valid photo ID include:<ul>  <li> Alabama driver''s license (may be expired up to 60 days)</li><li> Alabama non-driver''s ID card (may be expired up to 60 days)</li><li> Alabama photo voter ID card</li><li> digital driver''s license or non-driver ID issued by the Alabama Law Enforcement Agency</li><li> photo ID card issued by Alabama or any other state (examples include AL Department of Corrections Release - Temporary ID, AL Movement/Booking Sheet from Prison/Jail System, or a pistol permit)</li><li> federal government issued ID</li><li> US passport</li><li> employee ID card issued by the federal government, the State of Alabama, county, municipality, board or other entity in Alabama</li><li> student or employee ID issued by a public or private college or university in Alabama</li><li> US military ID</li><li> valid tribal ID</li></ul></div><br><div>Voters without ID: If you are unable to provide ID, you will be able to vote a provisional ballot. In order for your ballot to be counted, you must provide your ID, including your address and your telephone number, to the board of registrars no later than 5:00 P.M. on the Friday following the election. If you fail to provide ID to the board of registrars by that time, your ballot will not be counted. In addition, voters who do not show valid photo ID at the polls can vote a regular ballot if they are positively identified by two election officials as a voter on the poll list who is eligible to vote and the election officials sign a sworn affidavit.</div></div>  <h4>How can I check the status of my ballot?</h4><div>You can check the status of your ballot on <a href="https://myinfo.alabamavotes.gov/voterview">Alabama’s site</a>.</div>  '
-              voteByMail:
-                question: How do I vote by mail?
-                answer: '  <div>Alabama allows eligible voters to request a mail ballot. All other voters are expected to vote in person. Check to see if you’re eligible to vote by mail on <a href="https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting">Alabama''s site</a>. </div><h4>How do I get my ballot? </h4><div>Request your mail-in ballot with a <a href="https://www.sos.alabama.gov/alabama-votes/absentee-ballot-applications">mail ballot application</a>.</div><h4>What should I do if I don’t get my ballot? </h4><div>If you don’t receive your ballot in the mail, then contact your <a href="https://www.sos.alabama.gov/city-county-lookup/absentee-election-manager">Absentee Election Manager</a>. </div><h4>How do I return my ballot? </h4><ul><li>Read the instructions carefully on how to mark and return your ballot. </li><li>You can return your ballot by mail or by visiting a dedicated drop off location. </li><li><a href="https://www.sos.alabama.gov/alabama-votes/voter/absentee-voting">Find a ballot drop off location near you</a>.</li><li>If you choose to return your ballot by mail, the <a href="https://about.usps.com/what/government-services/election-mail/">United States Postal Service (USPS)</a> recommends that voters mail their completed ballots at least one week before the due date. <a href="https://tools.usps.com/find-location.htm">Find a USPS location near you</a>.</li></ul><h4>What do I need to do if I’ve moved? </h4><div>What’s on your ballot depends on where you live, so your voter registration is tied to your exact address. If you’ve moved, you need to re-register with your new address.</div>  <br> <h4>How can I check the status of my ballot?</h4><div>You can check the status of your ballot on <a href="https://myinfo.alabamavotes.gov/voterview">Alabama’s site</a>.</div>  '
-              whatsOnTheBallot:
-                question: How do I see what's on my ballot?
-                answer: Learn more about what will be on your ballot by visiting the <a href="https://www.sos.alabama.gov/alabama-votes/2022-general-election-sample-ballots">Alabama website</a>.
-          - ocdId: ocd-division/country:us/state:ri/place:coventry
-            officeName: Coventry Town
-            officialTitle: Board of Canvassers
-            homepageUrl: https://www.coventryri.org/board-canvassers
-            registrationAuthorityLevel: municipal
-            electionAuthorityLevel: municipal
-            isRegistrationContact: false
-            contact:
-              email: landerson@coventryri.org
-              physicalAddress:
-                street: 1675 FLAT RIVER RD
-                city: COVENTRY
-                state: RI
-                zip: 02816
-              mailingAddress:
-                street: 1670 FLAT RIVER RD
-                city: COVENTRY
-                state: RI
-                zip: 02816
-        pagination:
-          totalRecordCount: 2
-          currentPage: 1
-          pageSize: 10
   schemas:
-    localAuthority:
-      description: A representation of an authority.
-      type: object
-      required:
-      - ocdId
-      - officeName
-      - officialTitle
-      - contact
-      - isRegistrationContact
-      properties:
-        ocdId:
-          type: string
-          description: Provides the [OCD-ID](https://opencivicdata.info/en/latest/ocdids.html) associated with the office.
-        officeName:
-          type: string
-          description: Provides the state/office name.
-        officialTitle:
-          type: string
-          description: 'Provides the state election authority title.
-
-
-            `Localized`
-
-            '
-        homepageUrl:
-          type: string
-          description: Provides the URL for the office. This is typically Secretary of State or Division/State Board of Elections.
-        registrationAuthorityLevel:
-          type: string
-          description: Provides the governmental level in charge of voter registration. Options include state, county, or municipal.
-        electionAuthorityLevel:
-          type: string
-          description: Provides the governmental level in charge of voting and elections. Options include state, county, or municipal.
-        isRegistrationContact:
-          type: boolean
-          description: Indicates whether the authority should be the point of contact for voter registration services and inquiries.
-        contact:
-          type: object
-          required:
-          - email
-          - physicalAddress
-          - mailingAddress
-          properties:
-            phone:
-              type: string
-              description: Provides the phone number of the election authority.
-            email:
-              type: string
-              description: Provides the email address of the election authority.
-            physicalAddress:
-              type: object
-              properties:
-                street:
-                  type: string
-                  description: Provides the street address of the election authority.
-                city:
-                  type: string
-                  description: Provides the city associated with the election authority.
-                state:
-                  type: string
-                  description: Provides the state associated with the election authority.
-                zip:
-                  type: string
-                  description: Provides the zip code of the election authority.
-            mailingAddress:
-              type: object
-              properties:
-                street:
-                  type: string
-                  description: Provides the mailing street address of the election authority.
-                city:
-                  type: string
-                  description: Provides the mailing city address of the election authority.
-                state:
-                  type: string
-                  description: Provides the mailing state of the election authority.
-                zip:
-                  type: string
-                  description: Provides the mailing ZIP code of the election authority.
-    pagination:
-      type: object
-      properties:
-        totalRecordCount:
-          type: number
-          description: Total records found for the given query.
-        currentPage:
-          type: number
-          description: The page of records returned.
-        pageSize:
-          type: number
-          description: The number of records returned.
-    gatewayErrors:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
-    errors:
-      type: object
-      properties:
-        status:
-          type: integer
-        message:
-          type: array
-      required:
-      - status
-      - message
-    party:
-      type: object
-      required:
-      - partyLabelEn
-      - partyPhrasingEn
-      properties:
-        partyLabelEn:
-          type: string
-        partyLabelEs:
-          type: string
-        partyPhrasingEn:
-          type: string
-        partyPhrasingEs:
-          type: string
     authority:
       description: A representation of an authority.
       type: object
@@ -1804,6 +1643,167 @@ components:
                   type: string
                 answer:
                   type: string
+    party:
+      type: object
+      required:
+      - partyLabelEn
+      - partyPhrasingEn
+      properties:
+        partyLabelEn:
+          type: string
+        partyLabelEs:
+          type: string
+        partyPhrasingEn:
+          type: string
+        partyPhrasingEs:
+          type: string
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
+    localAuthority:
+      description: A representation of an authority.
+      type: object
+      required:
+      - ocdId
+      - officeName
+      - officialTitle
+      - contact
+      - isRegistrationContact
+      properties:
+        ocdId:
+          type: string
+          description: Provides the [OCD-ID](https://opencivicdata.info/en/latest/ocdids.html) associated with the office.
+        officeName:
+          type: string
+          description: Provides the state/office name.
+        officialTitle:
+          type: string
+          description: 'Provides the state election authority title.
+
+
+            `Localized`
+
+            '
+        homepageUrl:
+          type: string
+          description: Provides the URL for the office. This is typically Secretary of State or Division/State Board of Elections.
+        registrationAuthorityLevel:
+          type: string
+          description: Provides the governmental level in charge of voter registration. Options include state, county, or municipal.
+        electionAuthorityLevel:
+          type: string
+          description: Provides the governmental level in charge of voting and elections. Options include state, county, or municipal.
+        isRegistrationContact:
+          type: boolean
+          description: Indicates whether the authority should be the point of contact for voter registration services and inquiries.
+        contact:
+          type: object
+          required:
+          - email
+          - physicalAddress
+          - mailingAddress
+          properties:
+            phone:
+              type: string
+              description: Provides the phone number of the election authority.
+            email:
+              type: string
+              description: Provides the email address of the election authority.
+            physicalAddress:
+              type: object
+              properties:
+                street:
+                  type: string
+                  description: Provides the street address of the election authority.
+                city:
+                  type: string
+                  description: Provides the city associated with the election authority.
+                state:
+                  type: string
+                  description: Provides the state associated with the election authority.
+                zip:
+                  type: string
+                  description: Provides the zip code of the election authority.
+            mailingAddress:
+              type: object
+              properties:
+                street:
+                  type: string
+                  description: Provides the mailing street address of the election authority.
+                city:
+                  type: string
+                  description: Provides the mailing city address of the election authority.
+                state:
+                  type: string
+                  description: Provides the mailing state of the election authority.
+                zip:
+                  type: string
+                  description: Provides the mailing ZIP code of the election authority.
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    pagination:
+      type: object
+      properties:
+        totalRecordCount:
+          type: number
+          description: Total records found for the given query.
+        currentPage:
+          type: number
+          description: The page of records returned.
+        pageSize:
+          type: number
+          description: The number of records returned.
+  responses:
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    contentTooLargeError:
+      description: Content Too Large Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 413
+            message:
+            - Response size too large. Try again with a smaller pageSize.
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

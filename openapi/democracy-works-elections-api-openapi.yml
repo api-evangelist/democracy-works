@@ -345,138 +345,6 @@ paths:
     - url: https://api.democracy.works/v2
 components:
   schemas:
-    OnlineRegistrationMethod:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - online
-          description: 'Indicates that online voter registration is an option in the state. The sections following provide the state-specific requirements. This field and fields associated with online voter registration are only populated in states where it is available.
-
-            '
-        instructions:
-          type: object
-          description: 'Lists the state-specific requirements for registering to vote online.
-
-            '
-          properties:
-            registration:
-              description: 'Provides the identification requirements and other instructions for registering to vote online.
-
-                '
-              $ref: '#/components/schemas/LocalizedField'
-        supports-iframe:
-          type: boolean
-          description: 'Indicates whether the state online voter registration site can be iframed. `true`: can be iframed, `false`: cannot be iframed.
-
-            '
-        deadline-online:
-          type: string
-          format: date-time
-          description: 'Provides the deadline date for registering online to vote for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
-
-            '
-        url:
-          type: string
-          format: uri
-          description: 'Provides the link to the state online voter registration system.
-
-            '
-    DistrictDivision:
-      type: object
-      properties:
-        ocd-id:
-          type: string
-          example: ocd-division/country:us/state:nc/sldl:1
-          description: 'The political division of the election. Represented as an Open Civic Data Identifier. Voters within these political jurisdictions are covered by this election.
-
-            '
-        voter-registration-authority-level:
-          type: string
-        election-authority-level:
-          type: string
-        voting-methods:
-          type: array
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/ByMailVotingMethod'
-            - $ref: '#/components/schemas/EarlyVotingVotingMethod'
-            - $ref: '#/components/schemas/InPersonVotingMethod'
-        voter-registration-methods:
-          type: array
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/ByMailRegistrationMethod'
-            - $ref: '#/components/schemas/ElectionDayRegistrationMethod'
-            - $ref: '#/components/schemas/InPersonRegistrationMethod'
-            - $ref: '#/components/schemas/OnlineRegistrationMethod'
-        primary-voting-method-source:
-          type: string
-    LocalizedField:
-      oneOf:
-      - type: object
-        properties:
-          en:
-            type: string
-            description: English text
-          es:
-            type: string
-            description: Spanish text
-      - type: string
-        description: Localized text dependent on the `language` parameter
-    EarlyVotingVotingMethod:
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          enum:
-          - early-voting
-          description: 'Indicates that early voting is an option for the particular election. The sections following provide the state-specific requirements. This field and fields associated with early voting are only populated in states where it is available.
-
-            '
-        primary:
-          type: boolean
-          description: 'Indicates whether voting early is the primary voting method for the particular election or not. `true`: primary voting method; `false`: not primary voting method.
-
-            '
-        excuse-required:
-          type: boolean
-          description: 'Indicates whether you need an excuse to vote early. `true`: excuse required; `false`: excuse not required.
-
-            '
-        start:
-          type: string
-          format: date-time
-          description: 'Indicates the start date for early voting for the particular election. Early voting dates often vary within a state. This date can either be the earliest date or the latest date any jurisdiction is required to begin. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
-
-            '
-        end:
-          type: string
-          format: date-time
-          description: 'Indicates the end date for early voting for the particular election. Early voting dates often vary within a state. This date can either be the earliest day or the latest date any jurisdiction is required to end. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
-
-            '
-        alias:
-          type: string
-          enum:
-          - early-voting
-          - absentee-in-person
-          description: 'Default is empty, meaning election officials in the state use the term "early voting" or the value can explicitly list `early-voting`. If the value is `absentee-in-person` that means election officials in the state use the term "absentee in person". We don''t distinguish these two in the data because they are functionally equivalent.
-
-            '
-        exact-dates:
-          type: boolean
-          deprecated: true
-          description: Deprecated field as we reconsider date display.
-        url:
-          type: string
-          format: uri
-          description: 'If there is a website that provides information about the election or how to participate, we will provide it here. This field is often an election-specific URL, though we may include voter information portals.
-
-            '
     UpcomingElectionsResponse:
       type: object
       required:
@@ -562,6 +430,90 @@ components:
           description: 'Provides a link to additional information on the upcoming election, when available.
 
             '
+    EarlyVotingVotingMethod:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - early-voting
+          description: 'Indicates that early voting is an option for the particular election. The sections following provide the state-specific requirements. This field and fields associated with early voting are only populated in states where it is available.
+
+            '
+        primary:
+          type: boolean
+          description: 'Indicates whether voting early is the primary voting method for the particular election or not. `true`: primary voting method; `false`: not primary voting method.
+
+            '
+        excuse-required:
+          type: boolean
+          description: 'Indicates whether you need an excuse to vote early. `true`: excuse required; `false`: excuse not required.
+
+            '
+        start:
+          type: string
+          format: date-time
+          description: 'Indicates the start date for early voting for the particular election. Early voting dates often vary within a state. This date can either be the earliest date or the latest date any jurisdiction is required to begin. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        end:
+          type: string
+          format: date-time
+          description: 'Indicates the end date for early voting for the particular election. Early voting dates often vary within a state. This date can either be the earliest day or the latest date any jurisdiction is required to end. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        alias:
+          type: string
+          enum:
+          - early-voting
+          - absentee-in-person
+          description: 'Default is empty, meaning election officials in the state use the term "early voting" or the value can explicitly list `early-voting`. If the value is `absentee-in-person` that means election officials in the state use the term "absentee in person". We don''t distinguish these two in the data because they are functionally equivalent.
+
+            '
+        exact-dates:
+          type: boolean
+          deprecated: true
+          description: Deprecated field as we reconsider date display.
+        url:
+          type: string
+          format: uri
+          description: 'If there is a website that provides information about the election or how to participate, we will provide it here. This field is often an election-specific URL, though we may include voter information portals.
+
+            '
+    InPersonRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - in-person
+          description: 'Indicates that in-person voter registration is an option in the state. This field and fields associated with in-person voter registration are only populated in states where it is available.
+
+            '
+        start:
+          type: string
+          format: date-time
+          description: 'This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        end:
+          type: string
+          format: date-time
+          description: 'This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+    ElectionDayRegistrationMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - election-day
+          description: 'Indicates whether voter registration is available for the particular election at voting locations.
+
+            '
     InPersonVotingMethod:
       type: object
       required:
@@ -594,97 +546,74 @@ components:
 
                 '
               $ref: '#/components/schemas/LocalizedField'
-    ElectionDayRegistrationMethod:
+    DistrictDivision:
+      type: object
+      properties:
+        ocd-id:
+          type: string
+          example: ocd-division/country:us/state:nc/sldl:1
+          description: 'The political division of the election. Represented as an Open Civic Data Identifier. Voters within these political jurisdictions are covered by this election.
+
+            '
+        voter-registration-authority-level:
+          type: string
+        election-authority-level:
+          type: string
+        voting-methods:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ByMailVotingMethod'
+            - $ref: '#/components/schemas/EarlyVotingVotingMethod'
+            - $ref: '#/components/schemas/InPersonVotingMethod'
+        voter-registration-methods:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ByMailRegistrationMethod'
+            - $ref: '#/components/schemas/ElectionDayRegistrationMethod'
+            - $ref: '#/components/schemas/InPersonRegistrationMethod'
+            - $ref: '#/components/schemas/OnlineRegistrationMethod'
+        primary-voting-method-source:
+          type: string
+    OnlineRegistrationMethod:
       type: object
       properties:
         type:
           type: string
           enum:
-          - election-day
-          description: 'Indicates whether voter registration is available for the particular election at voting locations.
-
-            '
-    InPersonRegistrationMethod:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - in-person
-          description: 'Indicates that in-person voter registration is an option in the state. This field and fields associated with in-person voter registration are only populated in states where it is available.
-
-            '
-        start:
-          type: string
-          format: date-time
-          description: 'This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
-
-            '
-        end:
-          type: string
-          format: date-time
-          description: 'This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
-
-            '
-    ByMailRegistrationMethod:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - by-mail
-          description: 'Indicates that registering to vote by mail is an option for the particular election. The sections following provide the state-specific requirements. This field, and fields associated with registering to vote by mail are not available for elections in New Hampshire or North Dakota.
+          - online
+          description: 'Indicates that online voter registration is an option in the state. The sections following provide the state-specific requirements. This field and fields associated with online voter registration are only populated in states where it is available.
 
             '
         instructions:
           type: object
-          description: 'Lists the state-specific signature block language and ID requirements for registering to vote by mail.
+          description: 'Lists the state-specific requirements for registering to vote online.
 
             '
           properties:
-            signature:
-              description: 'Provides the state-specific language for voters to affirm when they complete and sign their paper registration form. This language varies from state to state.
+            registration:
+              description: 'Provides the identification requirements and other instructions for registering to vote online.
 
                 '
               $ref: '#/components/schemas/LocalizedField'
-            idnumber:
-              description: 'Provides the state-specific identification requirements for registering to vote by mail.
-
-                '
-              $ref: '#/components/schemas/LocalizedField'
-        acceptable-forms:
-          type: array
-          description: 'Lists the paper registration form accepted by the state.
+        supports-iframe:
+          type: boolean
+          description: 'Indicates whether the state online voter registration site can be iframed. `true`: can be iframed, `false`: cannot be iframed.
 
             '
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                description: 'Display name for the state-accepted registration form. Most states accept the National Voter Registration Form (`nvrf`). Voters in Wyoming must use the state-specific registration form (`wy_reg`). This field is left blank in New Hampshire and North Dakota.
-
-                  '
-        deadline-received:
+        deadline-online:
           type: string
           format: date-time
-          description: 'Indicates that a by mail voter registration application must be received by the designated election office by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+          description: 'Provides the deadline date for registering online to vote for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
 
             '
-        deadline-postmarked:
+        url:
           type: string
-          format: date-time
-          description: 'Indicates that a by mail voter registration applications must be postmarked by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+          format: uri
+          description: 'Provides the link to the state online voter registration system.
 
             '
-        deadline-in-person:
-          type: string
-          format: date-time
-          description: 'Indicates that a by mail voter registration must be delivered/completed in person (by the voter) by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
-
-            '
-        new-voter:
-          type: string
     ByMailVotingMethod:
       type: object
       required:
@@ -752,18 +681,415 @@ components:
                 description: 'For internal use only. Name for the ballot request application.
 
                   '
-    pagination:
+    LocalizedField:
+      oneOf:
+      - type: object
+        properties:
+          en:
+            type: string
+            description: English text
+          es:
+            type: string
+            description: Spanish text
+      - type: string
+        description: Localized text dependent on the `language` parameter
+    ByMailRegistrationMethod:
       type: object
       properties:
-        totalRecordCount:
+        type:
+          type: string
+          enum:
+          - by-mail
+          description: 'Indicates that registering to vote by mail is an option for the particular election. The sections following provide the state-specific requirements. This field, and fields associated with registering to vote by mail are not available for elections in New Hampshire or North Dakota.
+
+            '
+        instructions:
+          type: object
+          description: 'Lists the state-specific signature block language and ID requirements for registering to vote by mail.
+
+            '
+          properties:
+            signature:
+              description: 'Provides the state-specific language for voters to affirm when they complete and sign their paper registration form. This language varies from state to state.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+            idnumber:
+              description: 'Provides the state-specific identification requirements for registering to vote by mail.
+
+                '
+              $ref: '#/components/schemas/LocalizedField'
+        acceptable-forms:
+          type: array
+          description: 'Lists the paper registration form accepted by the state.
+
+            '
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: 'Display name for the state-accepted registration form. Most states accept the National Voter Registration Form (`nvrf`). Voters in Wyoming must use the state-specific registration form (`wy_reg`). This field is left blank in New Hampshire and North Dakota.
+
+                  '
+        deadline-received:
+          type: string
+          format: date-time
+          description: 'Indicates that a by mail voter registration application must be received by the designated election office by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        deadline-postmarked:
+          type: string
+          format: date-time
+          description: 'Indicates that a by mail voter registration applications must be postmarked by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        deadline-in-person:
+          type: string
+          format: date-time
+          description: 'Indicates that a by mail voter registration must be delivered/completed in person (by the voter) by the deadline date for the particular election. This [timestamp should be interpreted as a date](#tag/DateAsTimestamp).
+
+            '
+        new-voter:
+          type: string
+    ballotMeasure:
+      description: Information on the ballot measures on the ballot, including a summary and the full text of the ballot measure.
+      type: object
+      required:
+      - id
+      - name
+      - shortName
+      - districtName
+      - districtType
+      - type
+      - topics
+      - summary
+      - yesVote
+      - noVote
+      - ocdId
+      properties:
+        id:
+          type: string
+          description: The ID of the ballot measure.
+        name:
+          type: string
+          description: The name of the ballot measure.
+        shortName:
+          type: string
+          description: The concise name of the ballot measure.
+        streamlinedName:
+          type: string
+          description: The ballot measure name without reference to the state name or year.
+        districtName:
+          type: string
+          description: The name of the district covered by the ballot measure.
+        districtType:
+          type: string
+          description: The type of district relevant to the ballot measure.
+          enum:
+          - cityTown
+          - cityTownSubdivision
+          - congress
+          - county
+          - countySubdivision
+          - judicialDistrict
+          - judicialDistrictSubdivision
+          - schoolDistrict
+          - schoolDistrictSubdivision
+          - specialDistrict
+          - specialDistrictSubdivision
+          - state
+          - stateLegislativeLower
+          - stateLegislativeUpper
+          - stateSubdivision
+          - township
+        type:
+          type: string
+          description: The type of ballot measure.
+        topics:
+          type: array
+          items:
+            type: string
+          description: An array of topics covered by a ballot measure.
+        topicAreas:
+          type: array
+          items:
+            type: string
+          description: 'An array of topic areas covered by a ballot measure.
+
+
+            `Localized`
+
+            '
+        summary:
+          type: string
+          description: Describes a summary of the ballot measure.
+        yesVote:
+          type: string
+          description: Describes what a vote supporting the ballot measure means.
+        noVote:
+          type: string
+          description: Describes what a vote opposed to the ballot measure means.
+        yesVotesTotal:
           type: number
-          description: Total records found for the given query.
-        currentPage:
+          description: The number of YES votes this ballot measure received.
+        noVotesTotal:
           type: number
-          description: The page of records returned.
-        pageSize:
+          description: The number of NO votes this ballot measure received.
+        ballotQuestion:
+          type: string
+          description: The full text of the ballot measure.
+        ocdId:
+          type: string
+          description: The OCD-ID associated with the jurisidiction covered by the ballot measure.
+        status:
+          type: string
+        endorsementYesCount:
           type: number
-          description: The number of records returned.
+          description: The number of "support" endorsements for this ballot measure.
+        endorsementNoCount:
+          type: number
+          description: The number of "oppose" endorsements for this ballot measure
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
+    candidate:
+      description: A representation of a candidate.
+      type: object
+      required:
+      - id
+      - fullName
+      - firstName
+      - lastName
+      - partyAffiliation
+      - isWriteIn
+      properties:
+        id:
+          type: string
+          description: The ID of the candidate.
+        fullName:
+          type: string
+          description: The full name of the candidate.
+        firstName:
+          type: string
+          description: The first name of the candidate.
+        lastName:
+          type: string
+          description: The last name of the candidate.
+        partyAffiliation:
+          type: array
+          description: Describes the party affiliation of the candidate.
+          items:
+            type: string
+        isIncumbent:
+          type: boolean
+          description: Indicates whether a candidate is an incumbent.
+        isWriteIn:
+          type: boolean
+          description: Indicates whether a candidate is a write-in candidate.
+        ballotpediaUrl:
+          type: string
+          description: The URL of the candidate's Ballotpedia page.
+        status:
+          type: string
+          description: The status of the candidate in that contest.
+          enum:
+          - won
+          - lost
+          - advanced
+          - declared
+          - disqualified
+          - onBallot
+          - withdrew
+          - notable
+          - acclaimed
+          - withdrewStillOnBallot
+        runningMateFullName:
+          type: string
+          description: The full name of the candidate's running mate.
+        runningMateTitle:
+          type: string
+          description: The title of the candidate's running mate.
+        rankedChoiceVotingRound:
+          type: number
+          description: RCV results are reported in “rounds” of calculations. Ballotpedia reports each round of these results, so a candidate in an RCV will have a row for each round of calculation in that stage. The first round of results reported will have this attribute = 1. Rounds will count up until the final round.
+        endorsementCount:
+          type: number
+          description: The number of endorsements available for this candidate.
+        contact:
+          type: object
+          properties:
+            campaign:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The candidate’s campaign email address.
+                website:
+                  type: string
+                  description: The candidate’s campaign website.
+                facebook:
+                  type: string
+                  description: The candidate’s campaign Facebook.
+                twitter:
+                  type: string
+                  description: The candidate’s campaign Twitter.
+                instagram:
+                  type: string
+                  description: The candidate’s campaign Instagram.
+                youtube:
+                  type: string
+                  description: The candidate’s campaign YouTube.
+                mailingAddress:
+                  type: string
+                  description: The candidate’s campaign mailing address.
+                phone:
+                  type: string
+                  description: The candidate’s campaign phone number.
+            personal:
+              type: object
+              properties:
+                website:
+                  type: string
+                  description: The candidate’s personal website.
+                facebook:
+                  type: string
+                  description: The candidate’s personal Facebook.
+                twitter:
+                  type: string
+                  description: The candidate’s personal Twitter.
+                instagram:
+                  type: string
+                  description: The candidate’s personal Instagram.
+                youtube:
+                  type: string
+                  description: The candidate’s personal YouTube.
+                linkedIn:
+                  type: string
+                  description: The candidate’s personal LinkedIn.
+    contest:
+      description: Information on the race for the specific office up for election, including the list of candidates and candidate information.
+      type: object
+      required:
+      - id
+      - name
+      - level
+      - districtName
+      - ocdId
+      - seatsUpForElection
+      - candidates
+      properties:
+        id:
+          type: string
+          description: The ID of the contest.
+        name:
+          type: string
+          description: 'The name of the office  (ex: “President”).'
+        title:
+          type: string
+          description: Human readable title of the office (e.g. Senator)
+        body:
+          type: string
+          description: Label of legislative or judicial body to which the contest belongs
+        level:
+          type: string
+          description: The level of the contest.
+          enum:
+          - federal
+          - state
+          - local
+        branch:
+          type: string
+          description: The branch of government of the office.
+          enum:
+          - executive
+          - judicial
+          - legislative
+        districtName:
+          type: string
+          description: The name of the district that elects the office.
+        districtType:
+          type: string
+          description: The type of district that elects the office.
+          enum:
+          - cityTown
+          - cityTownSubdivision
+          - congress
+          - county
+          - countySubdivision
+          - judicialDistrict
+          - judicialDistrictSubdivision
+          - schoolDistrict
+          - schoolDistrictSubdivision
+          - specialDistrict
+          - specialDistrictSubdivision
+          - state
+          - stateLegislativeLower
+          - stateLegislativeUpper
+          - stateSubdivision
+          - township
+        contestType:
+          type: string
+          description: The type of contest.
+          enum:
+          - regular
+          - special
+          - recall
+        ocdId:
+          type: string
+          description: The OCD-ID of the contest.
+        seatsUpForElection:
+          type: string
+          description: The number of seats up for election.
+        rankedChoice:
+          type: boolean
+          description: If the contest is conducted by ranked choice voting (RCV), then TRUE; else FALSE.
+        rankedChoiceExplainerURL:
+          type: string
+          description: Link to state or local election administrator website explaining how ranked choice voting works.
+        rankedChoiceRankNumber:
+          type: number
+          description: Number of candidates a voter can rank on a ballot in a Ranked Choice Election.
+        hasPrimary:
+          type: boolean
+          description: For a general election, indicates if an associated primary election exists.
+        primaryDate:
+          type: string
+          description: For a general election, provides the date of the associated primary election.
+        generalDate:
+          type: string
+        partisanPrimary:
+          type: string
+        partisanPrimaryExplainerUrl:
+          type: string
+          description: URL where voter can learn more about how to vote in the party primary contest.
+        partisanPrimaryExplainerEn:
+          type: string
+          description: English-language sentence explaining to voters how to vote in the party primary contest.
+        partisanPrimaryExplainerEs:
+          type: string
+          description: Spanish-language sentence explaining to voters how to vote in the party primary contest.
+        partisanPrimaryExplainerSharedId:
+          type: string
+          description: Hash for all contests (associated with the election) sharing the same guidance.
+        cancelled:
+          type: boolean
+          description: TRUE if contest does not appear on ballot due to a cancellation. Contests may be cancelled if the number of candidates filed is less than or equal to the number of positions up for election. Not all jurisdictions cancel contests under these circumstances as write-in votes may be allowed in some case
+        aboutOffice:
+          type: string
+          description: A brief summary of the role and responsibilities associated with an office.
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/candidate'
+          description: A list of candidates running for election for the contest.
     election:
       description: A representation of an election.
       type: object
@@ -1438,383 +1764,18 @@ components:
           type: string
       required:
       - message
-    errors:
+    pagination:
       type: object
       properties:
-        status:
-          type: integer
-        message:
-          type: array
-      required:
-      - status
-      - message
-    ballotMeasure:
-      description: Information on the ballot measures on the ballot, including a summary and the full text of the ballot measure.
-      type: object
-      required:
-      - id
-      - name
-      - shortName
-      - districtName
-      - districtType
-      - type
-      - topics
-      - summary
-      - yesVote
-      - noVote
-      - ocdId
-      properties:
-        id:
-          type: string
-          description: The ID of the ballot measure.
-        name:
-          type: string
-          description: The name of the ballot measure.
-        shortName:
-          type: string
-          description: The concise name of the ballot measure.
-        streamlinedName:
-          type: string
-          description: The ballot measure name without reference to the state name or year.
-        districtName:
-          type: string
-          description: The name of the district covered by the ballot measure.
-        districtType:
-          type: string
-          description: The type of district relevant to the ballot measure.
-          enum:
-          - cityTown
-          - cityTownSubdivision
-          - congress
-          - county
-          - countySubdivision
-          - judicialDistrict
-          - judicialDistrictSubdivision
-          - schoolDistrict
-          - schoolDistrictSubdivision
-          - specialDistrict
-          - specialDistrictSubdivision
-          - state
-          - stateLegislativeLower
-          - stateLegislativeUpper
-          - stateSubdivision
-          - township
-        type:
-          type: string
-          description: The type of ballot measure.
-        topics:
-          type: array
-          items:
-            type: string
-          description: An array of topics covered by a ballot measure.
-        topicAreas:
-          type: array
-          items:
-            type: string
-          description: 'An array of topic areas covered by a ballot measure.
-
-
-            `Localized`
-
-            '
-        summary:
-          type: string
-          description: Describes a summary of the ballot measure.
-        yesVote:
-          type: string
-          description: Describes what a vote supporting the ballot measure means.
-        noVote:
-          type: string
-          description: Describes what a vote opposed to the ballot measure means.
-        yesVotesTotal:
+        totalRecordCount:
           type: number
-          description: The number of YES votes this ballot measure received.
-        noVotesTotal:
+          description: Total records found for the given query.
+        currentPage:
           type: number
-          description: The number of NO votes this ballot measure received.
-        ballotQuestion:
-          type: string
-          description: The full text of the ballot measure.
-        ocdId:
-          type: string
-          description: The OCD-ID associated with the jurisidiction covered by the ballot measure.
-        status:
-          type: string
-        endorsementYesCount:
+          description: The page of records returned.
+        pageSize:
           type: number
-          description: The number of "support" endorsements for this ballot measure.
-        endorsementNoCount:
-          type: number
-          description: The number of "oppose" endorsements for this ballot measure
-    candidate:
-      description: A representation of a candidate.
-      type: object
-      required:
-      - id
-      - fullName
-      - firstName
-      - lastName
-      - partyAffiliation
-      - isWriteIn
-      properties:
-        id:
-          type: string
-          description: The ID of the candidate.
-        fullName:
-          type: string
-          description: The full name of the candidate.
-        firstName:
-          type: string
-          description: The first name of the candidate.
-        lastName:
-          type: string
-          description: The last name of the candidate.
-        partyAffiliation:
-          type: array
-          description: Describes the party affiliation of the candidate.
-          items:
-            type: string
-        isIncumbent:
-          type: boolean
-          description: Indicates whether a candidate is an incumbent.
-        isWriteIn:
-          type: boolean
-          description: Indicates whether a candidate is a write-in candidate.
-        ballotpediaUrl:
-          type: string
-          description: The URL of the candidate's Ballotpedia page.
-        status:
-          type: string
-          description: The status of the candidate in that contest.
-          enum:
-          - won
-          - lost
-          - advanced
-          - declared
-          - disqualified
-          - onBallot
-          - withdrew
-          - notable
-          - acclaimed
-          - withdrewStillOnBallot
-        runningMateFullName:
-          type: string
-          description: The full name of the candidate's running mate.
-        runningMateTitle:
-          type: string
-          description: The title of the candidate's running mate.
-        rankedChoiceVotingRound:
-          type: number
-          description: RCV results are reported in “rounds” of calculations. Ballotpedia reports each round of these results, so a candidate in an RCV will have a row for each round of calculation in that stage. The first round of results reported will have this attribute = 1. Rounds will count up until the final round.
-        endorsementCount:
-          type: number
-          description: The number of endorsements available for this candidate.
-        contact:
-          type: object
-          properties:
-            campaign:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: The candidate’s campaign email address.
-                website:
-                  type: string
-                  description: The candidate’s campaign website.
-                facebook:
-                  type: string
-                  description: The candidate’s campaign Facebook.
-                twitter:
-                  type: string
-                  description: The candidate’s campaign Twitter.
-                instagram:
-                  type: string
-                  description: The candidate’s campaign Instagram.
-                youtube:
-                  type: string
-                  description: The candidate’s campaign YouTube.
-                mailingAddress:
-                  type: string
-                  description: The candidate’s campaign mailing address.
-                phone:
-                  type: string
-                  description: The candidate’s campaign phone number.
-            personal:
-              type: object
-              properties:
-                website:
-                  type: string
-                  description: The candidate’s personal website.
-                facebook:
-                  type: string
-                  description: The candidate’s personal Facebook.
-                twitter:
-                  type: string
-                  description: The candidate’s personal Twitter.
-                instagram:
-                  type: string
-                  description: The candidate’s personal Instagram.
-                youtube:
-                  type: string
-                  description: The candidate’s personal YouTube.
-                linkedIn:
-                  type: string
-                  description: The candidate’s personal LinkedIn.
-    contest:
-      description: Information on the race for the specific office up for election, including the list of candidates and candidate information.
-      type: object
-      required:
-      - id
-      - name
-      - level
-      - districtName
-      - ocdId
-      - seatsUpForElection
-      - candidates
-      properties:
-        id:
-          type: string
-          description: The ID of the contest.
-        name:
-          type: string
-          description: 'The name of the office  (ex: “President”).'
-        title:
-          type: string
-          description: Human readable title of the office (e.g. Senator)
-        body:
-          type: string
-          description: Label of legislative or judicial body to which the contest belongs
-        level:
-          type: string
-          description: The level of the contest.
-          enum:
-          - federal
-          - state
-          - local
-        branch:
-          type: string
-          description: The branch of government of the office.
-          enum:
-          - executive
-          - judicial
-          - legislative
-        districtName:
-          type: string
-          description: The name of the district that elects the office.
-        districtType:
-          type: string
-          description: The type of district that elects the office.
-          enum:
-          - cityTown
-          - cityTownSubdivision
-          - congress
-          - county
-          - countySubdivision
-          - judicialDistrict
-          - judicialDistrictSubdivision
-          - schoolDistrict
-          - schoolDistrictSubdivision
-          - specialDistrict
-          - specialDistrictSubdivision
-          - state
-          - stateLegislativeLower
-          - stateLegislativeUpper
-          - stateSubdivision
-          - township
-        contestType:
-          type: string
-          description: The type of contest.
-          enum:
-          - regular
-          - special
-          - recall
-        ocdId:
-          type: string
-          description: The OCD-ID of the contest.
-        seatsUpForElection:
-          type: string
-          description: The number of seats up for election.
-        rankedChoice:
-          type: boolean
-          description: If the contest is conducted by ranked choice voting (RCV), then TRUE; else FALSE.
-        rankedChoiceExplainerURL:
-          type: string
-          description: Link to state or local election administrator website explaining how ranked choice voting works.
-        rankedChoiceRankNumber:
-          type: number
-          description: Number of candidates a voter can rank on a ballot in a Ranked Choice Election.
-        hasPrimary:
-          type: boolean
-          description: For a general election, indicates if an associated primary election exists.
-        primaryDate:
-          type: string
-          description: For a general election, provides the date of the associated primary election.
-        generalDate:
-          type: string
-        partisanPrimary:
-          type: string
-        partisanPrimaryExplainerUrl:
-          type: string
-          description: URL where voter can learn more about how to vote in the party primary contest.
-        partisanPrimaryExplainerEn:
-          type: string
-          description: English-language sentence explaining to voters how to vote in the party primary contest.
-        partisanPrimaryExplainerEs:
-          type: string
-          description: Spanish-language sentence explaining to voters how to vote in the party primary contest.
-        partisanPrimaryExplainerSharedId:
-          type: string
-          description: Hash for all contests (associated with the election) sharing the same guidance.
-        cancelled:
-          type: boolean
-          description: TRUE if contest does not appear on ballot due to a cancellation. Contests may be cancelled if the number of candidates filed is less than or equal to the number of positions up for election. Not all jurisdictions cancel contests under these circumstances as write-in votes may be allowed in some case
-        aboutOffice:
-          type: string
-          description: A brief summary of the role and responsibilities associated with an office.
-        candidates:
-          type: array
-          items:
-            $ref: '#/components/schemas/candidate'
-          description: A list of candidates running for election for the contest.
-  responses:
-    contentTooLargeError:
-      description: Content Too Large Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 413
-            message:
-            - Response size too large. Try again with a smaller pageSize.
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
-    badRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
-    tooManyRequestsError:
-      description: TooManyRequestsError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/gatewayErrors'
-          example:
-            message: Too Many Requests
+          description: The number of records returned.
   examples:
     elections:
       summary: Sample elections response
@@ -2280,6 +2241,45 @@ components:
           totalRecordCount: 2
           currentPage: 1
           pageSize: 10
+  responses:
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    contentTooLargeError:
+      description: Content Too Large Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 413
+            message:
+            - Response size too large. Try again with a smaller pageSize.
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

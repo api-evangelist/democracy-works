@@ -29,6 +29,10 @@ accessModel:
 position: Consuming
 access: 3rd-Party
 image: https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/democracy-works-elections-api-democracy-works-election-data.png
+x-docs-platform: redocly
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-09-25
+x-docs-hosting: netlify
 tags:
 - Civic Tech
 - Elections

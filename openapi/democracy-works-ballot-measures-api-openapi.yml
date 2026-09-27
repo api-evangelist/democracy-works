@@ -55,85 +55,7 @@ paths:
       tags:
       - Ballot Measures
 components:
-  examples:
-    ballotMeasures:
-      summary: Sample ballotMeasure response
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        data:
-          ballotMeasures:
-            id: bm_b2897f4f799485eaba40901bc0ed38310dc8211a
-            name: Yreka, California, Measure V, Sales Tax Measure (November 2024)
-            shortName: Measure V
-            streamlinedName: Yreka, California, Measure V, Sales Tax Measure
-            districtName: Yreka
-            districtType: cityTown
-            type: Referral
-            topics:
-            - Local electoral systems
-            - Local elections and campaigns
-            topicAreas:
-            - Law Enforcement
-            - Taxes
-            summary: Authorize an additional sales tax of 1% with revenue dedicated to public safety services
-            yesVote: <p>A “yes” vote supported authorizing an additional sales tax of 1% with revenue dedicated to public safety services.</p>
-            yesVoteTotal: 1655
-            noVote: <p>A “no” vote opposed authorizing an additional sales tax of 1% with revenue dedicated to public safety services.</p>
-            noVoteTotal: 1458
-            ballotQuestion: I<p>MEASURE V</p><p>To maintain and improve essential city services, including local firefighting and emergency medical response; hire and train firefighters; upgrade/replace aging firefighting safety equipment, life-saving tools and an outdated fire station, shall an ordinance be adopted to impose a one percent sales tax providing approximately 2.4 million dollars annually for general government use, until ended by the voters, with independent audits and all funds staying local</p><p>YES_________ NO__________</p>"
-            ocdId: ocd-division/country:us/state:ca/place:yreka
-            status: approved
-            endorsementYesCount: 1
-            endorsementNoCount: 0
-  responses:
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
-    badRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
-    tooManyRequestsError:
-      description: TooManyRequestsError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/gatewayErrors'
-          example:
-            message: Too Many Requests
   schemas:
-    gatewayErrors:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
-    errors:
-      type: object
-      properties:
-        status:
-          type: integer
-        message:
-          type: array
-      required:
-      - status
-      - message
     ballotMeasure:
       description: Information on the ballot measures on the ballot, including a summary and the full text of the ballot measure.
       type: object
@@ -232,6 +154,84 @@ components:
         endorsementNoCount:
           type: number
           description: The number of "oppose" endorsements for this ballot measure
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+  responses:
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
+  examples:
+    ballotMeasures:
+      summary: Sample ballotMeasure response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        data:
+          ballotMeasures:
+            id: bm_b2897f4f799485eaba40901bc0ed38310dc8211a
+            name: Yreka, California, Measure V, Sales Tax Measure (November 2024)
+            shortName: Measure V
+            streamlinedName: Yreka, California, Measure V, Sales Tax Measure
+            districtName: Yreka
+            districtType: cityTown
+            type: Referral
+            topics:
+            - Local electoral systems
+            - Local elections and campaigns
+            topicAreas:
+            - Law Enforcement
+            - Taxes
+            summary: Authorize an additional sales tax of 1% with revenue dedicated to public safety services
+            yesVote: <p>A “yes” vote supported authorizing an additional sales tax of 1% with revenue dedicated to public safety services.</p>
+            yesVoteTotal: 1655
+            noVote: <p>A “no” vote opposed authorizing an additional sales tax of 1% with revenue dedicated to public safety services.</p>
+            noVoteTotal: 1458
+            ballotQuestion: I<p>MEASURE V</p><p>To maintain and improve essential city services, including local firefighting and emergency medical response; hire and train firefighters; upgrade/replace aging firefighting safety equipment, life-saving tools and an outdated fire station, shall an ordinance be adopted to impose a one percent sales tax providing approximately 2.4 million dollars annually for general government use, until ended by the voters, with independent audits and all funds staying local</p><p>YES_________ NO__________</p>"
+            ocdId: ocd-division/country:us/state:ca/place:yreka
+            status: approved
+            endorsementYesCount: 1
+            endorsementNoCount: 0
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
