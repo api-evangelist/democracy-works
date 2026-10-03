@@ -107,6 +107,35 @@ paths:
       - Endorsements
 components:
   schemas:
+    pagination:
+      type: object
+      properties:
+        totalRecordCount:
+          type: number
+          description: Total records found for the given query.
+        currentPage:
+          type: number
+          description: The page of records returned.
+        pageSize:
+          type: number
+          description: The number of records returned.
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
     endorsement:
       description: Information regarding an endorsement for a candidate or ballot measure.
       type: object
@@ -133,35 +162,55 @@ components:
           enum:
           - 'yes'
           - 'no'
-    errors:
-      type: object
-      properties:
-        status:
-          type: integer
-        message:
-          type: array
-      required:
-      - status
-      - message
-    gatewayErrors:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
-    pagination:
-      type: object
-      properties:
-        totalRecordCount:
-          type: number
-          description: Total records found for the given query.
-        currentPage:
-          type: number
-          description: The page of records returned.
-        pageSize:
-          type: number
-          description: The number of records returned.
+  responses:
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
+    contentTooLargeError:
+      description: Content Too Large Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 413
+            message:
+            - Response size too large. Try again with a smaller pageSize.
+    notFoundError:
+      description: Not Found Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 404
+            message:
+            - Object not found.
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
   examples:
     cEndorsements:
       summary: Sample endorsements response by candidateId
@@ -179,6 +228,17 @@ components:
           totalRecordCount: 1
           currentPage: 1
           pageSize: 10
+    bmEndorsement:
+      summary: Sample ballot measure endorsements response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        id: ben_92800009b57ea6d51a701ebaec4ce10be78494f3
+        type: Organization
+        name: Name of the Organization
+        source: website
+        position: 'yes'
     bmEndorsements:
       summary: Sample endorsements response by ballotMeasureId
       description: 'This is **fictional** data to provide examples of fields values.
@@ -206,66 +266,6 @@ components:
         name: Individual Name
         source: website
         position: null
-    bmEndorsement:
-      summary: Sample ballot measure endorsements response
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        id: ben_92800009b57ea6d51a701ebaec4ce10be78494f3
-        type: Organization
-        name: Name of the Organization
-        source: website
-        position: 'yes'
-  responses:
-    contentTooLargeError:
-      description: Content Too Large Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 413
-            message:
-            - Response size too large. Try again with a smaller pageSize.
-    notFoundError:
-      description: Not Found Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 404
-            message:
-            - Object not found.
-    badRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
-    tooManyRequestsError:
-      description: TooManyRequestsError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/gatewayErrors'
-          example:
-            message: Too Many Requests
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

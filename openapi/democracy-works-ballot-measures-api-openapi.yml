@@ -55,7 +55,53 @@ paths:
       tags:
       - Ballot Measures
 components:
+  responses:
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
   schemas:
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
     ballotMeasure:
       description: Information on the ballot measures on the ballot, including a summary and the full text of the ballot measure.
       type: object
@@ -154,52 +200,6 @@ components:
         endorsementNoCount:
           type: number
           description: The number of "oppose" endorsements for this ballot measure
-    errors:
-      type: object
-      properties:
-        status:
-          type: integer
-        message:
-          type: array
-      required:
-      - status
-      - message
-    gatewayErrors:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
-  responses:
-    badRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
-    tooManyRequestsError:
-      description: TooManyRequestsError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/gatewayErrors'
-          example:
-            message: Too Many Requests
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
   examples:
     ballotMeasures:
       summary: Sample ballotMeasure response
