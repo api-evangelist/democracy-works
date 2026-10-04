@@ -55,17 +55,55 @@ paths:
       tags:
       - Candidates
 components:
+  examples:
+    candidates:
+      summary: Sample Candidate response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        data:
+          candidates:
+            id: can_92800009b57ea6d51a701ebaec4ce10be78494f3
+            fullName: Jesse Lee Gunn
+            firstName: Jesse
+            lastName: Gunn
+            partyAffiliation:
+            - Nonpartisan
+            isIncumbent: false
+            isWriteIn: false
+            ballotpediaUrl: https://ballotpedia.org/Jesse_Lee_Gunn
+            status: lost
+            runningMateFullName: null
+            runningMateTitle: null
+            rankedChoiceVotingRound: null
+            endorsementCount: 1
+            contact:
+              campaign:
+                email: jg4act@gmail.com
+                website: https://www.jesse2024.com/
+                facebook: https://www.facebook.com/jesse4transit
+                twitter: null
+                instagram: https://www.instagram.com/jesse4transit
+                youtube: null
+                mailingAddress: 510 Schafer Road Hayward CA 94544
+                phone: 510-512-4236
+              personal:
+                website: null
+                facebook: https://www.facebook.com/jesse4transit
+                twitter: jessegunnmath
+                instagram: null
+                youtube: https://www.youtube.com/@jessegunn5994
+                linkedIn: https://www.linkedin.com/in/jesse4transit/
   responses:
-    badRequestError:
-      description: Bad Request
+    tooManyRequestsError:
+      description: TooManyRequestsError
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errors'
+            $ref: '#/components/schemas/gatewayErrors'
           example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+            message: Too Many Requests
     internalServerError:
       description: InternalServerError
       content:
@@ -76,32 +114,17 @@ components:
             status: 500
             message:
             - Something went wrong.
-    tooManyRequestsError:
-      description: TooManyRequestsError
+    badRequestError:
+      description: Bad Request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/gatewayErrors'
+            $ref: '#/components/schemas/errors'
           example:
-            message: Too Many Requests
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
   schemas:
-    errors:
-      type: object
-      properties:
-        status:
-          type: integer
-        message:
-          type: array
-      required:
-      - status
-      - message
-    gatewayErrors:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
     candidate:
       description: A representation of a candidate.
       type: object
@@ -216,46 +239,23 @@ components:
                 linkedIn:
                   type: string
                   description: The candidate’s personal LinkedIn.
-  examples:
-    candidates:
-      summary: Sample Candidate response
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        data:
-          candidates:
-            id: can_92800009b57ea6d51a701ebaec4ce10be78494f3
-            fullName: Jesse Lee Gunn
-            firstName: Jesse
-            lastName: Gunn
-            partyAffiliation:
-            - Nonpartisan
-            isIncumbent: false
-            isWriteIn: false
-            ballotpediaUrl: https://ballotpedia.org/Jesse_Lee_Gunn
-            status: lost
-            runningMateFullName: null
-            runningMateTitle: null
-            rankedChoiceVotingRound: null
-            endorsementCount: 1
-            contact:
-              campaign:
-                email: jg4act@gmail.com
-                website: https://www.jesse2024.com/
-                facebook: https://www.facebook.com/jesse4transit
-                twitter: null
-                instagram: https://www.instagram.com/jesse4transit
-                youtube: null
-                mailingAddress: 510 Schafer Road Hayward CA 94544
-                phone: 510-512-4236
-              personal:
-                website: null
-                facebook: https://www.facebook.com/jesse4transit
-                twitter: jessegunnmath
-                instagram: null
-                youtube: https://www.youtube.com/@jessegunn5994
-                linkedIn: https://www.linkedin.com/in/jesse4transit/
+    errors:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: array
+      required:
+      - status
+      - message
+    gatewayErrors:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

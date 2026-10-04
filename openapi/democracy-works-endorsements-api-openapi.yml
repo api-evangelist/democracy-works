@@ -106,6 +106,110 @@ paths:
       tags:
       - Endorsements
 components:
+  responses:
+    contentTooLargeError:
+      description: Content Too Large Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 413
+            message:
+            - Response size too large. Try again with a smaller pageSize.
+    notFoundError:
+      description: Not Found Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 404
+            message:
+            - Object not found.
+    tooManyRequestsError:
+      description: TooManyRequestsError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gatewayErrors'
+          example:
+            message: Too Many Requests
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 500
+            message:
+            - Something went wrong.
+    badRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+          example:
+            status: 400
+            message:
+            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
+  examples:
+    cEndorsement:
+      summary: Sample candidate endorsements response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        id: cen_92800009b57ea6d51a701ebaec4ce10be78494f3
+        type: Individual-Other
+        name: Individual Name
+        source: website
+        position: null
+    cEndorsements:
+      summary: Sample endorsements response by candidateId
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        data:
+        - id: cen_92800009b57ea6d51a701ebaec4ce10be78494f3
+          type: Individual-Other
+          name: Individual Name
+          source: website
+          position: null
+        pagination:
+          totalRecordCount: 1
+          currentPage: 1
+          pageSize: 10
+    bmEndorsements:
+      summary: Sample endorsements response by ballotMeasureId
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        data:
+        - id: ben_92800009b57ea6d51a701ebaec4ce10be78494f3
+          type: Organization
+          name: Name of the Organization
+          source: website
+          position: 'yes'
+        pagination:
+          totalRecordCount: 1
+          currentPage: 1
+          pageSize: 10
+    bmEndorsement:
+      summary: Sample ballot measure endorsements response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        id: ben_92800009b57ea6d51a701ebaec4ce10be78494f3
+        type: Organization
+        name: Name of the Organization
+        source: website
+        position: 'yes'
   schemas:
     pagination:
       type: object
@@ -162,110 +266,6 @@ components:
           enum:
           - 'yes'
           - 'no'
-  responses:
-    badRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 400
-            message:
-            - Something has gone wrong parsing your request. Please refer to our documentation at https://developers.democracy.works/api/v2 to confirm all required fields are present and all fields are formatted correctly.
-    internalServerError:
-      description: InternalServerError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 500
-            message:
-            - Something went wrong.
-    contentTooLargeError:
-      description: Content Too Large Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 413
-            message:
-            - Response size too large. Try again with a smaller pageSize.
-    notFoundError:
-      description: Not Found Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-          example:
-            status: 404
-            message:
-            - Object not found.
-    tooManyRequestsError:
-      description: TooManyRequestsError
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/gatewayErrors'
-          example:
-            message: Too Many Requests
-  examples:
-    cEndorsements:
-      summary: Sample endorsements response by candidateId
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        data:
-        - id: cen_92800009b57ea6d51a701ebaec4ce10be78494f3
-          type: Individual-Other
-          name: Individual Name
-          source: website
-          position: null
-        pagination:
-          totalRecordCount: 1
-          currentPage: 1
-          pageSize: 10
-    bmEndorsement:
-      summary: Sample ballot measure endorsements response
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        id: ben_92800009b57ea6d51a701ebaec4ce10be78494f3
-        type: Organization
-        name: Name of the Organization
-        source: website
-        position: 'yes'
-    bmEndorsements:
-      summary: Sample endorsements response by ballotMeasureId
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        data:
-        - id: ben_92800009b57ea6d51a701ebaec4ce10be78494f3
-          type: Organization
-          name: Name of the Organization
-          source: website
-          position: 'yes'
-        pagination:
-          totalRecordCount: 1
-          currentPage: 1
-          pageSize: 10
-    cEndorsement:
-      summary: Sample candidate endorsements response
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        id: cen_92800009b57ea6d51a701ebaec4ce10be78494f3
-        type: Individual-Other
-        name: Individual Name
-        source: website
-        position: null
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

@@ -95,6 +95,57 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    StateAuthorityUrlResponse:
+      type: object
+      properties:
+        voter-registration-status-url:
+          type: string
+          format: uri
+          description: 'URL for voter to check their status
+
+            '
+        voter-registration-status-url-shortened:
+          type: string
+          format: uri
+          description: 'Shortened URL for a voter to check their status
+
+            '
+        local-election-authority-lookup-url:
+          type: string
+          format: uri
+          example: https://tvote.org/abcd123
+          description: 'URL for voter to contact their local Election Authority
+
+            '
+        local-reg-authority-lookup-url:
+          type: string
+          format: uri
+          description: 'URL for voter to contact their local Registration Authority
+
+            '
+    StateAuthorityAddress:
+      type: object
+      properties:
+        street:
+          type: string
+          description: 'Street address for state election office
+
+            '
+        city:
+          type: string
+          description: 'City for state election office
+
+            '
+        state:
+          type: string
+          description: 'State abbreviation
+
+            '
+        zip:
+          type: string
+          description: 'Zip code for state election office
+
+            '
     StateAuthorityResponse:
       type: object
       required:
@@ -168,54 +219,3 @@ components:
           type: string
           format: uri
           description: "Link to the state election website. \n"
-    StateAuthorityAddress:
-      type: object
-      properties:
-        street:
-          type: string
-          description: 'Street address for state election office
-
-            '
-        city:
-          type: string
-          description: 'City for state election office
-
-            '
-        state:
-          type: string
-          description: 'State abbreviation
-
-            '
-        zip:
-          type: string
-          description: 'Zip code for state election office
-
-            '
-    StateAuthorityUrlResponse:
-      type: object
-      properties:
-        voter-registration-status-url:
-          type: string
-          format: uri
-          description: 'URL for voter to check their status
-
-            '
-        voter-registration-status-url-shortened:
-          type: string
-          format: uri
-          description: 'Shortened URL for a voter to check their status
-
-            '
-        local-election-authority-lookup-url:
-          type: string
-          format: uri
-          example: https://tvote.org/abcd123
-          description: 'URL for voter to contact their local Election Authority
-
-            '
-        local-reg-authority-lookup-url:
-          type: string
-          format: uri
-          description: 'URL for voter to contact their local Registration Authority
-
-            '

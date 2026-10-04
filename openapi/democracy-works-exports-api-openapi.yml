@@ -43,15 +43,6 @@ paths:
       tags:
       - Exports
 components:
-  examples:
-    exports:
-      summary: Sample exports response
-      description: 'This is **fictional** data to provide examples of fields values.
-
-        '
-      value:
-        exportName: supplemental_data.json
-        exportUrl: https://example_presigned_url.s3.us-west-2.amazonaws.com/file.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=temporary_credential&X-Amz-Date=20180210T171315Z&X-Amz-Expires=3600&X-Amz-Signature=abc123&X-Amz-SignedHeaders=host
   schemas:
     export:
       description: A representation of an export.
@@ -63,6 +54,15 @@ components:
         exportUrl:
           type: string
           description: Provides a presigned URL to a file in AWS s3 containing data in JSON format.
+  examples:
+    exports:
+      summary: Sample exports response
+      description: 'This is **fictional** data to provide examples of fields values.
+
+        '
+      value:
+        exportName: supplemental_data.json
+        exportUrl: https://example_presigned_url.s3.us-west-2.amazonaws.com/file.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=temporary_credential&X-Amz-Date=20180210T171315Z&X-Amz-Expires=3600&X-Amz-Signature=abc123&X-Amz-SignedHeaders=host
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
