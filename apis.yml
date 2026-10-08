@@ -256,6 +256,8 @@ apis:
   - type: APIReference
     url: https://developers.democracy.works/api/v1
 common:
+- type: FinOps
+  url: finops/democracy-works-finops.yml
 - type: Overlay
   url: overlays/democracy-works-elections-v1-api-overlay.yaml
 - type: Authentication
