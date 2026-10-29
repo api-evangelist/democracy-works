@@ -1,4 +1,4 @@
-# Democracy Works (democracy-works)
+# Democracy Works
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,67 +64,173 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Democracy Works is a nonprofit civic technology organization providing reliable voting guidance for federal, state, and local elections. Its Elections API powers voter-facing platforms, apps, reminders, and outreach campaigns with comprehensive election and election-authority data keyed to Open Civic Data IDs.
+Democracy Works is a nonpartisan 501(c)(3) civic technology nonprofit, founded in 2010, that provides Americans with the guidance they need to vote in every election. Its Elections API delivers comprehensive federal, state, county and municipal election data — dates, deadlines, registration and voting methods, contests, candidates, ballot measures, endorsements and polling locations — keyed to Open Civic Data IDs and used by search, social and AI platforms including TikTok, Meta, Perplexity and Anthropic. It also runs TurboVote and co-runs the Voting Information Project with 40+ states.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/democracy-works/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/democracy-works/refs/heads/main/apis.yml)
+**Areas:** Civic Tech · Elections · Government · Non-Profit · Voter Information · Voting
 
-## Scope
+## Democracy Works on APIs.io
 
-- **Position:** Consuming
-- **Access:** 3rd-Party
+Everything profiled for Democracy Works is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/democracy-works/](https://apis.io/providers/democracy-works/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (9)
 
-- Civic Tech
-- Elections
-- Government
-- Nonprofit
-- Voter Information
-- Voting
+- [Democracy Works Authorities API](https://apis.io/apis/democracy-works/democracy-works-authorities-api/) — The Authorities API from Democracy Works — 3 operation(s) for authorities.
+- [Democracy Works Elections API](https://apis.io/apis/democracy-works/democracy-works-elections-api/) — The Elections API from Democracy Works — 1 operation(s) for elections.
+- [Democracy Works Exports API](https://apis.io/apis/democracy-works/democracy-works-exports-api/) — The Exports API from Democracy Works — 1 operation(s) for exports.
+- [Democracy Works Ballot Measures API](https://apis.io/apis/democracy-works/democracy-works-ballot-measures-api/) — The Ballot Measures API from Democracy Works — 1 operation retrieving a single ballot measure by id, with its ballot question, summary, yes/no framing,…
+- [Democracy Works Candidates API](https://apis.io/apis/democracy-works/democracy-works-candidates-api/) — The Candidates API from Democracy Works — 1 operation retrieving a single candidate by id, with party affiliation, incumbency, write-in status, running…
+- [Democracy Works Contests API](https://apis.io/apis/democracy-works/democracy-works-contests-api/) — The Contests API from Democracy Works — 1 operation retrieving a single contest by id, with its candidate list, seats up for election, ranked-choice rules,…
+- [Democracy Works Endorsements API](https://apis.io/apis/democracy-works/democracy-works-endorsements-api/) — The Endorsements API from Democracy Works — 2 operations: one endorsement by id, and endorsements in bulk for a candidate id or a ballot-measure id. Every…
+- [Democracy Works Voting Locations API](https://apis.io/apis/democracy-works/democracy-works-voting-locations-api/) — The Voting Locations API from Democracy Works — 1 operation returning polling places, early-voting sites and ballot drop boxes for a street address, with…
+- [Democracy Works Election Authorities API](https://apis.io/apis/democracy-works/democracy-works-election-authorities-api/) — The Election Authorities API from Democracy Works — 2 operation(s) for election authorities.
 
-## Timestamps
+### Published properties
 
-- **Created:** 2024-03-30
-- **Modified:** 2026-04-28
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### MCP servers (1)
 
-### Democracy Works Elections API
+Model Context Protocol servers that expose the API to agents.
 
-The Democracy Works Elections API provides reliable voting guidance for all levels of elections, from federal to local. It exposes elections, election authorities, state-level guidance, and bulk export endpoints used to inspire civic participation.
+- [democracy-works-mcp.yml](https://apis.io/servers/democracy-works/democracy-works-mcp-yml/)
 
-- **Human URL:** [https://data.democracy.works/api-info](https://data.democracy.works/api-info)
-- **Base URL:** `https://api.democracy.works/v2`
+#### JSON Schema (2)
 
-#### Tags
+The data models the API reads and writes.
 
-- Authorities
-- Elections
-- Exports
-- Voter Information
+- [Authority](https://apis.io/schemas/democracy-works/democracy-works-authority/)
+- [Election](https://apis.io/schemas/democracy-works/democracy-works-election/)
 
-#### Properties
+#### JSON-LD (1)
 
-- [Documentation](https://data.democracy.works/api-info)
-- [Sign Up](https://data.democracy.works/api-signup)
-- [OpenAPI](openapi/openapi-spec.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Rules](rules/democracy-works-elections-api-rules.yml)
-- [Capabilities](capabilities/democracy-works-elections-api-capabilities.yml)
-- [JSON Schema](json-schema/democracy-works-election-schema.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON Schema](json-schema/democracy-works-authority-schema.json) — [JSON Schema](https://json-schema.org/specification)
+Linked-data contexts for the provider's vocabulary.
 
-## Common Properties
+- [Democracy Works Context](https://apis.io/jsonld/democracy-works/democracy-works-context/)
 
-- [LinkedIn](https://www.linkedin.com/company/democracyworks)
+#### Vocabulary (1)
+
+The provider's domain terms, defined.
+
+- [Democracy Works Vocabulary](https://apis.io/vocabularies/democracy-works/democracy-works-vocabulary/)
+
+#### Collections (3)
+
+Postman and Open Collection request collections.
+
+- [Democracy Works Authorities API](https://apis.io/collections/democracy-works/open-democracy-works-authorities-api/)
+- [Democracy Works Elections API](https://apis.io/collections/democracy-works/open-democracy-works-elections-api/)
+- [Democracy Works Exports API](https://apis.io/collections/democracy-works/open-democracy-works-exports-api/)
+
+#### Overlays (9)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Democracy Works Authorities Api Overlay](https://apis.io/overlays/democracy-works/democracy-works-authorities-api-overlay/)
+- [Democracy Works Ballot Measures Api Overlay](https://apis.io/overlays/democracy-works/democracy-works-ballot-measures-api-overlay/)
+- [Democracy Works Candidates Api Overlay](https://apis.io/overlays/democracy-works/democracy-works-candidates-api-overlay/)
+- [Democracy Works Contests Api Overlay](https://apis.io/overlays/democracy-works/democracy-works-contests-api-overlay/)
+- [Democracy Works Elections Api Overlay](https://apis.io/overlays/democracy-works/democracy-works-elections-api-overlay/)
+- [Democracy Works Elections V1 Api Overlay](https://apis.io/overlays/democracy-works/democracy-works-elections-v1-api-overlay/)
+- [Democracy Works Endorsements Api Overlay](https://apis.io/overlays/democracy-works/democracy-works-endorsements-api-overlay/)
+- [Democracy Works Exports Api Overlay](https://apis.io/overlays/democracy-works/democracy-works-exports-api-overlay/)
+- [Democracy Works Voting Locations Api Overlay](https://apis.io/overlays/democracy-works/democracy-works-voting-locations-api-overlay/)
+
+#### Governance rules (2)
+
+Spectral rulesets for the provider's contracts.
+
+- [Democracy Works — elections api rules](https://apis.io/rules/democracy-works/democracy-works-elections-api-rules/)
+- [Democracy Works — jsonschema rules](https://apis.io/rules/democracy-works/democracy-works-jsonschema-spectral-rules/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Democracy Works Authentication](https://apis.io/security/democracy-works/democracy-works-authentication/)
+- [Democracy Works Domain Security](https://apis.io/security/democracy-works/democracy-works-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Democracy Works Plans Pricing](https://apis.io/plans/democracy-works/democracy-works-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Democracy Works Rate Limits](https://apis.io/rate-limits/democracy-works/democracy-works-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Democracy Works Finops](https://apis.io/finops/democracy-works/democracy-works-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
 - [Website](https://www.democracy.works)
-- [Data  Portal](https://data.democracy.works)
-- [Git Hub](https://github.com/democracyworks)
-- [Google Group](https://groups.google.com/a/democracy.works/g/democracy-works-data)
-- [Support](mailto:partnerships@democracy.works)
-- [JSON-LD](json-ld/democracy-works-context.jsonld) — [JSON-LD](https://www.w3.org/TR/json-ld11/)
-- [Vocabulary](vocabulary/democracy-works-vocabulary.yml)
+- [Documentation](https://developers.democracy.works/api/v2)
+- [API reference](https://developers.democracy.works/api/v2)
+- [Support](https://www.democracy.works/contact)
+- [Blog](https://www.democracy.works/news)
+- [Privacy policy](https://www.democracy.works/privacy)
+- [GitHub](https://github.com/democracyworks)
+- [Status](https://status.democracy.works)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 46.5** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 78.6 |
+| Contract quality | 61.8 |
+| Contract governance | 45.5 |
+| Operational transparency | 26.3 |
+| Developer ergonomics | 55.4 |
+| Access clarity | 10.5 |
+
+**Agent readiness 34.6** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | na |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | na |
+| Error Semantics | verified |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | na |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | — |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 20.6** — Government & Public Sector
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/democracy-works/](https://apis.io/providers/democracy-works/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Democracy Works: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/democracy-works/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
